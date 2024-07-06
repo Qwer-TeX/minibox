@@ -1,0 +1,27 @@
+# Object files
+*.o
+minibox
+
+# Libraries
+*.a
+*.la
+*.lo
+
+# Shared Objects
+*.so
+*.so.*
+
+# executables
+ *.out
+
+# symlinks
+wc
+cat
+cp
+sync
+yes
+update
+
+# Images
+MINIBOX.png
+MINIBOX-wTitle.png
