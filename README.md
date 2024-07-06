@@ -5,7 +5,7 @@ MiniBox -
 
 ![MINIBOX-wTitle](https://github.com/Qwer-TeX/minibox/assets/128016252/df4b6b83-2adf-434a-9d46-a907a9641a51)
 
-FEATURES (are there any?): 
+NOTE: 
 
  - No error checking
  - No debug
@@ -14,8 +14,6 @@ FEATURES (are there any?):
  - No useless symboles injected into objects
  - Only simplicity and low memory usage
 
-
-NOTES for the public
 
   I know (maybe) that this project would not succeed against BusyBox or 
   ToyBox(as of right now). Almost same multi-call binary that you can't even show 
