@@ -17,6 +17,4 @@ NOTES for the public
 
   I know (maybe) that this project would not succeed against BusyBox or 
   ToyBox(as of right now). Almost same multi-call binary that you can't even show 
-  the difference from, only which has the most arguments(-h, -v, etc). It's 
-  only you that can make the difference, add more program arguments, introduce 
-  more programs, etc.
+  the difference from, only which has the most arguments(-h, -v, etc).
