@@ -1,0 +1,17 @@
+7/3/2024 V0.1.0pre1 - pre-release version 1
+	* The first version with the minibox driver, cat, cp, and wc implemented
+
+7/3/2024 V0.1.0pre2 - pre-release version 2
+	* Introduced the sync function being the smallest program ever with 
+		The highest comment/code ratio and being the most succesful function
+		returning 0 every time
+	* Introduced update since its the same thing as sync() but repeats
+		after every 30 seconds.
+
+7/6/2024 V0.1.0pre3 - pre-release version 3 (unstable)
+	* Added usage printing if program invoked as nothing but itself
+		the driver (a.out)
+	* Added a Makefile to make life easier.
+	* Added the first target to Makefile - all, minibox, links.
+	* Added a dist target in Makefile to make releases easier
+	* Created github repository with the name 'minibox'
