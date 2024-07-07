@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <errno.h>
 
 /* minibox specific defines */
-#define VERSION "0.1.0pre4-unstable"
+#define VERSION "0.1.0pre5-unstable"
 
 /* wc specific defines */
 #define WC_IN  1  /* in a word */
@@ -34,7 +35,7 @@ main ( int argc, char *argv[] )
   else if (strstr(argv[0], "update"))
     return update();
   else if (strstr(argv[0], "sleep"))
-    return _sleep(argc, argv[0]);
+    return _sleep(argc, argv);
   else if (strstr(argv[0], "whoami"))
     return whoami();
   else
@@ -163,36 +164,36 @@ update(void)
 
 /* sleep program */
 /* Usage: sleep [seconds] */
-/* XXX: CURRENT IMPLEMENTATION BROKEN - command execution returns a
- * segmentation fault*/
+/* XXX XXX XXX: CURRENT IMPLEMENTATION BROKEN - command execution returns a segmentation fault*/
 int
-_sleep(int argsc, char *argsv[])
+_sleep(int argsc, char *argsv[]) 
 {
-  char c;
-  unsigned int secs;
-
-  secs = 0;
-
-  if( argsc != 2 || argsc < 2)
+  // Check if the correct number of arguments is provided
+  if (argsc != 2)
   {
-    fprintf(stderr, "usage: sleep [seconds]\n");
-    fprintf(stderr, "NOTE: sleep is currently broken and does a\n");
-    fprintf(stderr, "segmentation core dump everytime when invoked with\n");
-    fprintf(stderr, "a number of seconds\n");
-    exit(1);
+    fprintf(stderr, "Usage: sleep <seconds>\n");
+    return 1;
   }
 
-  while(c = *(argsv[1])++)
-  {
-    if(c < '0' || c > '9')
-    {
-      fprintf(stderr, "Bad number of seconds - invalid argument\n");
-      exit(1);
-    }
-    secs = 10 * secs + (c - '0');
+  // Validate that the argument is a number
+  char *endptr;
+  errno = 0;
+  long seconds = strtol(argsv[1], &endptr, 10);
+
+  // Check for conversion errors
+  if (errno != 0 || *endptr != '\0' || seconds < 0) {
+      fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
+      return 1;
   }
 
-  sleep(secs);
+  // Check if the number of seconds is within the valid range for unsigned int
+  if (seconds > (unsigned int)-1) {
+      fprintf(stderr, "Number of seconds is too large: %s\n", argsv[1]);
+      return 1;
+  }
+
+  // Call sleep with the valid number of seconds
+  sleep((unsigned int)seconds);
   return 0;
 }
 

@@ -1,3 +1,9 @@
+7/7/2024 V0.1.0pre5 - pre-release version 5 (unstable)
+	* Fixed sleep finally - fixed a obvious silly mistake and
+		fully recoded the function with better error handling
+		but with a more modern approach.
+	* Still in the progress of fixing cat!
+
 7/7/2024 V0.1.0pre4 - pre-release version 4 (unstable)
 	* Added sleep (currently broken) and whoami
 

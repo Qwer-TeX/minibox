@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=
+CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami
 
