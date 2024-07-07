@@ -1,31 +1,31 @@
 CC=gcc
 CFLAGS=
 LDFLAGS=
+PROGS=wc cat cp sync yes update sleep whoami
 
-VERSION=v0.1.0pre3-unstable
+VERSION=v0.1.0pre5-unstable
 
-all: minibox links
-
-
-minibox: minibox.o
-	${CC} -o minibox minibox.o
-	strip -vs $@
+all: minibox strip
 
 
-minibox.o: minibox.c
-	${CC} -c minibox.c -o minibox.o
+minibox: minibox.o links
+	${CC} ${LDFLAGS} ${CFLAGS} -o minibox minibox.o
+	ls -l $@
+	size $@
 
-links: minibox
-	ln -s minibox wc
-	ln -s minibox cat
-	ln -s minibox cp
-	ln -s minibox sync
-	ln -s minibox yes
-	ln -s minibox update
 
+minibox.o: minibox.c clean
+	${CC} ${CFLAGS} -c minibox.c -o minibox.o
+
+links:
+	for f in ${PROGS}; do \
+		ln -s minibox $$f > /dev/null 2>&1; done
+
+strip: minibox
+	$@ -vs $^
 
 clean:
-	rm -rf *.o minibox minibox-dist wc cat cp sync yes update
+	rm -rf *.o minibox minibox-dist ${PROGS}
 
 
 dist:

@@ -1,6 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <sys/types.h>
+
+/* minibox specific defines */
+#define VERSION "0.1.0pre4-unstable"
 
 /* wc specific defines */
 #define WC_IN  1  /* in a word */
@@ -14,29 +20,39 @@ extern FILE *stdout;
 int
 main ( int argc, char *argv[] )
 {
+
   if (strstr(argv[0], "wc"))
     return wc( 0, stdin, stdout );
   else if (strstr(argv[0], "cat"))
-    return cat( 0, stdin, stdout, 0 );
+    return cpcat( 0, stdin, stdout, 0 );
   else if (strstr(argv[0], "cp"))
-    return cat( 0, argv[1], argv[2], 1 );
+    return cpcat( 0, argv[1], argv[2], 1 );
   else if (strstr(argv[0], "sync"))
     return _sync();
   else if (strstr(argv[0], "yes"))
     return yes(argv[1]);
   else if (strstr(argv[0], "update"))
     return update();
+  else if (strstr(argv[0], "sleep"))
+    return _sleep(argc, argv[0]);
+  else if (strstr(argv[0], "whoami"))
+    return whoami();
   else
-    printf("MiniBox: A multi-call binary that aims to be lightweight\n"
-           "memory efficient\n"
+    printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
+           "into one that aims to be lightweight and memory efficient.\n"
            "\n"
-           "Current implementations include (in chronological order from 1st to last developed:\n"
+           "This is free software with ABSOLUTELY NO WARRANTY.\n"
+           "For details see the LICENSE than came with this distribution.\n"
+           "\n"
+           "Current implementations include (in chronological order from 1st to last developed):\n"
            "wc:     Print newline, word, and byte counts\n"
            "cat:    Concatenate files\n"
            "cp:     Copy files\n"
            "sync:   Sync filesystem caches to disk\n"
            "yes:    Output y or a character repeatedly until killed\n"
-           "update: sync filesystem caches every 30 seconds\n");
+           "update: Sync filesystem caches every 30 seconds\n"
+           "sleep*: Sleep for the specified amount of seconds *(BROKEN)\n"
+           "whoami: Print current effective username\n", VERSION);
     return 0;
 }
 
@@ -66,10 +82,11 @@ wc(int retval, FILE *strmin, FILE *strmout)
   return retval;
 }
 
-/* cat program */
+/* cat and cp program */
 /* cat [<] [infile] [|>] outfile */
+/* cp some-random-file another-random-file*/
 int
-cat(int retval, FILE *strmin, FILE *strmout, int fromcp)
+cpcat(int retval, FILE *strmin, FILE *strmout, int fromcp)
 {
   FILE *finptr;
   FILE *foutptr;
@@ -142,4 +159,54 @@ update(void)
     _sync();
     sleep(30);
   }
+}
+
+/* sleep program */
+/* Usage: sleep [seconds] */
+/* XXX: CURRENT IMPLEMENTATION BROKEN - command execution returns a
+ * segmentation fault*/
+int
+_sleep(int argsc, char *argsv[])
+{
+  char c;
+  unsigned int secs;
+
+  secs = 0;
+
+  if( argsc != 2 || argsc < 2)
+  {
+    fprintf(stderr, "usage: sleep [seconds]\n");
+    fprintf(stderr, "NOTE: sleep is currently broken and does a\n");
+    fprintf(stderr, "segmentation core dump everytime when invoked with\n");
+    fprintf(stderr, "a number of seconds\n");
+    exit(1);
+  }
+
+  while(c = *(argsv[1])++)
+  {
+    if(c < '0' || c > '9')
+    {
+      fprintf(stderr, "Bad number of seconds - invalid argument\n");
+      exit(1);
+    }
+    secs = 10 * secs + (c - '0');
+  }
+
+  sleep(secs);
+  return 0;
+}
+
+/* whoami program */
+/* print current effective user */
+/* Usage: whoami */
+int
+whoami(void)
+{
+  struct passwd *pw_ent;
+
+  pw_ent = getpwuid(geteuid());
+  if (pw_ent == NULL)
+    exit(1);
+  printf("%s\n", pw_ent->pw_name);
+  return 0;
 }

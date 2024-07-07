@@ -13,6 +13,7 @@ FEATURES (are there any?):
 
  - No useless symboles injected into objects
  - Only simplicity and low memory usage
+ - Best of all, no bloat, anykind, source-code bloat, object bloat, etc.
 
 
 NOTES for the public
