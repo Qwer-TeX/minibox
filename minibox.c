@@ -52,7 +52,7 @@ main ( int argc, char *argv[] )
            "sync:   Sync filesystem caches to disk\n"
            "yes:    Output y or a character repeatedly until killed\n"
            "update: Sync filesystem caches every 30 seconds\n"
-           "sleep*: Sleep for the specified amount of seconds *(BROKEN)\n"
+           "sleep:  Sleep for the specified amount of seconds\n"
            "whoami: Print current effective username\n", VERSION);
     return 0;
 }
@@ -164,14 +164,13 @@ update(void)
 
 /* sleep program */
 /* Usage: sleep [seconds] */
-/* XXX XXX XXX: CURRENT IMPLEMENTATION BROKEN - command execution returns a segmentation fault*/
 int
 _sleep(int argsc, char *argsv[]) 
 {
   // Check if the correct number of arguments is provided
   if (argsc != 2)
   {
-    fprintf(stderr, "Usage: sleep <seconds>\n");
+    fprintf(stderr, "Usage: sleep [seconds]\n");
     return 1;
   }
 
