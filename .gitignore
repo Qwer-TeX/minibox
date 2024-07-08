@@ -21,6 +21,8 @@ cp
 sync
 yes
 update
+sleep
+whoami
 
 # Images
 MINIBOX.png

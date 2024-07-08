@@ -129,7 +129,7 @@ _sync(void)
 {
   /* Shortest program here ever with the highest comment/code ratio */
   sync();
-  /* This functions is always successful - listed as an error in sync(2) */
+  /* This function is always successful - listed as an error in sync(2) */
   return 0;
 }
 
@@ -167,32 +167,34 @@ update(void)
 int
 _sleep(int argsc, char *argsv[]) 
 {
-  // Check if the correct number of arguments is provided
+  char *endptr;
+  errno = 0;
+  long secs;
+
+  /* Check if the correct number of arguments is provided */
   if (argsc != 2)
   {
     fprintf(stderr, "Usage: sleep [seconds]\n");
-    return 1;
+    exit(1);
   }
 
-  // Validate that the argument is a number
-  char *endptr;
-  errno = 0;
-  long seconds = strtol(argsv[1], &endptr, 10);
+  /* Validate that the argument is a number */
+  secs = strtol(argsv[1], &endptr, 10);
 
-  // Check for conversion errors
-  if (errno != 0 || *endptr != '\0' || seconds < 0) {
+  /* Check for conversion errors just in case */
+  if (errno != 0 || *endptr != '\0' || secs < 0) {
       fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
-      return 1;
+      exit(1);
   }
 
-  // Check if the number of seconds is within the valid range for unsigned int
-  if (seconds > (unsigned int)-1) {
-      fprintf(stderr, "Number of seconds is too large: %s\n", argsv[1]);
-      return 1;
+  /* Check if the # of secs is within the valid range for unsigned ints */
+  if (secs > (unsigned int)-1) {
+      fprintf(stderr, "Number of seconds not within range: %s\n", argsv[1]);
+      exit(1);
   }
 
-  // Call sleep with the valid number of seconds
-  sleep((unsigned int)seconds);
+  /* Call sleep with the valid number of seconds */
+  sleep((unsigned int)secs);
   return 0;
 }
 
