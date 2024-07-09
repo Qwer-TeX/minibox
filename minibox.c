@@ -38,6 +38,10 @@ main ( int argc, char *argv[] )
     return _sleep(argc, argv);
   else if (strstr(argv[0], "whoami"))
     return whoami();
+  else if (strstr(argv[0], "true"))
+    return _true();
+  else if (strstr(argv[0], "false"))
+    return _false();
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
            "into one that aims to be lightweight and memory efficient.\n"
@@ -53,7 +57,9 @@ main ( int argc, char *argv[] )
            "yes:    Output y or a character repeatedly until killed\n"
            "update: Sync filesystem caches every 30 seconds\n"
            "sleep:  Sleep for the specified amount of seconds\n"
-           "whoami: Print current effective username\n", VERSION);
+           "whoami: Print current effective username\n"
+           "true:   return true or 0\n"
+           "false:  return false or 1\n", VERSION);
     return 0;
 }
 
@@ -211,4 +217,20 @@ whoami(void)
     exit(1);
   printf("%s\n", pw_ent->pw_name);
   return 0;
+}
+
+/* true program */
+/* return true or 0 */
+int
+_true(void)
+{
+  exit(0);
+}
+
+/* false program */
+/* return false or 1 */
+int
+_false(void)
+{
+  exit(1);
 }

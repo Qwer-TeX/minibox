@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -g
 LDFLAGS=
-PROGS=wc cat cp sync yes update sleep whoami
+PROGS=wc cat cp sync yes update sleep whoami true false
 
 VERSION=v0.1.0pre5-unstable
 
