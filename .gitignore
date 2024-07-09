@@ -23,6 +23,8 @@ yes
 update
 sleep
 whoami
+true
+false
 
 # Images
 MINIBOX.png
