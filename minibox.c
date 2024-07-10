@@ -18,25 +18,25 @@ int
 main ( int argc, char *argv[] )
 {
 
-  if (strstr(*argv, "wc"))
+  if (strstr(argv, "wc"))
     return wc( 0, stdin, stdout );
-  else if (strstr(*argv, "cat"))
+  else if (strstr(argv[1], "cat"))
     return cpcat( 0, stdin, stdout, 0 );
-  else if (strstr(*argv, "cp"))
-    return cpcat( 0, *++argv, *(argv+2), 1 );
-  else if (strstr(*argv, "sync"))
+  else if (strstr(argv[1], "cp"))
+    return cpcat( 0, argv[1], argv[2], 1 );
+  else if (strstr(argv[1], "sync"))
     return _sync();
-  else if (strstr(*argv, "yes"))
+  else if (strstr(argv[1], "yes"))
     return yes(argv[1]);
-  else if (strstr(*argv, "update"))
+  else if (strstr(argv[1], "update"))
     return update();
-  else if (strstr(*argv, "sleep"))
+  else if (strstr(argv[1], "sleep"))
     return _sleep(argc, argv);
-  else if (strstr(*argv, "whoami"))
+  else if (strstr(argv[1], "whoami"))
     return whoami();
-  else if (strstr(*argv, "true"))
+  else if (strstr(argv[1], "true"))
     return _true();
-  else if (strstr(*argv, "false"))
+  else if (strstr(argv[1], "false"))
     return _false();
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
@@ -141,7 +141,7 @@ int
 yes(char *args[])
 {
   for(;;)
-    printf("%s\n", args > 1 ? *++args : "y");
+    printf("%s\n", args > 1 ? args[1] : "y");
   return 0;
 }
 
@@ -179,17 +179,17 @@ _sleep(int argsc, char *argsv[])
   }
 
   /* Validate that the argument is a number */
-  secs = strtol(*++argsv, &endptr, 10);
+  secs = strtol(argsv[1], &endptr, 10);
 
   /* Check for conversion errors just in case */
   if (errno != 0 || *endptr != '\0' || secs < 0) {
-      fprintf(stderr, "Invalid number of seconds: %s\n", *++argsv);
+      fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
       exit(1);
   }
 
   /* Check if the # of secs is within the valid range for unsigned ints */
   if (secs > (unsigned int)-1) {
-      fprintf(stderr, "Number of seconds not within range: %s\n", *++argsv);
+      fprintf(stderr, "Number of seconds not within range: %s\n", argsv[1]);
       exit(1);
   }
 
