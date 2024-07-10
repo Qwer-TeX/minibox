@@ -1,5 +1,10 @@
 7/9/2024 V0.1.0pre6 - pre-release version 6 (testing)
+	* Massive load of fixed :)
 	* Added true and false
+	* Changed argv[0] to *(argv), argv[1] to *++argv/*(argv+1), etc to make the
+		program run faster.
+	* Improved code sources
+	* FIXED cat FINALLY !!! -- also a silly mistake :D
 
 7/7/2024 V0.1.0pre5 - pre-release version 5 (unstable)
 	* Fixed sleep finally - fixed a obvious silly mistake and

@@ -1,5 +1,6 @@
 # MiniBox
-A very young, almost unstable, busybox-like/toybox-like lighweight replacement aiming to be lightweight and ultra-portable
+A busybox-like/toybox-like lighweight replacement aiming to be lightweight and ultra-portably
+memory efficient.
 
 MiniBox - 
 

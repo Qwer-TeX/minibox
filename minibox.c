@@ -7,11 +7,7 @@
 #include <errno.h>
 
 /* minibox specific defines */
-#define VERSION "0.1.0pre5-unstable"
-
-/* wc specific defines */
-#define WC_IN  1  /* in a word */
-#define WC_OUT 0  /* not in a word (default) */
+#define VERSION "0.1.0pre6-testing"
 
 /* Not needed, though put in case */
 extern FILE *stdin;
@@ -22,25 +18,25 @@ int
 main ( int argc, char *argv[] )
 {
 
-  if (strstr(argv[0], "wc"))
+  if (strstr(*argv, "wc"))
     return wc( 0, stdin, stdout );
-  else if (strstr(argv[0], "cat"))
+  else if (strstr(*argv, "cat"))
     return cpcat( 0, stdin, stdout, 0 );
-  else if (strstr(argv[0], "cp"))
-    return cpcat( 0, argv[1], argv[2], 1 );
-  else if (strstr(argv[0], "sync"))
+  else if (strstr(*argv, "cp"))
+    return cpcat( 0, *++argv, *(argv+2), 1 );
+  else if (strstr(*argv, "sync"))
     return _sync();
-  else if (strstr(argv[0], "yes"))
+  else if (strstr(*argv, "yes"))
     return yes(argv[1]);
-  else if (strstr(argv[0], "update"))
+  else if (strstr(*argv, "update"))
     return update();
-  else if (strstr(argv[0], "sleep"))
+  else if (strstr(*argv, "sleep"))
     return _sleep(argc, argv);
-  else if (strstr(argv[0], "whoami"))
+  else if (strstr(*argv, "whoami"))
     return whoami();
-  else if (strstr(argv[0], "true"))
+  else if (strstr(*argv, "true"))
     return _true();
-  else if (strstr(argv[0], "false"))
+  else if (strstr(*argv, "false"))
     return _false();
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
@@ -64,13 +60,13 @@ main ( int argc, char *argv[] )
 }
 
 /* wc program */
-/* Usage: wc [<] [infile] [|>] [outfile] */
+/* Usage: wc [<] [infile] */
 int
 wc(int retval, FILE *strmin, FILE *strmout)
 {
   int letter, nline, nchar, nword, inword;
 
-  inword = WC_OUT;
+  inword = 0;
   nline = nword = nchar = 0;
   while ((letter = getc(strmin)) != EOF)
   {
@@ -78,10 +74,10 @@ wc(int retval, FILE *strmin, FILE *strmout)
     if (letter == '\n')
       ++nline;
     if (letter == ' ' || letter == '\n' || letter == '\t')
-      inword = WC_IN;
-    else if (inword == WC_OUT) 
+      inword = 1;
+    else if (inword == 0) 
     {
-      inword == WC_IN;
+      inword == 1;
       ++nword;
     }
   }
@@ -91,7 +87,7 @@ wc(int retval, FILE *strmin, FILE *strmout)
 
 /* cat and cp program */
 /* cat [<] [infile] [|>] outfile */
-/* cp some-random-file another-random-file*/
+/* cp [some-random-file] [another-random-file] */
 int
 cpcat(int retval, FILE *strmin, FILE *strmout, int fromcp)
 {
@@ -133,7 +129,6 @@ cpcat(int retval, FILE *strmin, FILE *strmout, int fromcp)
 int
 _sync(void)
 {
-  /* Shortest program here ever with the highest comment/code ratio */
   sync();
   /* This function is always successful - listed as an error in sync(2) */
   return 0;
@@ -146,7 +141,7 @@ int
 yes(char *args[])
 {
   for(;;)
-    printf("%s\n", args > 1 ? args[1] : "y");
+    printf("%s\n", args > 1 ? *++args : "y");
   return 0;
 }
 
@@ -154,9 +149,8 @@ int
 update(void)
 {
   /* close all standard descriptors */
-  close(0);
-  close(1);
-  close(2);
+  for(int i=0; i!=3; ++i)
+    close(i);
 
   /* change directory to root to avoid locking the device */
   chdir("/");
@@ -185,17 +179,17 @@ _sleep(int argsc, char *argsv[])
   }
 
   /* Validate that the argument is a number */
-  secs = strtol(argsv[1], &endptr, 10);
+  secs = strtol(*++argsv, &endptr, 10);
 
   /* Check for conversion errors just in case */
   if (errno != 0 || *endptr != '\0' || secs < 0) {
-      fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
+      fprintf(stderr, "Invalid number of seconds: %s\n", *++argsv);
       exit(1);
   }
 
   /* Check if the # of secs is within the valid range for unsigned ints */
   if (secs > (unsigned int)-1) {
-      fprintf(stderr, "Number of seconds not within range: %s\n", argsv[1]);
+      fprintf(stderr, "Number of seconds not within range: %s\n", *++argsv);
       exit(1);
   }
 

@@ -3,7 +3,7 @@ CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false
 
-VERSION=v0.1.0pre5-unstable
+VERSION=v0.1.0pre6-testing
 
 all: minibox strip
 
@@ -25,7 +25,7 @@ strip: minibox
 	$@ -vs $^
 
 clean:
-	rm -rf *.o minibox minibox-dist ${PROGS}
+	rm -rf *.o minibox minibox-${VERSION} ${PROGS}
 
 
 dist:
