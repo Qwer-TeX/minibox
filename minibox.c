@@ -18,25 +18,25 @@ int
 main ( int argc, char *argv[] )
 {
 
-  if (strstr(argv, "wc"))
+  if (strstr(argv[0], "wc"))
     return wc( 0, stdin, stdout );
-  else if (strstr(argv[1], "cat"))
+  else if (strstr(argv[0], "cat"))
     return cpcat( 0, stdin, stdout, 0 );
-  else if (strstr(argv[1], "cp"))
+  else if (strstr(argv[0], "cp"))
     return cpcat( 0, argv[1], argv[2], 1 );
-  else if (strstr(argv[1], "sync"))
+  else if (strstr(argv[0], "sync"))
     return _sync();
-  else if (strstr(argv[1], "yes"))
+  else if (strstr(argv[0], "yes"))
     return yes(argv[1]);
-  else if (strstr(argv[1], "update"))
+  else if (strstr(argv[0], "update"))
     return update();
-  else if (strstr(argv[1], "sleep"))
+  else if (strstr(argv[0], "sleep"))
     return _sleep(argc, argv);
-  else if (strstr(argv[1], "whoami"))
+  else if (strstr(argv[0], "whoami"))
     return whoami();
-  else if (strstr(argv[1], "true"))
+  else if (strstr(argv[0], "true"))
     return _true();
-  else if (strstr(argv[1], "false"))
+  else if (strstr(argv[0], "false"))
     return _false();
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
