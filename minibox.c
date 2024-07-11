@@ -229,7 +229,7 @@ _false(void)
   exit(1);
 }
 
-/* Sketch of a echo function */
+/* Sketch of a echo function with arguments */
 //int
 //echo(int argc, char *argv[])
 //{
