@@ -20,4 +20,4 @@ NOTE:
   I know (maybe) that this project would not succeed against BusyBox or 
   ToyBox(as of right now). Almost same multi-call binary that you can't even show 
   the difference from, only which has the most arguments(-h, -v, etc).
-  Maybe I'll introduce arguments that are most widely used to programs respectivly.
+  Maybe I'll introduce arguments that are most widely used in programs respectivly.
