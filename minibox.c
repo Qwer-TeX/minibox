@@ -228,3 +228,67 @@ _false(void)
 {
   exit(1);
 }
+
+/* Sketch of a echo function */
+//int
+//echo(int argc, char *argv[])
+//{
+//  int n_flag = 0;
+//  int e_flag = 0;
+//  int arg_start = 1;
+//
+//  /* Parse options */
+//  if (argc > 1) {
+//    for (int i = 1; i < argc; i++) {
+//      if (strcmp(argv[i], "-n") == 0) {
+//        n_flag = 1;
+//        arg_start++;
+//      } else if (strcmp(argv[i], "-e") == 0) {
+//        e_flag = 1;
+//        arg_start++;
+//      } else if (argv[i][0] == '-') {
+//        printf("Usage: echo [-en] [string]\n");
+//        return;
+//      } else {
+//        break;
+//      }
+//    }
+//  }
+//
+//  /* Print arguments */
+//  for (int i = arg_start; i < argc; i++) {
+//    if (e_flag) {
+//      for (char *p = argv[i]; *p != '\0'; p++) {
+//        if (*p == '\\') {
+//          switch (*(++p)) {
+//            case 'n':
+//              putchar('\n');
+//              break;
+//            case 't':
+//              putchar('\t');
+//              break;
+//            case '\\':
+//              putchar('\\');
+//              break;
+//            default:
+//              putchar('\\');
+//              putchar(*p);
+//              break;
+//          }
+//        } else {
+//          putchar(*p);
+//        }
+//      }
+//    } else {
+//      fputs(argv[i], stdout);
+//    }
+//    if (i < argc - 1) {
+//      putchar(' ');
+//    }
+//  }
+//
+//  // Print newline if -n is not set
+//  if (!n_flag) {
+//    putchar('\n');
+//  }
+//}
