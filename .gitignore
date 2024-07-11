@@ -25,6 +25,7 @@ sleep
 whoami
 true
 false
+ls
 
 # Images
 MINIBOX.png

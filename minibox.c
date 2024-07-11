@@ -5,6 +5,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <dirent.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0pre6-testing"
@@ -38,6 +39,8 @@ main ( int argc, char *argv[] )
     return _true();
   else if (strstr(argv[0], "false"))
     return _false();
+  else if (strstr(argv[0], "ls"))
+    return ls(argc, argv);
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
            "into one that aims to be lightweight and memory efficient.\n"
@@ -55,7 +58,8 @@ main ( int argc, char *argv[] )
            "sleep:  Sleep for the specified amount of seconds\n"
            "whoami: Print current effective username\n"
            "true:   return true or 0\n"
-           "false:  return false or 1\n", VERSION);
+           "false:  return false or 1\n"
+           "ls:     List files and directories\n", VERSION);
     return 0;
 }
 
@@ -229,6 +233,33 @@ _false(void)
   exit(1);
 }
 
+/* ls program */
+/* list directories or files */
+/* Usage: ls [file] */
+int
+ls(int argc, char *argv[])
+{
+  DIR *directory;
+  struct dirent *entry;
+
+  if (argc > 1)
+    directory = opendir(argv[1]);
+  else
+    directory = opendir(".");
+  if(!directory)
+  {
+    perror("ls");
+    return 1;
+  }
+
+  while ((entry = readdir(directory)) != NULL)
+  {
+    printf("%s\n", entry->d_name);
+  }
+
+  closedir(directory);
+}
+
 /* Sketch of a echo function with arguments */
 //int
 //echo(int argc, char *argv[])
@@ -292,3 +323,4 @@ _false(void)
 //    putchar('\n');
 //  }
 //}
+//
