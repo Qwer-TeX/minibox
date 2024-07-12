@@ -248,7 +248,7 @@ ls(int argc, char *argv[])
     directory = opendir(".");
   if(!directory)
   {
-    perror("ls");
+    fprintf(stdout, "ls: access failure - '%s': No such file or directory\n", argv[1]);
     return 1;
   }
 
