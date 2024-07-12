@@ -1,3 +1,35 @@
+/* MiniBox is a busybox/toybox like replacement aiming to be lightweight, portable, and 
+ * memory efficient.
+ *
+ * Copyleft (C) 2024-2024 Robert Johnson <mitnew842 AT gmail dot com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * minibox.c is the main program source with all programs as functions called from main().
+ *
+ * When adding programs or features, please consider if they can be
+ * accomplished in a sane way with standard unix tools. If they're 
+ * programs or features you added, please make sure they are read-
+ * able and understandable by a novice programmer, if not, add 
+ * comments or let me know.
+ *
+ * I haven't tested but it could compile on windows systems with MSYS/MinGW or Cygwin.
+ * MiniBox should be fairly portable for POSIX systems.
+ *
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +73,8 @@ main ( int argc, char *argv[] )
     return _false();
   else if (strstr(argv[0], "ls"))
     return ls(argc, argv);
+  else if (strstr(argv[0], "echo"))
+    return echo(argc, argv);
   else
     printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
            "into one that aims to be lightweight and memory efficient.\n"
@@ -219,6 +253,7 @@ whoami(void)
 
 /* true program */
 /* return true or 0 */
+/* TODO: Write a minibox shell and move to shell source */
 int
 _true(void)
 {
@@ -227,6 +262,7 @@ _true(void)
 
 /* false program */
 /* return false or 1 */
+/* TODO: Write a minibox shell and move to shell source */
 int
 _false(void)
 {
@@ -260,67 +296,86 @@ ls(int argc, char *argv[])
   closedir(directory);
 }
 
-/* Sketch of a echo function with arguments */
-//int
-//echo(int argc, char *argv[])
-//{
-//  int n_flag = 0;
-//  int e_flag = 0;
-//  int arg_start = 1;
-//
-//  /* Parse options */
-//  if (argc > 1) {
-//    for (int i = 1; i < argc; i++) {
-//      if (strcmp(argv[i], "-n") == 0) {
-//        n_flag = 1;
-//        arg_start++;
-//      } else if (strcmp(argv[i], "-e") == 0) {
-//        e_flag = 1;
-//        arg_start++;
-//      } else if (argv[i][0] == '-') {
-//        printf("Usage: echo [-en] [string]\n");
-//        return;
-//      } else {
-//        break;
-//      }
-//    }
-//  }
-//
-//  /* Print arguments */
-//  for (int i = arg_start; i < argc; i++) {
-//    if (e_flag) {
-//      for (char *p = argv[i]; *p != '\0'; p++) {
-//        if (*p == '\\') {
-//          switch (*(++p)) {
-//            case 'n':
-//              putchar('\n');
-//              break;
-//            case 't':
-//              putchar('\t');
-//              break;
-//            case '\\':
-//              putchar('\\');
-//              break;
-//            default:
-//              putchar('\\');
-//              putchar(*p);
-//              break;
-//          }
-//        } else {
-//          putchar(*p);
-//        }
-//      }
-//    } else {
-//      fputs(argv[i], stdout);
-//    }
-//    if (i < argc - 1) {
-//      putchar(' ');
-//    }
-//  }
-//
-//  // Print newline if -n is not set
-//  if (!n_flag) {
-//    putchar('\n');
-//  }
-//}
-//
+/* echo program -- the first complete and lightweight implementation in minibox */
+/* print a string to stdout */
+/* Usage: echo [neE] [string] */
+
+/* The first ever COMPLETE implementation in minibox featuring all arguments found in coreutils
+ * and busybox/toybox echos while still maintining the idea of lightness and no-source-code-bloat
+ * resulting in a blazing fast echo :D */
+/* TODO: Write a minibox shell and move to shell source */
+int 
+echo(int argc, char *argv[]) {
+  int n_flag = 0;
+  int e_flag = 0;
+  int E_flag = 1;  // -E is default
+  int arg_start = 1;
+
+  /* Parse options */
+  if (argc > 1) {
+    for (int i = 1; i < argc; i++) {
+      if (argv[i][0] == '-') {
+        for (int j = 1; argv[i][j] != '\0'; j++) {
+          switch (argv[i][j]) {
+            case 'n':
+              n_flag = 1;
+              break;
+            case 'e':
+              e_flag = 1;
+              E_flag = 0;
+              break;
+            case 'E':
+              E_flag = 1;
+              e_flag = 0;
+              break;
+            default:
+              printf("Usage: echo [-neE] [string]\n");
+              return 1;
+          }
+        }
+        arg_start++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  /* Print arguments */
+  for (int i = arg_start; i < argc; i++) {
+    if (e_flag && !E_flag) {
+      for (char *p = argv[i]; *p != '\0'; p++) {
+        if (*p == '\\') {
+          switch (*(++p)) {
+            case 'n':
+              putchar('\n');
+              break;
+            case 't':
+              putchar('\t');
+              break;
+            case '\\':
+              putchar('\\');
+              break;
+            default:
+              putchar('\\');
+              putchar(*p);
+              break;
+          }
+        } else {
+          putchar(*p);
+        }
+      }
+    } else {
+      fputs(argv[i], stdout);
+    }
+    if (i < argc - 1) {
+      putchar(' ');
+    }
+  }
+
+  // Print newline if -n is not set
+  if (!n_flag) {
+    putchar('\n');
+  }
+
+  return 0;
+}

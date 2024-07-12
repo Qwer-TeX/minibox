@@ -26,6 +26,7 @@ whoami
 true
 false
 ls
+echo
 
 # Images
 MINIBOX.png
