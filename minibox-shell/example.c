@@ -11,6 +11,31 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#define MAX_HISTORY_SIZE 20
+
+char *history[MAX_HISTORY_SIZE];
+int history_count = 0;
+
+// Function to add a command to history
+void add_to_history(char *command) {
+  if (history_count == MAX_HISTORY_SIZE) {
+    // If history is full, remove the oldest command
+    free(history[0]);
+    for (int i = 0; i < history_count - 1; i++) {
+      history[i] = history[i + 1];
+    }
+    history_count--;
+  }
+  history[history_count++] = strdup(command);
+}
+
+// Function to print history
+void print_history() {
+  for (int i = 0; i < history_count; i++) {
+    printf("%d: %s\n", i + 1, history[i]);
+  }
+}
+
 // Function to print the prompt
 void print_prompt() {
   printf("$ ");
@@ -132,23 +157,9 @@ int shell_export(char **args) {
   return 1;
 }
 
-// Built-in command: if
-int shell_if(char **args) {
-  // This is a simplified if implementation
-  if (args[1] == NULL || args[2] == NULL || args[3] == NULL) {
-    fprintf(stderr, "expected arguments to \"if\"\n");
-    return 1;
-  }
-  if (strcmp(args[1], "[") != 0 || strcmp(args[3], "]") != 0) {
-    fprintf(stderr, "invalid format for if\n");
-    return 1;
-  }
-  if (strcmp(args[2], "true") == 0) {
-    // Execute the command after "then"
-    if (args[4] && strcmp(args[4], "then") == 0) {
-      return execute_command(args + 5);
-    }
-  }
+// Built-in command: history
+int shell_history(char **args) {
+  print_history();
   return 1;
 }
 
@@ -157,7 +168,7 @@ char *builtin_str[] = {
   "cd",
   "exit",
   "export",
-  "if"
+  "history"
 };
 
 // Corresponding functions for built-in commands
@@ -165,7 +176,7 @@ int (*builtin_func[]) (char **) = {
   &shell_cd,
   &shell_exit,
   &shell_export,
-  &shell_if
+  &shell_history
 };
 
 // Function to execute built-in commands
@@ -217,6 +228,9 @@ int execute_command(char **args) {
     setenv(args[0], equals_sign + 1, 1);
     return 1;
   }
+
+  // Add command to history
+  add_to_history(args[0]);
 
   int builtin_status = execute_builtin(args);
   if (builtin_status != -1) {
@@ -273,7 +287,7 @@ void shell_loop() {
 // Main function
 int main(int argc, char **argv) {
   // Source the .profile file if it exists
-  //source_profile();
+  source_profile();
 
   // Run command loop.
   shell_loop();
