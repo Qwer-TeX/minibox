@@ -1,3 +1,11 @@
+7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
+	* Reached a massive milestone by creating a shell example
+	* Created another shell example but using readline this time, a major improvement
+		since libreadline it includes line-editing abilities and history handling
+	* Updated all C source files to include the standard license header, and some extra
+		info
+
+
 7/9/2024 V0.1.0pre6 - pre-release version 6 (testing)
 	* Massive load of fixed :)
 	* Added true and false, and ls

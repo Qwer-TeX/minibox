@@ -1,63 +1,37 @@
 /*
- * A small example of a shell implementation created by Robert Johnson, yes, I had time, but no
- * I didn't have enough time to create it all. At least you've got a ultra minimal shell
- * implementation. I would call it the umsh ( the ummm shell :D ) since like ummm, why doesn't
- * echo $PATH print the path or umm, why doesn't the shell recognize the case builtin, umm, why
- * is export broken, umm, I can't export variables, umm, this shell sucks, etc.
+ * A small example of a shell implementation created by Robert Johnson, yes, I had time,
+ * but not enough. At least you've got a very minimal shell implementation. I would call 
+ * this one, the msh (Minibox SHell) since it, thanks to the readline library, can make
+ * use of its history mechanism, not just that, can't forget about history scrolling, 
+ * best part of all, it now fully recognizes variable expansion, what a fantastic feat.
+ *
+ * Even bash itself uses libreadline, which isn't old. Its one of the reasons I chose
+ * to use libreadline instead of making my own like in dash since it'll be easier for
+ * me to do.
+ * 
+ * NOTE: I would like libreadline to statically link against msh because it would
+ * eliminate the need for libreadline on the system and also make it run faster. So, I 
+ * would like to include the readline sources with minibox just like in bash, so that 
+ * I would be able to strip and delete some of the readline sources down depending on 
+ * what msh needs. Or as usual, statically link msh to libreadline using `gcc -static 
+ * -o example2 example2.c -lreadline` but it complains about missing references to 
+ * functions. I don't think gcc understands that I only want to statically link 
+ * libreadline and not anything else, libtinfo and libc should be dynamically linked. 
+ * Am I doing something wrong here? This is what I did in my first try before thinking 
+ * about including the readline sources. Just to add in a little bit, readline's info 
+ * manual lists as a bug "It's too big and too slow." That's the first reason that 
+ * first came to mind which made me think, yes, I should statically link it to my 
+ * shell and on the top of that, maybe even strip its source down and help readline's 
+ * developers a little bit :).
+ *
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
-#define MAX_HISTORY_SIZE 20
-
-char *history[MAX_HISTORY_SIZE];
-int history_count = 0;
-
-// Function to add a command to history
-void add_to_history(char *command) {
-  if (history_count == MAX_HISTORY_SIZE) {
-    // If history is full, remove the oldest command
-    free(history[0]);
-    for (int i = 0; i < history_count - 1; i++) {
-      history[i] = history[i + 1];
-    }
-    history_count--;
-  }
-  history[history_count++] = strdup(command);
-}
-
-// Function to print history
-void print_history() {
-  for (int i = 0; i < history_count; i++) {
-    printf("%d: %s\n", i + 1, history[i]);
-  }
-}
-
-// Function to print the prompt
-void print_prompt() {
-  printf("$ ");
-}
-
-// Function to read a line of input from the user
-char *read_line() {
-  char *line = NULL;
-  size_t len = 0;
-  if (getline(&line, &len, stdin) == -1) {
-    if (feof(stdin)) {
-      // End-of-file (Ctrl+D) was reached
-      free(line);
-      exit(EXIT_SUCCESS);
-    } else {
-      perror("readline");
-      free(line);
-      exit(EXIT_FAILURE);
-    }
-  }
-  return line;
-}
+#include <readline/readline.h>
+#include <readline/history.h>
 
 // Function to expand environment variables
 char *expand_vars(char *line) {
@@ -159,7 +133,12 @@ int shell_export(char **args) {
 
 // Built-in command: history
 int shell_history(char **args) {
-  print_history();
+  HIST_ENTRY **the_history_list = history_list();
+  if (the_history_list) {
+    for (int i = 0; the_history_list[i]; i++) {
+      printf("%d: %s\n", i + history_base, the_history_list[i]->line);
+    }
+  }
   return 1;
 }
 
@@ -230,7 +209,7 @@ int execute_command(char **args) {
   }
 
   // Add command to history
-  add_to_history(args[0]);
+  add_history(args[0]);
 
   int builtin_status = execute_builtin(args);
   if (builtin_status != -1) {
@@ -271,9 +250,14 @@ void shell_loop() {
   char **args;
   int status;
 
+  rl_bind_keyseq("\\C-p", rl_get_previous_history);
+  rl_bind_keyseq("\\C-n", rl_get_next_history);
+
   do {
-    print_prompt();
-    line = read_line();
+    line = readline("$ ");
+    if (line == NULL) {
+      break;
+    }
     expanded_line = expand_vars(line);
     args = split_line(expanded_line);
     status = execute_command(args);
@@ -287,7 +271,6 @@ void shell_loop() {
 // Main function
 int main(int argc, char **argv) {
   // Source the .profile file if it exists
-  // Commented out since this feature is currently broken
   //source_profile();
 
   // Run command loop.
@@ -297,3 +280,4 @@ int main(int argc, char **argv) {
 
   return EXIT_SUCCESS;
 }
+
