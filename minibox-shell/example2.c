@@ -13,16 +13,17 @@
  * eliminate the need for libreadline on the system and also make it run faster. So, I 
  * would like to include the readline sources with minibox just like in bash, so that 
  * I would be able to strip and delete some of the readline sources down depending on 
- * what msh needs. Or as usual, statically link msh to libreadline using `gcc -static 
- * -o example2 example2.c -lreadline` but it complains about missing references to 
- * functions. I don't think gcc understands that I only want to statically link 
- * libreadline and not anything else, libtinfo and libc should be dynamically linked. 
- * Am I doing something wrong here? This is what I did in my first try before thinking 
- * about including the readline sources. Just to add in a little bit, readline's info 
- * manual lists as a bug "It's too big and too slow." That's the first reason that 
- * first came to mind which made me think, yes, I should statically link it to my 
- * shell and on the top of that, maybe even strip its source down and help readline's 
- * developers a little bit :).
+ * what msh needs. Or as usual, statically link msh to libreadline This is what I did 
+ * in my first try before thinking  about including the readline sources but its just
+ * slow. Just to add in a little bit, readline's info manual lists as a bug "It's too 
+ * big and too slow." That's the first reason that  first came to mind which made me 
+ * think, yes, I should statically link it to my shell and on the top of that, maybe 
+ * even strip its source down and help readline's developers a little bit :). The size
+ * comes to 284K which is a massive size increase which is another reason I would want
+ * to strip it down. The last resort is to create our own readline like in dash which
+ * would be a lot times faster than libreadline.
+ *
+ * gcc -o example2 example2.c -l:libreadline.a -ltinfo -lc -Wl,-Bdynamic
  *
  */
 #include <stdio.h>
