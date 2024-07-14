@@ -80,12 +80,32 @@ int shell_history(char **args) {
   return 1;
 }
 
+// Built-in command: echo
+int shell_echo(char **args) {
+  for (int i = 1; args[i] != NULL; i++) {
+    char *arg = args[i];
+    int len = strlen(arg);
+
+    // Check if the argument starts and ends with quotes
+    if ((arg[0] == '"' && arg[len - 1] == '"') || (arg[0] == '\'' && arg[len - 1] == '\'')) {
+      // Print the argument without the outer quotes
+      printf("%.*s ", len - 2, arg + 1);
+    } else {
+      // Print the argument as is
+      printf("%s ", arg);
+    }
+  }
+  printf("\n");
+  return 1;
+}
+
 // List of built-in commands
 char *builtin_str[] = {
   "cd",
   "exit",
   "export",
-  "history"
+  "history",
+  "echo" // Added echo to the list of built-in commands
 };
 
 // Corresponding functions for built-in commands
@@ -93,7 +113,8 @@ int (*builtin_func[]) (char **) = {
   &shell_cd,
   &shell_exit,
   &shell_export,
-  &shell_history
+  &shell_history,
+  &shell_echo // Added shell_echo function pointer
 };
 
 // Function to execute built-in commands
@@ -177,4 +198,3 @@ int main(int argc, char **argv) {
 
   return EXIT_SUCCESS;
 }
-
