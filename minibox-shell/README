@@ -1,0 +1,18 @@
+README:     This file.
+
+example.c:  The original barebones shell without variable expansion, cursor navigation, etc.
+
+example2.c: Imporved version of the barebones shell but with the help of libreadline which
+            makes it now support variable expansion, cursor navigation, and history management.
+            though it still doesn't support redirection. Is linking a small shell with a huge
+            bloated libreadline make any sense? It looks like to me its some black magic dealing
+            with terminals. Approx 30K lines of code for libreadline and also 20K for 
+            libeditline, are you kidding me, its the most bloated libraries I've ever seen in my
+            life.
+
+readline_example: A simple lightweight example of how readline works.
+
+NOTE:       Making a real shell involves more just than variable expansion, history management, 
+            and cursor management, etc. It also needs to be able to run shell scripts. These 
+            examples don't implement if, else, case, until, for, set, shopt, echo, etc although
+            it includes export and cd.

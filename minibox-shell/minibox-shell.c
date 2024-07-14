@@ -28,14 +28,21 @@
  *      enable ash and its features would result in a 88k executable. It could become 
  *      probably 14k to 48k if we were to fork and strip it down ;). Or as usual, get 
  *      started at creating our own shell from scratch but that would be off the limits 
- *      for me since I don't have enough time to do it all.
+ *      for me since I don't have enough time to do it all though I can create examples
+ *      since they're simple and effective.
  *
  *      The minibox shell has to be implemented in a seperate file and directory because 
- *      I know that the lines of code for this shell would be atleast 6100 lines with 
+ *      I know that the lines of code for this shell would be atleast 600 lines with 
  *      comments included. Remember its the stripped-down version of the busybox ash so 
- *      its has to not exceede 6100-7000 lines of code. I know, that's alot thats why I 
- *      didn't want to make one from scratch.
+ *      its has to not exceede 600-1000 lines of code. But the example shells are less 
+ *      than 200 lines of code so I thought maybe we can make our shell ultra small but 
+ *      remember those example shells are only stripped down and don't yet have 
+ *      implemented its shell language functions like if, case, else, until, for, test, 
+ *      etc. If someone can contribute codes for those functions, I would me much more 
+ *      than thankful.
  *
  *      No its not going to be seperate from the minibox.c since minibox.o and minibox-
- *      shell.o are going to be linked together.
+ *      shell.o are going to be linked together because this projects's goal is for a 
+ *      multi-call binary but I'll give two options you can adjust in the Makefile for
+ *      creating a standalone shell or including it in the multi-call binary.
  */

@@ -113,7 +113,7 @@ wc(int retval, FILE *strmin, FILE *strmout)
   return retval;
 }
 
-/* cat and cp program */
+/* common code for the cp and cat program */
 /* cat [<] [infile] [|>] outfile */
 /* cp [some-random-file] [another-random-file] */
 int

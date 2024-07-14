@@ -4,6 +4,7 @@
 		since libreadline it includes line-editing abilities and history handling
 	* Updated all C source files to include the standard license header, and some extra
 		info
+	* Added another example but using the bloated libreadline this time
 
 
 7/9/2024 V0.1.0pre6 - pre-release version 6 (testing)
