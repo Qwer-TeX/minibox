@@ -6,6 +6,7 @@
 		info
 	* Added another example but using the bloated libreadline this time
 	* Added another example using the lightweight liblinenoise this time
+	* Added variable expansion to shell
 
 
 7/9/2024 V0.1.0pre6 - pre-release version 6 (testing)
