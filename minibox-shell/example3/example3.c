@@ -10,11 +10,27 @@
 #include <sys/wait.h>
 #include "linenoise.h"
 
+// Function to expand variables prefixed with '$'
+char *expand_variable(char *token) {
+  if (token[0] == '$') {
+    char *var_name = token + 1; // Skip the '$'
+    char *value = getenv(var_name);
+    if (value != NULL) {
+      return strdup(value); // Duplicate the value since getenv returns a pointer to an internal buffer
+    } else {
+      fprintf(stderr, "Variable '%s' not set\n", var_name);
+      return NULL;
+    }
+  } else {
+    return strdup(token); // No expansion needed
+  }
+}
+
 // Function to split a line into tokens (arguments)
 char **split_line(char *line) {
   int bufsize = 64, position = 0;
   char **tokens = malloc(bufsize * sizeof(char*));
-  char *token;
+  char *token, *expanded_token;
 
   if (!tokens) {
     fprintf(stderr, "allocation error\n");
@@ -23,8 +39,11 @@ char **split_line(char *line) {
 
   token = strtok(line, " \t\r\n\a");
   while (token != NULL) {
-    tokens[position] = token;
-    position++;
+    expanded_token = expand_variable(token);
+    if (expanded_token != NULL) {
+      tokens[position] = expanded_token;
+      position++;
+    }
 
     if (position >= bufsize) {
       bufsize += 64;
