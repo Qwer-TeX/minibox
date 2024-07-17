@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <dirent.h>
+#include <sys/wait.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0"
@@ -308,67 +309,76 @@ int echo(int argc, char *argv[]) {
 int init(void) {
     printf("MiniBox %s init: Running init process\n", VERSION);
 
+    // Example: Starting essential services
+    pid_t child_pid = fork();
+    if (child_pid == 0) {
+        // Child process
+        execl("/bin/sh", "/bin/sh", "-c", "/sbin/networking", NULL);
+        perror("execl");
+        exit(1);
+    } else if (child_pid > 0) {
+        // Parent process
+        printf("MiniBox %s init: Started networking service\n", VERSION);
+    } else {
+        // Error occurred
+        perror("fork");
+        return 1;
+    }
+
+    // Example: Waiting for children
     while (1) {
-        printf("MiniBox %s init: Waiting for children\n", VERSION);
-        wait(NULL); // Placeholder for child process handling
+        int status;
+        pid_t terminated_pid = wait(&status);
+        if (terminated_pid == -1) {
+            perror("wait");
+            break;
+        }
+        if (WIFEXITED(status)) {
+            printf("MiniBox %s init: Process %d exited with status %d\n", VERSION, terminated_pid, WEXITSTATUS(status));
+        } else if (WIFSIGNALED(status)) {
+            printf("MiniBox %s init: Process %d terminated by signal %d\n", VERSION, terminated_pid, WTERMSIG(status));
+        }
     }
 
     return 0;
 }
 
-/* minibox driver */
+/* Main driver function */
 int main(int argc, char *argv[]) {
-    if (argc < 1) {
-        fprintf(stderr, "Error: Missing program name\n");
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s command [arguments]\n", argv[0]);
         return 1;
     }
 
-    if (strstr(argv[0], "wc"))
+    if (strcmp(argv[1], "wc") == 0) {
         return wc(0, stdin, stdout);
-    else if (strstr(argv[0], "cat"))
-        return cpcat(0, NULL, NULL, 0);
-    else if (strstr(argv[0], "cp") && argc >= 3)
-        return cpcat(0, argv[1], argv[2], 1);
-    else if (strstr(argv[0], "sync"))
+    } else if (strcmp(argv[1], "cat") == 0) {
+        return cpcat(0, argv[2], argv[3], 0);
+    } else if (strcmp(argv[1], "cp") == 0) {
+        return cpcat(0, argv[2], argv[3], 1);
+    } else if (strcmp(argv[1], "sync") == 0) {
         return _sync();
-    else if (strstr(argv[0], "yes"))
-        return yes(argv);
-    else if (strstr(argv[0], "update"))
+    } else if (strcmp(argv[1], "yes") == 0) {
+        return yes(&argv[2]);
+    } else if (strcmp(argv[1], "update") == 0) {
         return update();
-    else if (strstr(argv[0], "sleep"))
+    } else if (strcmp(argv[1], "sleep") == 0) {
         return _sleep(argc, argv);
-    else if (strstr(argv[0], "whoami"))
+    } else if (strcmp(argv[1], "whoami") == 0) {
         return whoami();
-    else if (strstr(argv[0], "true"))
+    } else if (strcmp(argv[1], "true") == 0) {
         return _true();
-    else if (strstr(argv[0], "false"))
+    } else if (strcmp(argv[1], "false") == 0) {
         return _false();
-    else if (strstr(argv[0], "ls"))
+    } else if (strcmp(argv[1], "ls") == 0) {
         return ls(argc, argv);
-    else if (strstr(argv[0], "echo"))
+    } else if (strcmp(argv[1], "echo") == 0) {
         return echo(argc, argv);
-    else if (strstr(argv[0], "init"))
+    } else if (strcmp(argv[1], "init") == 0) {
         return init();
-    else {
-        printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
-               "into one that aims to be lightweight and memory efficient.\n"
-               "\n"
-               "This is free software with ABSOLUTELY NO WARRANTY.\n"
-               "For details see the LICENSE that came with this distribution.\n"
-               "\n"
-               "Current implementations include (in chronological order from 1st to last developed):\n"
-               "wc:     Print newline, word, and byte counts\n"
-               "cat:    Concatenate files\n"
-               "cp:     Copy files\n"
-               "sync:   Sync filesystem caches to disk\n"
-               "yes:    Output y or a character repeatedly until killed\n"
-               "update: Sync filesystem caches every 30 seconds\n"
-               "sleep:  Sleep for the specified amount of seconds\n"
-               "whoami: Print current effective username\n"
-               "true:   return true or 0\n"
-               "false:  return false or 1\n"
-               "ls:     List files and directories\n"
-               "init:   Init process (dummy version)\n", VERSION);
+    } else {
+        fprintf(stderr, "%s: command not found\n", argv[1]);
+        return 1;
     }
 
     return 0;
