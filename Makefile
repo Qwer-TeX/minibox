@@ -3,7 +3,7 @@ CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false ls echo
 
-VERSION=v0.1.0pre6-testing
+VERSION=v0.1.0
 
 all: minibox strip
 

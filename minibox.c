@@ -30,7 +30,7 @@
 #include <dirent.h>
 
 /* minibox specific defines */
-#define VERSION "0.1.0pre6-testing"
+#define VERSION "0.1.0"
 
 /* Not needed, though put in case */
 extern FILE *stdin;
