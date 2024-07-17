@@ -5,7 +5,7 @@ LDFLAGS=
 all: msh examples
 
 msh: minibox-shell.o
-	$(CC) -o $@ $^ linenoise/linenoise.c
+	$(CC) -s -o $@ $^ linenoise/linenoise.c
 
 minibox-shell.o: minibox-shell.c
 	$(CC) -s -Os -Ilinenoise -c $^
