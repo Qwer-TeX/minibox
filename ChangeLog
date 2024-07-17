@@ -1,4 +1,4 @@
-7/17/2024 V0.1.0		 - patch level 0
+7/17/2024 V0.1.0		 - patch level 21
 	* Merged example3 to the Minibox SHell
 	* Cleaned and organized the minibox-shell directory
 	* Switched to linenoise which offered a very great size reduction solution.
