@@ -1,0 +1,26 @@
+CC=gcc
+CFLAGS=
+LDFLAGS=
+
+all: msh examples
+
+msh: minibox-shell.o
+	$(CC) -o $@ $^ linenoise/linenoise.c
+
+minibox-shell.o: minibox-shell.c
+	$(CC) -s -Os -Ilinenoise -c $^
+
+examples: example1 example2 example3
+
+example1:
+	$(CC) -s -o example1 example.c
+
+example2:
+	$(CC) -s -o example2 example2.c -l:libreadline.a -ltinfo -lc -Wl,-Bdynamic
+
+example3:
+	$(CC) -s -Os -Ilinenoise -o example3 example3.c linenoise/linenoise.c
+
+clean:
+	rm -rf *.o msh example1 example2 example3
+

@@ -2,6 +2,7 @@
 	* Merged example3 to the Minibox SHell
 	* Cleaned and organized the minibox-shell directory
 	* Switched to linenoise which offered a very great size reduction solution.
+	* Added Makefile to Minibox SHell source.
 
 7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
 	* Reached a massive milestone by creating a shell example
