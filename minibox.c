@@ -28,13 +28,10 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0"
-
-/* Not needed, though put in case */
-extern FILE *stdin;
-extern FILE *stdout;
 
 /* Function to compare two directory entries for qsort */
 int compare_entries(const void *a, const void *b) {
@@ -43,16 +40,21 @@ int compare_entries(const void *a, const void *b) {
 
 /* minibox driver */
 int main(int argc, char *argv[]) {
+    if (argc < 1) {
+        fprintf(stderr, "Error: Missing program name\n");
+        return 1;
+    }
+
     if (strstr(argv[0], "wc"))
         return wc(0, stdin, stdout);
     else if (strstr(argv[0], "cat"))
         return cpcat(0, stdin, stdout, 0);
     else if (strstr(argv[0], "cp"))
-        return cpcat(0, argv[1], argv[2], 1);
+        return cpcat(0, fopen(argv[1], "r"), fopen(argv[2], "w"), 1);
     else if (strstr(argv[0], "sync"))
         return _sync();
     else if (strstr(argv[0], "yes"))
-        return yes(argv[1]);
+        return yes(argv);
     else if (strstr(argv[0], "update"))
         return update();
     else if (strstr(argv[0], "sleep"))
@@ -107,29 +109,27 @@ int wc(int retval, FILE *strmin, FILE *strmout) {
             ++nword;
         }
     }
-    fprintf(stdout, "%d  %d  %d\n", nline, nword, nchar);
+    fprintf(strmout, "%d  %d  %d\n", nline, nword, nchar);
     return retval;
 }
 
 /* common code for the cp and cat program */
 /* cat [<] [infile] [|>] outfile */
 /* cp [some-random-file] [another-random-file] */
-int cpcat(int retval, FILE *strmin, FILE *strmout, int fromcp) {
-    FILE *finptr;
-    FILE *foutptr;
+int cpcat(int retval, FILE *finptr, FILE *foutptr, int fromcp) {
     int chars;
 
-    if ((finptr = fopen(strmin, "r")) != NULL) {
-        if ((foutptr = fopen(strmout, "w")) != NULL) {
+    if (finptr != NULL) {
+        if (foutptr != NULL) {
             while ((chars = fgetc(finptr)) != EOF) {
                 fputc(chars, foutptr);
             }
             fclose(foutptr);
         } else {
             if (fromcp == 1)
-                fprintf(stderr, "Contents could not be read to stdout\n");
+                fprintf(stderr, "Contents could not be written to stdout\n");
             else
-                fprintf(stderr, "Contents could not be read to %s\n", strmout);
+                fprintf(stderr, "Contents could not be written to output file\n");
             return 1;
         }
         fclose(finptr);
@@ -137,7 +137,7 @@ int cpcat(int retval, FILE *strmin, FILE *strmout, int fromcp) {
         if (fromcp == 1)
             fprintf(stderr, "Contents could not be read from stdin\n");
         else
-            fprintf(stderr, "Contents could not be read from %s\n", strmin);
+            fprintf(stderr, "Contents could not be read from input file\n");
         return 1;
     }
     return retval;
@@ -154,8 +154,8 @@ int _sync(void) {
 /* output y or a repeatent repeatedly until killed */
 /* yes [repeatent] */
 int yes(char *args[]) {
-    for (;;) {
-        printf("%s\n", args ? args[1] : "y");
+    while (1) {
+        printf("%s\n", args[1] ? args[1] : "y");
     }
     return 0;
 }
