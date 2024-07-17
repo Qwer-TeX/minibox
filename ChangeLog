@@ -1,3 +1,8 @@
+7/17/2024 V0.1.0		 - patch level 0
+	* Merged example3 to the Minibox SHell
+	* Cleaned and organized the minibox-shell directory
+	* Switched to linenoise which offered a very great size reduction solution.
+
 7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
 	* Reached a massive milestone by creating a shell example
 	* Created another shell example but using readline this time, a major improvement
@@ -7,6 +12,7 @@
 	* Added another example but using the bloated libreadline this time
 	* Added another example using the lightweight liblinenoise this time
 	* Added variable expansion to shell
+	* Tested example shells for basic shell functionality
 
 
 7/9/2024 V0.1.0pre6 - pre-release version 6 (testing)

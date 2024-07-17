@@ -1,6 +1,6 @@
 /*
  *
- *  gcc -s -Os -o example3 example3.c linenoise.c
+ *  gcc -s -Os -Ilinenoise -o example3 example3.c linenoise/linenoise.c
  *
  */
 #include <stdio.h>

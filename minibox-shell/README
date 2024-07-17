@@ -12,7 +12,11 @@ example2.c: Imporved version of the barebones shell but with the help of libread
 example3:   The lightest we've gotten with emacs-like keybindings, but without variable 
             expansion, etc using liblinenoise this time which is the lightest.
 
-readline_example: A simple lightweight example of how readline works.
+readline_example: A simple lightweight example of how readline works created by me.
+
+linenoise:        A simple line editing library that aims to the idea that a line editing library
+                  shouldn't excede 20,000 lines of code. This would be used from here on. You can
+                  find it by searching linenoise in the github search.
 
 NOTE:       Making a real shell involves more just than variable expansion, history management, 
             and cursor management, etc. It also needs to be able to run shell scripts. These 
