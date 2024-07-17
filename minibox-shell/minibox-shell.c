@@ -115,7 +115,7 @@ int shell_cd(char **args) {
     fprintf(stderr, "expected argument to \"cd\"\n");
   } else {
     if (chdir(args[1]) != 0) {
-      perror("msh");
+      perror("mbsh");
     }
   }
   return 1;
@@ -199,12 +199,12 @@ int launch_program(char **args) {
   if (pid == 0) {
     // Child process
     if (execvp(args[0], args) == -1) {
-      perror("msh");
+      perror("mbsh");
     }
     exit(EXIT_FAILURE);
   } else if (pid < 0) {
     // Error forking
-    perror("msh");
+    perror("mbsh");
   } else {
     // Parent process
     do {
