@@ -6,6 +6,7 @@ all: mbsh examples
 
 mbsh: minibox-shell.o
 	$(CC) -s -o $@ $^ linenoise/linenoise.c
+	ln -s mbsh sh
 
 minibox-shell.o: minibox-shell.c
 	$(CC) -s -Os -Ilinenoise -c $^
@@ -22,5 +23,5 @@ example3:
 	$(CC) -s -Os -Ilinenoise -o example3 example3.c linenoise/linenoise.c
 
 clean:
-	rm -rf *.o mbsh example1 example2 example3
+	rm -rf *.o mbsh sh example1 example2 example3
 
