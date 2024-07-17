@@ -38,59 +38,6 @@ int compare_entries(const void *a, const void *b) {
     return strcmp(*(const char **)a, *(const char **)b);
 }
 
-/* minibox driver */
-int main(int argc, char *argv[]) {
-    if (argc < 1) {
-        fprintf(stderr, "Error: Missing program name\n");
-        return 1;
-    }
-
-    if (strstr(argv[0], "wc"))
-        return wc(0, stdin, stdout);
-    else if (strstr(argv[0], "cat"))
-        return cpcat(0, stdin, stdout, 0);
-    else if (strstr(argv[0], "cp"))
-        return cpcat(0, fopen(argv[1], "r"), fopen(argv[2], "w"), 1);
-    else if (strstr(argv[0], "sync"))
-        return _sync();
-    else if (strstr(argv[0], "yes"))
-        return yes(argv);
-    else if (strstr(argv[0], "update"))
-        return update();
-    else if (strstr(argv[0], "sleep"))
-        return _sleep(argc, argv);
-    else if (strstr(argv[0], "whoami"))
-        return whoami();
-    else if (strstr(argv[0], "true"))
-        return _true();
-    else if (strstr(argv[0], "false"))
-        return _false();
-    else if (strstr(argv[0], "ls"))
-        return ls(argc, argv);
-    else if (strstr(argv[0], "echo"))
-        return echo(argc, argv);
-    else
-        printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
-               "into one that aims to be lightweight and memory efficient.\n"
-               "\n"
-               "This is free software with ABSOLUTELY NO WARRANTY.\n"
-               "For details see the LICENSE that came with this distribution.\n"
-               "\n"
-               "Current implementations include (in chronological order from 1st to last developed):\n"
-               "wc:     Print newline, word, and byte counts\n"
-               "cat:    Concatenate files\n"
-               "cp:     Copy files\n"
-               "sync:   Sync filesystem caches to disk\n"
-               "yes:    Output y or a character repeatedly until killed\n"
-               "update: Sync filesystem caches every 30 seconds\n"
-               "sleep:  Sleep for the specified amount of seconds\n"
-               "whoami: Print current effective username\n"
-               "true:   return true or 0\n"
-               "false:  return false or 1\n"
-               "ls:     List files and directories\n", VERSION);
-    return 0;
-}
-
 /* wc program */
 /* Usage: wc [<] [infile] */
 int wc(int retval, FILE *strmin, FILE *strmout) {
@@ -130,6 +77,7 @@ int cpcat(int retval, FILE *finptr, FILE *foutptr, int fromcp) {
                 fprintf(stderr, "Contents could not be written to stdout\n");
             else
                 fprintf(stderr, "Contents could not be written to output file\n");
+            fclose(finptr);
             return 1;
         }
         fclose(finptr);
@@ -253,14 +201,22 @@ int ls(int argc, char *argv[]) {
     while ((entry = readdir(directory)) != NULL) {
         if (count >= capacity) {
             capacity *= 2;
-            entries = realloc(entries, capacity * sizeof(char *));
-            if (!entries) {
+            char **new_entries = realloc(entries, capacity * sizeof(char *));
+            if (!new_entries) {
                 fprintf(stderr, "Memory allocation error\n");
                 closedir(directory);
+                free(entries);
                 return 1;
             }
+            entries = new_entries;
         }
         entries[count++] = strdup(entry->d_name);
+        if (!entries[count - 1]) {
+            fprintf(stderr, "Memory allocation error\n");
+            closedir(directory);
+            free(entries);
+            return 1;
+        }
     }
 
     closedir(directory);
@@ -346,5 +302,60 @@ int echo(int argc, char *argv[]) {
         putchar('\n');
     }
 
+    return 0;
+}
+
+/* minibox driver */
+int main(int argc, char *argv[]) {
+    if (argc < 1) {
+        fprintf(stderr, "Error: Missing program name\n");
+        return 1;
+    }
+
+    if (strstr(argv[0], "wc"))
+        return wc(0, stdin, stdout);
+    else if (strstr(argv[0], "cat"))
+        return cpcat(0, stdin, stdout, 0);
+    else if (strstr(argv[0], "cp") && argc >= 3)
+        return cpcat(0, fopen(argv[1], "r"), fopen(argv[2], "w"), 1);
+    else if (strstr(argv[0], "sync"))
+        return _sync();
+    else if (strstr(argv[0], "yes"))
+        return yes(argv);
+    else if (strstr(argv[0], "update"))
+        return update();
+    else if (strstr(argv[0], "sleep"))
+        return _sleep(argc, argv);
+    else if (strstr(argv[0], "whoami"))
+        return whoami();
+    else if (strstr(argv[0], "true"))
+        return _true();
+    else if (strstr(argv[0], "false"))
+        return _false();
+    else if (strstr(argv[0], "ls"))
+        return ls(argc, argv);
+    else if (strstr(argv[0], "echo"))
+        return echo(argc, argv);
+    else {
+        printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
+               "into one that aims to be lightweight and memory efficient.\n"
+               "\n"
+               "This is free software with ABSOLUTELY NO WARRANTY.\n"
+               "For details see the LICENSE that came with this distribution.\n"
+               "\n"
+               "Current implementations include (in chronological order from 1st to last developed):\n"
+               "wc:     Print newline, word, and byte counts\n"
+               "cat:    Concatenate files\n"
+               "cp:     Copy files\n"
+               "sync:   Sync filesystem caches to disk\n"
+               "yes:    Output y or a character repeatedly until killed\n"
+               "update: Sync filesystem caches every 30 seconds\n"
+               "sleep:  Sleep for the specified amount of seconds\n"
+               "whoami: Print current effective username\n"
+               "true:   return true or 0\n"
+               "false:  return false or 1\n"
+               "ls:     List files and directories\n", VERSION);
+    }
+    
     return 0;
 }
