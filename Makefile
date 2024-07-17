@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -g
 LDFLAGS=
-PROGS=wc cat cp sync yes update sleep whoami true false ls echo
+PROGS=wc cat cp sync yes update sleep whoami true false ls echo init
 
 VERSION=v0.1.0
 

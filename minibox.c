@@ -28,7 +28,6 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <dirent.h>
-#include <fcntl.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0"
@@ -63,31 +62,31 @@ int wc(int retval, FILE *strmin, FILE *strmout) {
 /* common code for the cp and cat program */
 /* cat [<] [infile] [|>] outfile */
 /* cp [some-random-file] [another-random-file] */
-int cpcat(int retval, FILE *finptr, FILE *foutptr, int fromcp) {
+int cpcat(int retval, const char *strmin, const char *strmout, int fromcp) {
+    FILE *finptr;
+    FILE *foutptr;
     int chars;
 
-    if (finptr != NULL) {
-        if (foutptr != NULL) {
-            while ((chars = fgetc(finptr)) != EOF) {
-                fputc(chars, foutptr);
-            }
-            fclose(foutptr);
-        } else {
-            if (fromcp == 1)
-                fprintf(stderr, "Contents could not be written to stdout\n");
-            else
-                fprintf(stderr, "Contents could not be written to output file\n");
-            fclose(finptr);
-            return 1;
-        }
-        fclose(finptr);
-    } else {
-        if (fromcp == 1)
-            fprintf(stderr, "Contents could not be read from stdin\n");
-        else
-            fprintf(stderr, "Contents could not be read from input file\n");
+    finptr = fopen(strmin, "r");
+    if (finptr == NULL) {
+        fprintf(stderr, "Error: Cannot open input file %s\n", strmin);
         return 1;
     }
+
+    foutptr = fopen(strmout, "w");
+    if (foutptr == NULL) {
+        fprintf(stderr, "Error: Cannot open output file %s\n", strmout);
+        fclose(finptr);
+        return 1;
+    }
+
+    while ((chars = fgetc(finptr)) != EOF) {
+        fputc(chars, foutptr);
+    }
+
+    fclose(finptr);
+    fclose(foutptr);
+
     return retval;
 }
 
@@ -99,11 +98,11 @@ int _sync(void) {
 }
 
 /* yes program */
-/* output y or a repeatent repeatedly until killed */
+/* output y or a character repeatedly until killed */
 /* yes [repeatent] */
 int yes(char *args[]) {
-    while (1) {
-        printf("%s\n", args[1] ? args[1] : "y");
+    for (;;) {
+        printf("%s\n", args ? args[1] : "y");
     }
     return 0;
 }
@@ -152,8 +151,10 @@ int _sleep(int argsc, char *argsv[]) {
 int whoami(void) {
     struct passwd *pw_ent;
     pw_ent = getpwuid(geteuid());
-    if (pw_ent == NULL)
-        exit(1);
+    if (pw_ent == NULL) {
+        fprintf(stderr, "Error: Cannot determine current user\n");
+        return 1;
+    }
     printf("%s\n", pw_ent->pw_name);
     return 0;
 }
@@ -161,13 +162,13 @@ int whoami(void) {
 /* true program */
 /* return true or 0 */
 int _true(void) {
-    exit(0);
+    return 0;
 }
 
 /* false program */
 /* return false or 1 */
 int _false(void) {
-    exit(1);
+    return 1;
 }
 
 /* ls program */
@@ -180,14 +181,11 @@ int ls(int argc, char *argv[]) {
     size_t count = 0;
     size_t capacity = 10;
 
-    if (argc > 1) {
-        directory = opendir(argv[1]);
-    } else {
-        directory = opendir(".");
-    }
+    const char *dirpath = (argc > 1) ? argv[1] : ".";
 
+    directory = opendir(dirpath);
     if (!directory) {
-        fprintf(stderr, "ls: access failure - '%s': No such file or directory\n", argc > 1 ? argv[1] : ".");
+        fprintf(stderr, "ls: access failure - '%s': No such file or directory\n", dirpath);
         return 1;
     }
 
@@ -256,7 +254,7 @@ int echo(int argc, char *argv[]) {
                             e_flag = 0;
                             break;
                         default:
-                            printf("Usage: echo [-neE] [string]\n");
+                            fprintf(stderr, "Usage: echo [-neE] [string]\n");
                             return 1;
                     }
                 }
@@ -305,6 +303,19 @@ int echo(int argc, char *argv[]) {
     return 0;
 }
 
+/* init program */
+/* Basic implementation of BusyBox's init */
+int init(void) {
+    printf("MiniBox %s init: Running init process\n", VERSION);
+
+    while (1) {
+        printf("MiniBox %s init: Waiting for children\n", VERSION);
+        wait(NULL); // Placeholder for child process handling
+    }
+
+    return 0;
+}
+
 /* minibox driver */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
@@ -315,9 +326,9 @@ int main(int argc, char *argv[]) {
     if (strstr(argv[0], "wc"))
         return wc(0, stdin, stdout);
     else if (strstr(argv[0], "cat"))
-        return cpcat(0, stdin, stdout, 0);
+        return cpcat(0, NULL, NULL, 0);
     else if (strstr(argv[0], "cp") && argc >= 3)
-        return cpcat(0, fopen(argv[1], "r"), fopen(argv[2], "w"), 1);
+        return cpcat(0, argv[1], argv[2], 1);
     else if (strstr(argv[0], "sync"))
         return _sync();
     else if (strstr(argv[0], "yes"))
@@ -336,6 +347,8 @@ int main(int argc, char *argv[]) {
         return ls(argc, argv);
     else if (strstr(argv[0], "echo"))
         return echo(argc, argv);
+    else if (strstr(argv[0], "init"))
+        return init();
     else {
         printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -354,8 +367,9 @@ int main(int argc, char *argv[]) {
                "whoami: Print current effective username\n"
                "true:   return true or 0\n"
                "false:  return false or 1\n"
-               "ls:     List files and directories\n", VERSION);
+               "ls:     List files and directories\n"
+               "init:   Init process (dummy version)\n", VERSION);
     }
-    
+
     return 0;
 }

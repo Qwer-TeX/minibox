@@ -5,6 +5,7 @@
 	* Added Makefile to Minibox SHell source.
 	* Changed ls to list in standard order
 	* Applied bugfixes to minibox.c source
+	* Added the dummy version of init
 
 7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
 	* Reached a massive milestone by creating a shell example
