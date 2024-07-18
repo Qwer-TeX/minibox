@@ -27,6 +27,7 @@ true
 false
 ls
 echo
+init
 
 # Images
 MINIBOX.png

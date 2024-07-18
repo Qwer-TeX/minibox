@@ -345,36 +345,36 @@ int init(void) {
 
 /* Main driver function */
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
+    if (argc < 1) {
         fprintf(stderr, "Usage: %s command [arguments]\n", argv[0]);
         return 1;
     }
 
-    if (strcmp(argv[1], "wc") == 0) {
+    if (strstr(argv[0], "wc")) {
         return wc(0, stdin, stdout);
-    } else if (strcmp(argv[1], "cat") == 0) {
-        return cpcat(0, argv[2], argv[3], 0);
-    } else if (strcmp(argv[1], "cp") == 0) {
-        return cpcat(0, argv[2], argv[3], 1);
-    } else if (strcmp(argv[1], "sync") == 0) {
+    } else if (strstr(argv[0], "cat")) {
+        return cpcat(0, stdin, stdout, 0);
+    } else if (strstr(argv[0], "cp")) {
+        return cpcat(0, argv[1], argv[2], 1);
+    } else if (strstr(argv[0], "sync")) {
         return _sync();
-    } else if (strcmp(argv[1], "yes") == 0) {
+    } else if (strstr(argv[0], "yes")) {
         return yes(&argv[2]);
-    } else if (strcmp(argv[1], "update") == 0) {
+    } else if (strstr(argv[0], "update")) {
         return update();
-    } else if (strcmp(argv[1], "sleep") == 0) {
+    } else if (strstr(argv[0], "sleep")) {
         return _sleep(argc, argv);
-    } else if (strcmp(argv[1], "whoami") == 0) {
+    } else if (strstr(argv[0], "whoami")) {
         return whoami();
-    } else if (strcmp(argv[1], "true") == 0) {
+    } else if (strstr(argv[0], "true")) {
         return _true();
-    } else if (strcmp(argv[1], "false") == 0) {
+    } else if (strstr(argv[0], "false")) {
         return _false();
-    } else if (strcmp(argv[1], "ls") == 0) {
+    } else if (strstr(argv[0], "ls")) {
         return ls(argc, argv);
-    } else if (strcmp(argv[1], "echo") == 0) {
+    } else if (strstr(argv[0], "echo")) {
         return echo(argc, argv);
-    } else if (strcmp(argv[1], "init") == 0) {
+    } else if (strstr(argv[0], "init")) {
         return init();
     } else {
         fprintf(stderr, "%s: command not found\n", argv[1]);
