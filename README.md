@@ -21,3 +21,5 @@ NOTE:
   ToyBox(as of right now). Almost same multi-call binary that you can't even show 
   the difference from, only which has the most arguments(-h, -v, etc).
   Maybe I'll introduce arguments that are most widely used in programs respectivly.
+
+  Also see NOTES
