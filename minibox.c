@@ -69,25 +69,33 @@ int cpcat(int retval, const char *strmin, const char *strmout, int fromcp) {
     FILE *foutptr;
     int chars;
 
-    finptr = fopen(strmin, "r");
-    if (finptr == NULL) {
-        fprintf(stderr, "Error: Cannot open input file %s\n", strmin);
-        return 1;
+    if (strmin == NULL || strcmp(strmin, "-") == 0) {
+        finptr = stdin;
+    } else {
+        finptr = fopen(strmin, "r");
+        if (finptr == NULL) {
+            fprintf(stderr, "Error: Cannot open input file %s\n", strmin);
+            return 1;
+        }
     }
 
-    foutptr = fopen(strmout, "w");
-    if (foutptr == NULL) {
-        fprintf(stderr, "Error: Cannot open output file %s\n", strmout);
-        fclose(finptr);
-        return 1;
+    if (strmout == NULL || strcmp(strmout, "-") == 0) {
+        foutptr = stdout;
+    } else {
+        foutptr = fopen(strmout, "w");
+        if (foutptr == NULL) {
+            fprintf(stderr, "Error: Cannot open output file %s\n", strmout);
+            if (finptr != stdin) fclose(finptr);
+            return 1;
+        }
     }
 
     while ((chars = fgetc(finptr)) != EOF) {
         fputc(chars, foutptr);
     }
 
-    fclose(finptr);
-    fclose(foutptr);
+    if (finptr != stdin) fclose(finptr);
+    if (foutptr != stdout) fclose(foutptr);
 
     return retval;
 }
@@ -356,7 +364,7 @@ int main(int argc, char *argv[]) {
     if (strstr(command, "wc")) {
         return wc(0, stdin, stdout);
     } else if (strstr(command, "cat")) {
-        return cpcat(0, stdin, stdout, 0);
+        return cpcat(0, argc > 1 ? argv[1] : "-", NULL, 0); // Read from stdin, write to stdout
     } else if (strstr(command, "cp")) {
         if (argc < 3) {
             fprintf(stderr, "Usage: %s [source] [destination]\n", command);
@@ -408,4 +416,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
