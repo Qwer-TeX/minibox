@@ -22,4 +22,4 @@ NOTE:
   the difference from, only which has the most arguments(-h, -v, etc).
   Maybe I'll introduce arguments that are most widely used in programs respectivly.
 
-  Also see NOTES
+  Also see TOOLBOX-INTRO to learn more about the tools philosophy.
