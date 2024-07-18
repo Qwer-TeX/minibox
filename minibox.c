@@ -377,8 +377,25 @@ int main(int argc, char *argv[]) {
     } else if (strstr(argv[0], "init")) {
         return init();
     } else {
-        fprintf(stderr, "%s: command not found\n", argv[1]);
-        return 1;
+      printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
+             "into one that aims to be lightweight and memory efficient.\n"
+             "\n"
+             "This is free software with ABSOLUTELY NO WARRANTY.\n"
+             "For details see the LICENSE that came with this distribution.\n"
+             "\n"
+             "Current implementations include (in chronological order from 1st to last developed):\n"
+             "wc:     Print newline, word, and byte counts\n"
+             "cat:    Concatenate files\n"
+             "cp:     Copy files\n"
+             "sync:   Sync filesystem caches to disk\n"
+             "yes:    Output y or a character repeatedly until killed\n"
+             "update: Sync filesystem caches every 30 seconds\n"
+             "sleep:  Sleep for the specified amount of seconds\n"
+             "whoami: Print current effective username\n"
+             "true:   return true or 0\n"
+             "false:  return false or 1\n"
+             "ls:     List files and directories\n"
+             "init:   Init process (dummy version)\n", VERSION);
     }
 
     return 0;
