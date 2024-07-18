@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/wait.h>
+#include <libgen.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0"
@@ -350,53 +351,61 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (strstr(argv[0], "wc")) {
+    char *command = basename(argv[0]); // Get the command name from symbolic link
+
+    if (strstr(command, "wc")) {
         return wc(0, stdin, stdout);
-    } else if (strstr(argv[0], "cat")) {
+    } else if (strstr(command, "cat")) {
         return cpcat(0, stdin, stdout, 0);
-    } else if (strstr(argv[0], "cp")) {
+    } else if (strstr(command, "cp")) {
+        if (argc < 3) {
+            fprintf(stderr, "Usage: %s [source] [destination]\n", command);
+            return 1;
+        }
         return cpcat(0, argv[1], argv[2], 1);
-    } else if (strstr(argv[0], "sync")) {
+    } else if (strstr(command, "sync")) {
         return _sync();
-    } else if (strstr(argv[0], "yes")) {
-        return yes(&argv[2]);
-    } else if (strstr(argv[0], "update")) {
+    } else if (strstr(command, "yes")) {
+        return yes(&argv[1]);
+    } else if (strstr(command, "update")) {
         return update();
-    } else if (strstr(argv[0], "sleep")) {
+    } else if (strstr(command, "sleep")) {
         return _sleep(argc, argv);
-    } else if (strstr(argv[0], "whoami")) {
+    } else if (strstr(command, "whoami")) {
         return whoami();
-    } else if (strstr(argv[0], "true")) {
+    } else if (strstr(command, "true")) {
         return _true();
-    } else if (strstr(argv[0], "false")) {
+    } else if (strstr(command, "false")) {
         return _false();
-    } else if (strstr(argv[0], "ls")) {
+    } else if (strstr(command, "ls")) {
         return ls(argc, argv);
-    } else if (strstr(argv[0], "echo")) {
+    } else if (strstr(command, "echo")) {
         return echo(argc, argv);
-    } else if (strstr(argv[0], "init")) {
+    } else if (strstr(command, "init")) {
         return init();
     } else {
-      printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
-             "into one that aims to be lightweight and memory efficient.\n"
-             "\n"
-             "This is free software with ABSOLUTELY NO WARRANTY.\n"
-             "For details see the LICENSE that came with this distribution.\n"
-             "\n"
-             "Current implementations include (in chronological order from 1st to last developed):\n"
-             "wc:     Print newline, word, and byte counts\n"
-             "cat:    Concatenate files\n"
-             "cp:     Copy files\n"
-             "sync:   Sync filesystem caches to disk\n"
-             "yes:    Output y or a character repeatedly until killed\n"
-             "update: Sync filesystem caches every 30 seconds\n"
-             "sleep:  Sleep for the specified amount of seconds\n"
-             "whoami: Print current effective username\n"
-             "true:   return true or 0\n"
-             "false:  return false or 1\n"
-             "ls:     List files and directories\n"
-             "init:   Init process (dummy version)\n", VERSION);
+        printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
+               "into one that aims to be lightweight and memory efficient.\n"
+               "\n"
+               "This is free software with ABSOLUTELY NO WARRANTY.\n"
+               "For details see the LICENSE that came with this distribution.\n"
+               "\n"
+               "Current implementations include (in chronological order from 1st to last developed):\n"
+               "wc:     Print newline, word, and byte counts\n"
+               "cat:    Concatenate files\n"
+               "cp:     Copy files\n"
+               "sync:   Sync filesystem caches to disk\n"
+               "yes:    Output y or a character repeatedly until killed\n"
+               "update: Sync filesystem caches every 30 seconds\n"
+               "sleep:  Sleep for the specified amount of seconds\n"
+               "whoami: Print current effective username\n"
+               "true:   return true or 0\n"
+               "false:  return false or 1\n"
+               "ls:     List files and directories\n"
+               "init:   Init process (dummy version)\n", VERSION);
+        return 1;
     }
 
     return 0;
 }
+
