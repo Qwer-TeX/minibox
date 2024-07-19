@@ -63,7 +63,7 @@ int wc(int retval, FILE *strmin, FILE *strmout) {
 
 /* common code for the cp and cat program */
 /* cat [<] [infile] [|>] outfile */
-/* cp [some-random-file] [another-random-file] */
+/* cp [source] [destination] */
 int cpcat(int retval, const char *strmin, const char *strmout, int fromcp) {
     FILE *finptr;
     FILE *foutptr;
@@ -147,7 +147,7 @@ int _sleep(int argsc, char *argsv[]) {
     }
 
     if (secs > (unsigned int)-1) {
-        fprintf(stderr, "Number of seconds not within range: %s\n", argsv[1]);
+        fprintf(stderr, "Number of seconds not within range of unsigned int: %s\n", argsv[1]);
         exit(1);
     }
 
@@ -316,7 +316,10 @@ int echo(int argc, char *argv[]) {
 /* init program */
 /* Basic implementation of BusyBox's init */
 int init(void) {
+    printf("MiniBox %s init: Mantle(kernel) passes control to init\n", VERSION);
     printf("MiniBox %s init: Running init process\n", VERSION);
+    printf("MiniBox %s init: Hello, World!\n", VERSION);
+    printf("MiniBox %s init: World Initialized!\n", VERSION);
 
     // Example: Starting essential services
     pid_t child_pid = fork();
@@ -378,6 +381,10 @@ int main(int argc, char *argv[]) {
     } else if (strstr(command, "update")) {
         return update();
     } else if (strstr(command, "sleep")) {
+        if (argc < 2) {
+          fprintf(stderr, "Usage: %s [seconds]\n", command);
+          return 1;
+        }
         return _sleep(argc, argv);
     } else if (strstr(command, "whoami")) {
         return whoami();
