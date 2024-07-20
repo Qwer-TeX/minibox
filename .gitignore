@@ -28,6 +28,9 @@ false
 ls
 echo
 init
+rm
+rmdir
+mv
 
 # Images
 MINIBOX.png

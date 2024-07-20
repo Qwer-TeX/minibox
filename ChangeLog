@@ -7,6 +7,8 @@
 	* Applied bugfixes to minibox.c source
 	* Added the dummy version of init
 	* Enhanced the dummy version of init featuring examples
+	* Applied upstream fixes
+	* Added mv, rm, and rmdir
 
 7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
 	* Reached a massive milestone by creating a shell example

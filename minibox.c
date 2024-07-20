@@ -30,6 +30,7 @@
 #include <dirent.h>
 #include <sys/wait.h>
 #include <libgen.h>
+#include <sys/stat.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.0"
@@ -336,19 +337,86 @@ int init(void) {
 
     // Example: Waiting for children
     while (1) {
-        int status;
-        pid_t terminated_pid = wait(&status);
-        if (terminated_pid == -1) {
-            perror("wait");
-            break;
+        pause(); // Wait for signals
+    }
+
+    return 0;
+}
+
+/* rm program */
+/* remove files or directories */
+/* Usage: rm [-r] [file/dir] */
+int rm(const char *path, int recursive) {
+    struct stat statbuf;
+
+    if (lstat(path, &statbuf) == -1) {
+        perror("lstat");
+        return 1;
+    }
+
+    if (S_ISDIR(statbuf.st_mode)) {
+        if (!recursive) {
+            fprintf(stderr, "Error: %s is a directory. Use -r to remove directories.\n", path);
+            return 1;
         }
-        if (WIFEXITED(status)) {
-            printf("MiniBox %s init: Process %d exited with status %d\n", VERSION, terminated_pid, WEXITSTATUS(status));
-        } else if (WIFSIGNALED(status)) {
-            printf("MiniBox %s init: Process %d terminated by signal %d\n", VERSION, terminated_pid, WTERMSIG(status));
+
+        DIR *dir = opendir(path);
+        if (dir == NULL) {
+            perror("opendir");
+            return 1;
+        }
+
+        struct dirent *entry;
+        while ((entry = readdir(dir)) != NULL) {
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+                continue;
+            }
+
+            char *child_path;
+            asprintf(&child_path, "%s/%s", path, entry->d_name);
+
+            if (rm(child_path, recursive) != 0) {
+                free(child_path);
+                closedir(dir);
+                return 1;
+            }
+            free(child_path);
+        }
+        closedir(dir);
+
+        if (rmdir(path) == -1) {
+            perror("rmdir");
+            return 1;
+        }
+    } else {
+        if (unlink(path) == -1) {
+            perror("unlink");
+            return 1;
         }
     }
 
+    return 0;
+}
+
+/* rmdir program */
+/* remove empty directories */
+/* Usage: rmdir [dir] */
+int rmdir_cmd(const char *path) {
+    if (rmdir(path) == -1) {
+        perror("rmdir");
+        return 1;
+    }
+    return 0;
+}
+
+/* mv program */
+/* move or rename files and directories */
+/* Usage: mv [source] [destination] */
+int mv(const char *source, const char *destination) {
+    if (rename(source, destination) == -1) {
+        perror("rename");
+        return 1;
+    }
     return 0;
 }
 
@@ -364,7 +432,7 @@ int main(int argc, char *argv[]) {
     if (strstr(command, "wc")) {
         return wc(stdin, stdout);
     } else if (strstr(command, "cat")) {
-        return cpcat(argc > 1 ? argv[1] : "-", NULL); // Read from stdin, write to stdout
+        return cpcat(argc > 1 ? argv[1] : "-", NULL);
     } else if (strstr(command, "cp")) {
         if (argc < 3) {
             fprintf(stderr, "Usage: %s [source] [destination]\n", command);
@@ -391,6 +459,21 @@ int main(int argc, char *argv[]) {
         return echo(argc, argv);
     } else if (strstr(command, "init")) {
         return init();
+    } else if (strstr(command, "rm")) {
+        int recursive = 0;
+        if (argc > 2 && strcmp(argv[1], "-r") == 0) {
+            recursive = 1;
+            return rm(argv[2], recursive);
+        }
+        return rm(argv[1], recursive);
+    } else if (strstr(command, "rmdir")) {
+        return rmdir_cmd(argc > 1 ? argv[1] : ".");
+    } else if (strstr(command, "mv")) {
+        if (argc != 3) {
+            fprintf(stderr, "Usage: %s [source] [destination]\n", command);
+            return 1;
+        }
+        return mv(argv[1], argv[2]);
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -410,7 +493,10 @@ int main(int argc, char *argv[]) {
                "true:   return true or 0\n"
                "false:  return false or 1\n"
                "ls:     List files and directories\n"
-               "init:   Init process (dummy version)\n", VERSION);
+               "init:   Init process (dummy version)\n"
+               "rm:     Remove files or directories\n"
+               "rmdir:  Remove empty directories\n"
+               "mv:     Move or rename files and directories\n", VERSION);
         return 1;
     }
 
