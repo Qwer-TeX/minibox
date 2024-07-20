@@ -41,7 +41,7 @@ int compare_entries(const void *a, const void *b) {
 
 /* wc program */
 /* Usage: wc [<] [infile] */
-int wc(int retval, FILE *strmin, FILE *strmout) {
+int wc(FILE *strmin, FILE *strmout) {
     int letter, nline, nchar, nword, inword;
 
     inword = 0;
@@ -58,13 +58,13 @@ int wc(int retval, FILE *strmin, FILE *strmout) {
         }
     }
     fprintf(strmout, "%d  %d  %d\n", nline, nword, nchar);
-    return retval;
+    return 0;
 }
 
 /* common code for the cp and cat program */
 /* cat [<] [infile] [|>] outfile */
 /* cp [source] [destination] */
-int cpcat(int retval, const char *strmin, const char *strmout, int fromcp) {
+int cpcat(const char *strmin, const char *strmout) {
     FILE *finptr;
     FILE *foutptr;
     int chars;
@@ -97,7 +97,7 @@ int cpcat(int retval, const char *strmin, const char *strmout, int fromcp) {
     if (finptr != stdin) fclose(finptr);
     if (foutptr != stdout) fclose(foutptr);
 
-    return retval;
+    return 0;
 }
 
 /* sync program */
@@ -111,7 +111,7 @@ int _sync(void) {
 /* output y or a character repeatedly until killed */
 /* yes [repeatent] */
 int yes(char *args[]) {
-    for (;;) {
+    while (1) {
         printf("%s\n", args ? args[1] : "y");
     }
     return 0;
@@ -136,19 +136,14 @@ int _sleep(int argsc, char *argsv[]) {
 
     if (argsc != 2) {
         fprintf(stderr, "Usage: sleep [seconds]\n");
-        exit(1);
+        return 1;
     }
 
     secs = strtol(argsv[1], &endptr, 10);
 
     if (errno != 0 || *endptr != '\0' || secs < 0) {
         fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
-        exit(1);
-    }
-
-    if (secs > (unsigned int)-1) {
-        fprintf(stderr, "Number of seconds not within range of unsigned int: %s\n", argsv[1]);
-        exit(1);
+        return 1;
     }
 
     sleep((unsigned int)secs);
@@ -159,8 +154,7 @@ int _sleep(int argsc, char *argsv[]) {
 /* print current effective user */
 /* Usage: whoami */
 int whoami(void) {
-    struct passwd *pw_ent;
-    pw_ent = getpwuid(geteuid());
+    struct passwd *pw_ent = getpwuid(geteuid());
     if (pw_ent == NULL) {
         fprintf(stderr, "Error: Cannot determine current user\n");
         return 1;
@@ -222,6 +216,9 @@ int ls(int argc, char *argv[]) {
         if (!entries[count - 1]) {
             fprintf(stderr, "Memory allocation error\n");
             closedir(directory);
+            for (size_t i = 0; i < count - 1; i++) {
+                free(entries[i]);
+            }
             free(entries);
             return 1;
         }
@@ -240,7 +237,7 @@ int ls(int argc, char *argv[]) {
     return 0;
 }
 
-/* echo program -- the first complete and lightweight implementation in minibox */
+/* echo program */
 int echo(int argc, char *argv[]) {
     int n_flag = 0;
     int e_flag = 0;
@@ -365,15 +362,15 @@ int main(int argc, char *argv[]) {
     char *command = basename(argv[0]); // Get the command name from symbolic link
 
     if (strstr(command, "wc")) {
-        return wc(0, stdin, stdout);
+        return wc(stdin, stdout);
     } else if (strstr(command, "cat")) {
-        return cpcat(0, argc > 1 ? argv[1] : "-", NULL, 0); // Read from stdin, write to stdout
+        return cpcat(argc > 1 ? argv[1] : "-", NULL); // Read from stdin, write to stdout
     } else if (strstr(command, "cp")) {
         if (argc < 3) {
             fprintf(stderr, "Usage: %s [source] [destination]\n", command);
             return 1;
         }
-        return cpcat(0, argv[1], argv[2], 1);
+        return cpcat(argv[1], argv[2]);
     } else if (strstr(command, "sync")) {
         return _sync();
     } else if (strstr(command, "yes")) {
@@ -381,10 +378,6 @@ int main(int argc, char *argv[]) {
     } else if (strstr(command, "update")) {
         return update();
     } else if (strstr(command, "sleep")) {
-        if (argc < 2) {
-          fprintf(stderr, "Usage: %s [seconds]\n", command);
-          return 1;
-        }
         return _sleep(argc, argv);
     } else if (strstr(command, "whoami")) {
         return whoami();
@@ -399,7 +392,7 @@ int main(int argc, char *argv[]) {
     } else if (strstr(command, "init")) {
         return init();
     } else {
-        printf("MiniBox %s: A multi-call binary that combines many common unix utilities\n"
+        printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
                "\n"
                "This is free software with ABSOLUTELY NO WARRANTY.\n"
