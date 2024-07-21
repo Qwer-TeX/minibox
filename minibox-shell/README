@@ -17,12 +17,13 @@ example3:   The lightest we've gotten with emacs-like keybindings, but without v
 readline_example: A simple lightweight example of how readline works created by me.
 
 linenoise:        A simple line editing library that aims to the idea that a line editing library
-                  shouldn't excede 20,000 lines of code. This would be used from here on. You can
-                  find it by searching linenoise in the github search. It features almost anything
-                  you would want. Just to name a few, tab completion, hints, emacs keybindings, 
-                  history navigation, history save/load to/from disk. Comes to around 35K when
-                  compiled and linked, a massive achievement over other libraries when including
-                  all expected features.
+                  shouldn't excede 20,000 lines of code (aka code bloat). This would be used from 
+                  here on. You can find it by searching linenoise in the github search. It 
+                  features almost anything you would want. Just to name a few, tab completion, 
+                  hints, emacs keybindings, history navigation, history save/load to/from disk. 
+                  Comes to around 35K when compiled and linked, a massive achievement over other 
+                  libraries when including all expected features. But we could go even smaller
+                  since 36K is 2.25x the original size of 16K.
 
 NOTE:       Making a real shell involves more just than variable expansion, history management, 
             and cursor management, etc. It also needs to be able to run shell scripts. These 
