@@ -54,6 +54,9 @@
 #include <sys/wait.h>
 #include "linenoise.h"
 
+#define MAX_TOKENS 64
+#define TOKEN_DELIMITERS " \t\r\n\a"
+
 // Function to expand variables prefixed with '$'
 char *expand_variable(char *token) {
   if (token[0] == '$') {
@@ -72,7 +75,7 @@ char *expand_variable(char *token) {
 
 // Function to split a line into tokens (arguments)
 char **split_line(char *line) {
-  int bufsize = 64, position = 0;
+  int bufsize = MAX_TOKENS, position = 0;
   char **tokens = malloc(bufsize * sizeof(char*));
   char *token, *expanded_token;
 
@@ -81,7 +84,7 @@ char **split_line(char *line) {
     exit(EXIT_FAILURE);
   }
 
-  token = strtok(line, " \t\r\n\a");
+  token = strtok(line, TOKEN_DELIMITERS);
   while (token != NULL) {
     expanded_token = expand_variable(token);
     if (expanded_token != NULL) {
@@ -90,7 +93,7 @@ char **split_line(char *line) {
     }
 
     if (position >= bufsize) {
-      bufsize += 64;
+      bufsize += MAX_TOKENS;
       tokens = realloc(tokens, bufsize * sizeof(char*));
       if (!tokens) {
         fprintf(stderr, "allocation error\n");
@@ -98,7 +101,7 @@ char **split_line(char *line) {
       }
     }
 
-    token = strtok(NULL, " \t\r\n\a");
+    token = strtok(NULL, TOKEN_DELIMITERS);
   }
   tokens[position] = NULL;
   return tokens;
@@ -172,7 +175,7 @@ char *builtin_str[] = {
 };
 
 // Corresponding functions for built-in commands
-int (*builtin_func[]) (char **) = {
+int (*builtin_func[])(char **) = {
   &shell_cd,
   &shell_exit,
   &shell_export,
@@ -200,8 +203,8 @@ int launch_program(char **args) {
     // Child process
     if (execvp(args[0], args) == -1) {
       perror("mbsh");
+      exit(EXIT_FAILURE);
     }
-    exit(EXIT_FAILURE);
   } else if (pid < 0) {
     // Error forking
     perror("mbsh");
