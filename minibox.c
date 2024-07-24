@@ -337,143 +337,113 @@ int init(void) {
 
     // Example: Waiting for children
     while (1) {
-        pause(); // Wait for signals
+        while (waitpid(-1, NULL, WNOHANG) > 0) {
+            // Reap any zombies
+        }
     }
 
     return 0;
 }
 
-/* rm program */
-/* remove files or directories */
-/* Usage: rm [-r] [file/dir] */
-int rm(const char *path, int recursive) {
-    struct stat statbuf;
+/* cmp program */
+/* Compare two files byte by byte */
+int cmp(const char *file1, const char *file2) {
+    FILE *f1, *f2;
+    int ch1, ch2;
+    int pos = 1;
+    int line = 1;
 
-    if (lstat(path, &statbuf) == -1) {
-        perror("lstat");
+    f1 = fopen(file1, "rb");
+    if (!f1) {
+        fprintf(stderr, "Error: Cannot open file %s\n", file1);
         return 1;
     }
 
-    if (S_ISDIR(statbuf.st_mode)) {
-        if (!recursive) {
-            fprintf(stderr, "Error: %s is a directory. Use -r to remove directories.\n", path);
-            return 1;
-        }
-
-        DIR *dir = opendir(path);
-        if (dir == NULL) {
-            perror("opendir");
-            return 1;
-        }
-
-        struct dirent *entry;
-        while ((entry = readdir(dir)) != NULL) {
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-                continue;
-            }
-
-            char *child_path;
-            asprintf(&child_path, "%s/%s", path, entry->d_name);
-
-            if (rm(child_path, recursive) != 0) {
-                free(child_path);
-                closedir(dir);
-                return 1;
-            }
-            free(child_path);
-        }
-        closedir(dir);
-
-        if (rmdir(path) == -1) {
-            perror("rmdir");
-            return 1;
-        }
-    } else {
-        if (unlink(path) == -1) {
-            perror("unlink");
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-/* rmdir program */
-/* remove empty directories */
-/* Usage: rmdir [dir] */
-int rmdir_cmd(const char *path) {
-    if (rmdir(path) == -1) {
-        perror("rmdir");
+    f2 = fopen(file2, "rb");
+    if (!f2) {
+        fprintf(stderr, "Error: Cannot open file %s\n", file2);
+        fclose(f1);
         return 1;
     }
-    return 0;
-}
 
-/* mv program */
-/* move or rename files and directories */
-/* Usage: mv [source] [destination] */
-int mv(const char *source, const char *destination) {
-    if (rename(source, destination) == -1) {
-        perror("rename");
+    while ((ch1 = fgetc(f1)) != EOF && (ch2 = fgetc(f2)) != EOF) {
+        if (ch1 != ch2) {
+            printf("%s %s differ: byte %d, line %d\n", file1, file2, pos, line);
+            fclose(f1);
+            fclose(f2);
+            return 1;
+        }
+        if (ch1 == '\n') line++;
+        pos++;
+    }
+
+    if (fgetc(f1) != EOF || fgetc(f2) != EOF) {
+        printf("%s %s differ: EOF mismatch\n", file1, file2);
+        fclose(f1);
+        fclose(f2);
         return 1;
     }
+
+    fclose(f1);
+    fclose(f2);
     return 0;
 }
 
-/* Main driver function */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
-        fprintf(stderr, "Usage: %s command [arguments]\n", argv[0]);
+        fprintf(stderr, "No command specified\n");
         return 1;
     }
 
-    char *command = basename(argv[0]); // Get the command name from symbolic link
+    char *cmd = basename(argv[0]);
 
-    if (strstr(command, "wc")) {
-        return wc(stdin, stdout);
-    } else if (strstr(command, "cat")) {
-        return cpcat(argc > 1 ? argv[1] : "-", NULL);
-    } else if (strstr(command, "cp")) {
-        if (argc < 3) {
-            fprintf(stderr, "Usage: %s [source] [destination]\n", command);
+    if (strcmp(cmd, "wc") == 0) {
+        if (argc == 1) {
+            return wc(stdin, stdout);
+        } else {
+            FILE *f = fopen(argv[1], "r");
+            if (!f) {
+                fprintf(stderr, "wc: %s: No such file or directory\n", argv[1]);
+                return 1;
+            }
+            int res = wc(f, stdout);
+            fclose(f);
+            return res;
+        }
+    } else if (strcmp(cmd, "cat") == 0) {
+        return cpcat(argc > 1 ? argv[1] : NULL, NULL);
+    } else if (strcmp(cmd, "cp") == 0) {
+        if (argc != 3) {
+            fprintf(stderr, "Usage: cp [source] [destination]\n");
             return 1;
         }
         return cpcat(argv[1], argv[2]);
-    } else if (strstr(command, "sync")) {
+    } else if (strcmp(cmd, "sync") == 0) {
         return _sync();
-    } else if (strstr(command, "yes")) {
-        return yes(&argv[1]);
-    } else if (strstr(command, "update")) {
+    } else if (strcmp(cmd, "yes") == 0) {
+        return yes(argv);
+    } else if (strcmp(cmd, "update") == 0) {
         return update();
-    } else if (strstr(command, "sleep")) {
+    } else if (strcmp(cmd, "sleep") == 0) {
         return _sleep(argc, argv);
-    } else if (strstr(command, "whoami")) {
+    } else if (strcmp(cmd, "whoami") == 0) {
         return whoami();
-    } else if (strstr(command, "true")) {
+    } else if (strcmp(cmd, "true") == 0) {
         return _true();
-    } else if (strstr(command, "false")) {
+    } else if (strcmp(cmd, "false") == 0) {
         return _false();
-    } else if (strstr(command, "ls")) {
+    } else if (strcmp(cmd, "ls") == 0) {
         return ls(argc, argv);
-    } else if (strstr(command, "echo")) {
+    } else if (strcmp(cmd, "echo") == 0) {
         return echo(argc, argv);
-    } else if (strstr(command, "init")) {
+    } else if (strcmp(cmd, "init") == 0) {
         return init();
-    } else if (strstr(command, "rm")) {
-        int recursive = 0;
-        if (argc > 2 && strcmp(argv[1], "-r") == 0) {
-            recursive = 1;
-            return rm(argv[2], recursive);
-        }
-        return rm(argv[1], recursive);
-    } else if (strstr(command, "rmdir")) {
-        return rmdir_cmd(argc > 1 ? argv[1] : ".");
-    } else if (strstr(command, "mv")) {
+    } else if (strcmp(cmd, "cmp") == 0) {
         if (argc != 3) {
-            fprintf(stderr, "Usage: %s [source] [destination]\n", command);
+            fprintf(stderr, "Usage: cmp [file1] [file2]\n");
             return 1;
         }
-        return mv(argv[1], argv[2]);
+        return cmp(argv[1], argv[2]);
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -499,6 +469,4 @@ int main(int argc, char *argv[]) {
                "mv:     Move or rename files and directories\n", VERSION);
         return 1;
     }
-
-    return 0;
 }

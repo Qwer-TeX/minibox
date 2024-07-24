@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false ls echo init rm rmdir\
-			mv
+			mv cmp
 
 VERSION=v0.1.0
 
