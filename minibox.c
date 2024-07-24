@@ -332,63 +332,189 @@ int init(void) {
     } else {
         // Error occurred
         perror("fork");
-        return 1;
+        exit(1);
     }
 
-    // Example: Waiting for children
     while (1) {
-        while (waitpid(-1, NULL, WNOHANG) > 0) {
-            // Reap any zombies
-        }
+        pause(); // Wait for signal
     }
 
     return 0;
 }
 
 /* cmp program */
-/* Compare two files byte by byte */
+/* Usage: cmp file1 file2 */
 int cmp(const char *file1, const char *file2) {
-    FILE *f1, *f2;
+    FILE *f1 = fopen(file1, "r");
+    FILE *f2 = fopen(file2, "r");
     int ch1, ch2;
-    int pos = 1;
-    int line = 1;
 
-    f1 = fopen(file1, "rb");
-    if (!f1) {
-        fprintf(stderr, "Error: Cannot open file %s\n", file1);
-        return 1;
-    }
-
-    f2 = fopen(file2, "rb");
-    if (!f2) {
-        fprintf(stderr, "Error: Cannot open file %s\n", file2);
-        fclose(f1);
+    if (!f1 || !f2) {
+        fprintf(stderr, "cmp: Cannot open file\n");
         return 1;
     }
 
     while ((ch1 = fgetc(f1)) != EOF && (ch2 = fgetc(f2)) != EOF) {
         if (ch1 != ch2) {
-            printf("%s %s differ: byte %d, line %d\n", file1, file2, pos, line);
+            printf("Files differ\n");
             fclose(f1);
             fclose(f2);
             return 1;
         }
-        if (ch1 == '\n') line++;
-        pos++;
     }
 
-    if (fgetc(f1) != EOF || fgetc(f2) != EOF) {
-        printf("%s %s differ: EOF mismatch\n", file1, file2);
+    if ((ch1 != EOF) || (ch2 != EOF)) {
+        printf("Files differ\n");
         fclose(f1);
         fclose(f2);
         return 1;
     }
 
+    printf("Files are identical\n");
     fclose(f1);
     fclose(f2);
     return 0;
 }
 
+/* rm program */
+/* Remove files or directories */
+/* Usage: rm [-r] file... */
+int rm(int argc, char *argv[]) {
+    int recursive = 0;
+
+    // Check for the -r flag
+    if (argc > 1 && strcmp(argv[1], "-r") == 0) {
+        recursive = 1;
+        argc--;
+        argv++;
+    }
+
+    if (argc < 2) {
+        fprintf(stderr, "Usage: rm [-r] file...\n");
+        return 1;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        struct stat st;
+        if (stat(argv[i], &st) < 0) {
+            fprintf(stderr, "rm: cannot stat '%s': %s\n", argv[i], strerror(errno));
+            return 1;
+        }
+
+        if (S_ISDIR(st.st_mode)) {
+            if (recursive) {
+                // Recursively delete directory contents
+                DIR *dir = opendir(argv[i]);
+                if (dir == NULL) {
+                    fprintf(stderr, "rm: cannot open directory '%s': %s\n", argv[i], strerror(errno));
+                    return 1;
+                }
+
+                struct dirent *entry;
+                while ((entry = readdir(dir)) != NULL) {
+                    if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+                        char path[PATH_MAX];
+                        snprintf(path, sizeof(path), "%s/%s", argv[i], entry->d_name);
+                        if (stat(path, &st) == 0 && S_ISDIR(st.st_mode)) {
+                            // Recursively remove subdirectories
+                            char *args[] = {"rm", "-r", path};
+                            rm(3, args);
+                        } else {
+                            unlink(path);
+                        }
+                    }
+                }
+                closedir(dir);
+                rmdir(argv[i]);
+            } else {
+                fprintf(stderr, "rm: '%s' is a directory\n", argv[i]);
+                return 1;
+            }
+        } else {
+            if (unlink(argv[i]) < 0) {
+                fprintf(stderr, "rm: cannot remove '%s': %s\n", argv[i], strerror(errno));
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* rmdir program */
+/* Remove empty directories */
+/* Usage: rmdir directory... */
+int rmdir_cmd(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: rmdir directory...\n");
+        return 1;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (rmdir(argv[i]) < 0) {
+            fprintf(stderr, "rmdir: failed to remove '%s': %s\n", argv[i], strerror(errno));
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/* mkdir program */
+/* Create directories */
+/* Usage: mkdir [-p] directory... */
+int mkdir_cmd(int argc, char *argv[]) {
+    int parents = 0;
+    int start_index = 1;
+
+    // Check for the -p flag
+    if (argc > 1 && strcmp(argv[1], "-p") == 0) {
+        parents = 1;
+        start_index = 2;
+    }
+
+    if (argc < start_index) {
+        fprintf(stderr, "Usage: mkdir [-p] directory...\n");
+        return 1;
+    }
+
+    for (int i = start_index; i < argc; i++) {
+        if (parents) {
+            char *path = strdup(argv[i]);
+            if (!path) {
+                fprintf(stderr, "Memory allocation error\n");
+                return 1;
+            }
+
+            char *p = path;
+            while ((p = strchr(p, '/')) != NULL) {
+                *p = '\0';
+                if (mkdir(path, 0755) < 0 && errno != EEXIST) {
+                    fprintf(stderr, "mkdir: failed to create directory '%s': %s\n", path, strerror(errno));
+                    free(path);
+                    return 1;
+                }
+                *p = '/';
+                p++;
+            }
+            if (mkdir(argv[i], 0755) < 0 && errno != EEXIST) {
+                fprintf(stderr, "mkdir: failed to create directory '%s': %s\n", argv[i], strerror(errno));
+                free(path);
+                return 1;
+            }
+            free(path);
+        } else {
+            if (mkdir(argv[i], 0755) < 0 && errno != EEXIST) {
+                fprintf(stderr, "mkdir: failed to create directory '%s': %s\n", argv[i], strerror(errno));
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* Update main function */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
         fprintf(stderr, "No command specified\n");
@@ -421,7 +547,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(cmd, "sync") == 0) {
         return _sync();
     } else if (strcmp(cmd, "yes") == 0) {
-        return yes(argv);
+        return yes(argc > 1 ? argv : NULL);
     } else if (strcmp(cmd, "update") == 0) {
         return update();
     } else if (strcmp(cmd, "sleep") == 0) {
@@ -444,6 +570,12 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         return cmp(argv[1], argv[2]);
+    } else if (strcmp(cmd, "rm") == 0) {
+        return rm(argc, argv);
+    } else if (strcmp(cmd, "rmdir") == 0) {
+        return rmdir_cmd(argc, argv);
+    } else if (strcmp(cmd, "mkdir") == 0) {
+        return mkdir_cmd(argc, argv);
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -460,13 +592,16 @@ int main(int argc, char *argv[]) {
                "update: Sync filesystem caches every 30 seconds\n"
                "sleep:  Sleep for the specified amount of seconds\n"
                "whoami: Print current effective username\n"
-               "true:   return true or 0\n"
-               "false:  return false or 1\n"
-               "ls:     List files and directories\n"
-               "init:   Init process (dummy version)\n"
+               "true:   Return true\n"
+               "false:  Return false\n"
+               "ls:     List directory contents\n"
+               "echo:   Display a line of text\n"
+               "init:   Initialize system\n"
+               "cmp:    Compare two files\n"
                "rm:     Remove files or directories\n"
                "rmdir:  Remove empty directories\n"
-               "mv:     Move or rename files and directories\n", VERSION);
+               "mkdir:  Create directories\n",
+               VERSION);
         return 1;
     }
 }
