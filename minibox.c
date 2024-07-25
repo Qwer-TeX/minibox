@@ -11,8 +11,9 @@
  * When adding programs or features, please consider if they can be
  * accomplished in a sane way with standard unix tools. If they're 
  * programs or features you added, please make sure they are read-
- * able and understandable by a novice programmer, if not, add 
- * comments or let me know.
+ * able and understandable by a novice-advanced programmer, if not, 
+ * add comments or let me know. Use common sense and please don't 
+ * bloat sources.
  *
  * I haven't tested but it could compile on windows systems with MSYS/MinGW or Cygwin.
  * MiniBox should be fairly portable for POSIX systems.
@@ -580,7 +581,7 @@ int main(int argc, char *argv[]) {
                "into one that aims to be lightweight and memory efficient.\n"
                "\n"
                "This is free software with ABSOLUTELY NO WARRANTY.\n"
-               "For details see the LICENSE that came with this distribution.\n"
+               "For details see the LICENSE that came with this MiniBox distribution.\n"
                "\n"
                "Current implementations include (in chronological order from 1st to recently developed):\n"
                "wc:     Print newline, word, and byte counts\n"
