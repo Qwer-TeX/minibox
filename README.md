@@ -30,3 +30,5 @@ NOTE:
   and toybox, but a guarantee that you can modify and distribute edited sources to fit
   your own needs, 
   it one of the reasons I made the code to this project novice understandable ;).
+
+  Don't be surprised if you firmware extracted a embedded device and found MiniBox in there :D.
