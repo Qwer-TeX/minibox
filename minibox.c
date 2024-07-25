@@ -40,7 +40,7 @@ int compare_entries(const void *a, const void *b) {
     return strcmp(*(const char **)a, *(const char **)b);
 }
 
-/* wc program */
+/* wc program - only accepts output from stdin as of right now */
 /* Usage: wc [<] [infile] */
 int wc(FILE *strmin, FILE *strmout) {
     int letter, nline, nchar, nword, inword;
@@ -63,7 +63,7 @@ int wc(FILE *strmin, FILE *strmout) {
 }
 
 /* common code for the cp and cat program */
-/* cat [<] [infile] [|>] outfile */
+/* cat [infile] */
 /* cp [source] [destination] */
 int cpcat(const char *strmin, const char *strmout) {
     FILE *finptr;
@@ -206,7 +206,7 @@ int ls(int argc, char *argv[]) {
             capacity *= 2;
             char **new_entries = realloc(entries, capacity * sizeof(char *));
             if (!new_entries) {
-                fprintf(stderr, "Memory allocation error\n");
+                fprintf(stderr, "Memory (re)allocation error\n");
                 closedir(directory);
                 free(entries);
                 return 1;
@@ -312,12 +312,11 @@ int echo(int argc, char *argv[]) {
 }
 
 /* init program */
-/* Basic implementation of BusyBox's init */
+/* Basic implementation of init - not production level yet */
 int init(void) {
     printf("MiniBox %s init: Mantle(kernel) passes control to init\n", VERSION);
     printf("MiniBox %s init: Running init process\n", VERSION);
-    printf("MiniBox %s init: Hello, World!\n", VERSION);
-    printf("MiniBox %s init: World Initialized!\n", VERSION);
+    printf("MiniBox %s init: World Initialized -- Hello, World!\n", VERSION);
 
     // Example: Starting essential services
     pid_t child_pid = fork();
@@ -351,7 +350,7 @@ int cmp(const char *file1, const char *file2) {
 
     if (!f1 || !f2) {
         fprintf(stderr, "cmp: Cannot open file\n");
-        return 1;
+        return 2;
     }
 
     while ((ch1 = fgetc(f1)) != EOF && (ch2 = fgetc(f2)) != EOF) {
@@ -370,7 +369,6 @@ int cmp(const char *file1, const char *file2) {
         return 1;
     }
 
-    printf("Files are identical\n");
     fclose(f1);
     fclose(f2);
     return 0;
