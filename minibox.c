@@ -342,7 +342,7 @@ int init(void) {
 }
 
 /* cmp program */
-/* Usage: cmp file1 file2 */
+/* Usage: cmp [comparer] [comparent] */
 int cmp(const char *file1, const char *file2) {
     FILE *f1 = fopen(file1, "r");
     FILE *f2 = fopen(file2, "r");
@@ -525,6 +525,7 @@ int main(int argc, char *argv[]) {
         if (argc == 1) {
             return wc(stdin, stdout);
         } else {
+          // FIXME: Integrate this into the wc function
             FILE *f = fopen(argv[1], "r");
             if (!f) {
                 fprintf(stderr, "wc: %s: No such file or directory\n", argv[1]);
@@ -581,7 +582,7 @@ int main(int argc, char *argv[]) {
                "This is free software with ABSOLUTELY NO WARRANTY.\n"
                "For details see the LICENSE that came with this distribution.\n"
                "\n"
-               "Current implementations include (in chronological order from 1st to last developed):\n"
+               "Current implementations include (in chronological order from 1st to recently developed):\n"
                "wc:     Print newline, word, and byte counts\n"
                "cat:    Concatenate files\n"
                "cp:     Copy files\n"
