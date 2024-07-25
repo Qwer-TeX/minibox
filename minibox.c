@@ -34,7 +34,7 @@
 #include <sys/stat.h>
 
 /* minibox specific defines */
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 /* Function to compare two directory entries for qsort */
 int compare_entries(const void *a, const void *b) {

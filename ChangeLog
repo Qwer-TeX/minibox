@@ -1,4 +1,7 @@
-7/17/2024 V0.1.0		 - patch level 21
+7/25/2024 V0.1.1		 - patch level 0
+	* Updated LICENSE headers in sources
+
+7/17/2024 V0.1.0		 - patch level 241
 	* Merged example3 to the Minibox SHell
 	* Cleaned and organized the minibox-shell directory
 	* Switched to linenoise which offered a very great size reduction solution.
@@ -8,7 +11,8 @@
 	* Added the dummy version of init
 	* Enhanced the dummy version of init featuring examples
 	* Applied upstream fixes
-	* Added mv, rm, and rmdir
+	* Added mv, rm, rmdir, cmp, and mkdir
+	* Enhanced shell to become POSIX Shell compliant
 
 7/12/2024 V0.1.0pre7 - pre-release version 7 (stable)
 	* Reached a massive milestone by creating a shell example
