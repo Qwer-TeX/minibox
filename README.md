@@ -31,4 +31,4 @@ NOTE:
   your own needs, 
   it one of the reasons I made the code to this project novice understandable ;).
 
-  Don't be surprised if you firmware extracted a embedded device and found MiniBox in there :D.
+  Don't be surprised if you firmware extracted a linux embedded device and found MiniBox in there :D.
