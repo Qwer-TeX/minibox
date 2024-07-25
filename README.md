@@ -23,3 +23,10 @@ NOTE:
   Maybe I'll introduce arguments that are most widely used in programs respectivly.
 
   Also see TOOLBOX-INTRO to learn more about the tools philosophy.
+
+  It can be used for many embedded devices, like for example, cheap routers, 
+  cheap modems which have a NVM, eMMC smaller than the size of 1.2MB, 720K, or 200K
+  that are cheap to manufacture though there is no warranty like in busybox, 
+  and toybox, but a guarantee that you can modify and distribute edited sources to fit
+  your own needs, 
+  it one of the reasons I made the code to this project novice understandable ;).
