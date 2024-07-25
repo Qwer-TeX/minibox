@@ -32,3 +32,15 @@ NOTE:
   it one of the reasons I made the code to this project novice understandable ;).
 
   Don't be surprised if you firmware extracted a linux embedded device and found MiniBox in there :D.
+
+  I didn't split minibox.c into wc.c, cpcat.c, main.c, etc on purpose because once I did, I saw a 
+  small size difference. I tried stripping it but it still would remain the same size. I tried 
+  debugging and objdump'ing nm'ing it but it proved somewhat useful, it show an extra addition
+  of a symbol, or something like that, that was just a pure annoyance. I from here on out, I didn't
+  split the source of this project. Just like in the sqlite3 source code, they have 1 large source 
+  which I can compile using gcc without its makefile, same here. The split source version of 
+  minibox produced a executable 13K larger and 4K larger when stripped. I then diff'ed this split 
+  source compiled executable with the original minibox executable and it turned out not to be the
+  same when it should clearly be the same. Its a compiler issue that someone needs to address to 
+  gcc. I haven't tried with clang but it could be the same. I haven't also tried with tcc either
+  but I really should and I will.
