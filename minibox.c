@@ -40,7 +40,7 @@ int compare_entries(const void *a, const void *b) {
     return strcmp(*(const char **)a, *(const char **)b);
 }
 
-/* wc program - only accepts output from stdin as of right now */
+/* wc program */
 /* Usage: wc [<] [infile] */
 int wc(FILE *strmin, FILE *strmout) {
     int letter, nline, nchar, nword, inword;
