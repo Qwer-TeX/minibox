@@ -32,6 +32,7 @@
 #include <sys/wait.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.1"
@@ -512,6 +513,50 @@ int mkdir_cmd(int argc, char *argv[]) {
 
     return 0;
 }
+int mknod_command(int argc, char *argv[]) {
+    if (argc < 4) {
+        fprintf(stderr, "Usage: mknod name type [major minor]\n");
+        return 1;
+    }
+
+    const char *name = argv[1];
+    char type = argv[2][0];
+    mode_t mode;
+    dev_t dev = 0;
+
+    switch (type) {
+        case 'p':
+            mode = S_IFIFO;
+            break;
+        case 'c':
+        case 'u':
+            if (argc < 6) {
+                fprintf(stderr, "Usage: mknod name c [major minor]\n");
+                return 1;
+            }
+            mode = S_IFCHR;
+            dev = makedev(atoi(argv[3]), atoi(argv[4]));
+            break;
+        case 'b':
+            if (argc < 6) {
+                fprintf(stderr, "Usage: mknod name b [major minor]\n");
+                return 1;
+            }
+            mode = S_IFBLK;
+            dev = makedev(atoi(argv[3]), atoi(argv[4]));
+            break;
+        default:
+            fprintf(stderr, "Invalid type: %c\n", type);
+            return 1;
+    }
+
+    if (mknod(name, mode | 0666, dev) == -1) {
+        perror("mknod");
+        return 1;
+    }
+
+    return 0;
+}
 
 /* Update main function */
 int main(int argc, char *argv[]) {
@@ -576,6 +621,8 @@ int main(int argc, char *argv[]) {
         return rmdir_cmd(argc, argv);
     } else if (strcmp(cmd, "mkdir") == 0) {
         return mkdir_cmd(argc, argv);
+    } else if (strcmp(cmd, "mknod") == 0) {
+        return mknod_command(argc, argv);
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -600,7 +647,8 @@ int main(int argc, char *argv[]) {
                "cmp:    Compare two files\n"
                "rm:     Remove files or directories\n"
                "rmdir:  Remove empty directories\n"
-               "mkdir:  Create directories\n",
+               "mkdir:  Create directories\n"
+               "mknod:  Create special files\n",
                VERSION);
         return 1;
     }

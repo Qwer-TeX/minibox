@@ -33,6 +33,7 @@ rmdir
 mv
 cmp
 mkdir
+mknod
 
 # Images
 MINIBOX.png
