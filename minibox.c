@@ -572,6 +572,40 @@ int hostname(void) {
     return 0;
 }
 
+/* free program */
+/* Display the amount of free and used memory in the system */
+/* FIXME: free displays 0 for shared while coreutils free displays non-zero */
+int free_cmd(void) {
+    FILE *file = fopen("/proc/meminfo", "r");
+    if (!file) {
+        perror("fopen");
+        return 1;
+    }
+
+    char line[256];
+    unsigned long total = 0, free = 0, available = 0, buffers = 0, cached = 0;
+
+    while (fgets(line, sizeof(line), file)) {
+        if (sscanf(line, "MemTotal: %lu kB", &total) == 1 ||
+            sscanf(line, "MemFree: %lu kB", &free) == 1 ||
+            sscanf(line, "MemAvailable: %lu kB", &available) == 1 ||
+            sscanf(line, "Buffers: %lu kB", &buffers) == 1 ||
+            sscanf(line, "Cached: %lu kB", &cached) == 1) {
+            // Parsed a line
+        }
+    }
+
+    fclose(file);
+
+    unsigned long used = total - free - buffers - cached;
+
+    printf("            total       used       free     shared  buff/cache  available\n");
+    printf("Mem:   %10lu %10lu %10lu %10lu %10lu %10lu\n",
+           total, used, free, 0UL, buffers + cached, available);
+
+    return 0;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
@@ -639,6 +673,8 @@ int main(int argc, char *argv[]) {
         return mknod_command(argc, argv);
     } else if (strcmp(cmd, "hostname") == 0) {
         return hostname();
+    } else if (strcmp(cmd, "free") == 0) {
+        return free_cmd();
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -665,7 +701,8 @@ int main(int argc, char *argv[]) {
                "rmdir:    Remove empty directories\n"
                "mkdir:    Create directories\n"
                "mknod:    Create special files\n"
-               "hostname: Print hostname\n",
+               "hostname: Print hostname\n"
+               "free:     Display memory stats (shared broken)\n",
                VERSION);
         return 1;
     }

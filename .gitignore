@@ -35,6 +35,7 @@ cmp
 mkdir
 mknod
 hostname
+free
 
 # Images
 MINIBOX.png
