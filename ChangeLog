@@ -1,5 +1,6 @@
 7/25/2024 V0.1.1		 - patch level 0
 	* Updated LICENSE headers in sources
+	* Added mknod, and hostname commands to set of utilities
 
 7/17/2024 V0.1.0		 - patch level 241
 	* Merged example3 to the Minibox SHell

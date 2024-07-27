@@ -513,6 +513,9 @@ int mkdir_cmd(int argc, char *argv[]) {
 
     return 0;
 }
+
+/* mknod program */
+/* Usage: mknod name type [major minor] */
 int mknod_command(int argc, char *argv[]) {
     if (argc < 4) {
         fprintf(stderr, "Usage: mknod name type [major minor]\n");
@@ -555,6 +558,17 @@ int mknod_command(int argc, char *argv[]) {
         return 1;
     }
 
+    return 0;
+}
+
+/* hostname program */
+int hostname(void) {
+    char hostname[1024];
+    if (gethostname(hostname, sizeof(hostname)) == -1) {
+        perror("gethostname");
+        return 1;
+    }
+    printf("%s\n", hostname);
     return 0;
 }
 
@@ -623,6 +637,8 @@ int main(int argc, char *argv[]) {
         return mkdir_cmd(argc, argv);
     } else if (strcmp(cmd, "mknod") == 0) {
         return mknod_command(argc, argv);
+    } else if (strcmp(cmd, "hostname") == 0) {
+        return hostname();
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -631,24 +647,25 @@ int main(int argc, char *argv[]) {
                "For details see the LICENSE that came with this MiniBox distribution.\n"
                "\n"
                "Current implementations include (in chronological order from 1st to recently developed):\n"
-               "wc:     Print newline, word, and byte counts\n"
-               "cat:    Concatenate files\n"
-               "cp:     Copy files\n"
-               "sync:   Sync filesystem caches to disk\n"
-               "yes:    Output y or a character repeatedly until killed\n"
-               "update: Sync filesystem caches every 30 seconds\n"
-               "sleep:  Sleep for the specified amount of seconds\n"
-               "whoami: Print current effective username\n"
-               "true:   Return true\n"
-               "false:  Return false\n"
-               "ls:     List directory contents\n"
-               "echo:   Display a line of text\n"
-               "init:   Initialize system\n"
-               "cmp:    Compare two files\n"
-               "rm:     Remove files or directories\n"
-               "rmdir:  Remove empty directories\n"
-               "mkdir:  Create directories\n"
-               "mknod:  Create special files\n",
+               "wc:       Print newline, word, and byte counts\n"
+               "cat:      Concatenate files\n"
+               "cp:       Copy files\n"
+               "sync:     Sync filesystem caches to disk\n"
+               "yes:      Output y or a character repeatedly until killed\n"
+               "update:   Sync filesystem caches every 30 seconds\n"
+               "sleep:    Sleep for the specified amount of seconds\n"
+               "whoami:   Print current effective username\n"
+               "true:     Return true\n"
+               "false:    Return false\n"
+               "ls:       List directory contents\n"
+               "echo:     Display a line of text\n"
+               "init:     Initialize system\n"
+               "cmp:      Compare two files\n"
+               "rm:       Remove files or directories\n"
+               "rmdir:    Remove empty directories\n"
+               "mkdir:    Create directories\n"
+               "mknod:    Create special files\n"
+               "hostname: Print hostname\n",
                VERSION);
         return 1;
     }
