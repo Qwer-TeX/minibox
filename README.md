@@ -15,6 +15,7 @@ NOTE:
  - No useless symboles injected into objects
  - Only simplicity and low memory usage
  - Best of all, no bloat, anykind, source-code bloat, object bloat, etc.
+ - Almost little-to-none command line options
 
 
   I know (maybe) that this project would not succeed against BusyBox or 
