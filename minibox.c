@@ -761,6 +761,25 @@ int w(void) {
     return 0;
 }
 
+/* vmstat program */
+/* report virtual memory statistics */
+/* FIXME: Outputs info not in their respective columns */
+int vmstat() {
+    struct sysinfo info;
+
+    if (sysinfo(&info) != 0) {
+        perror("sysinfo");
+        return;
+    }
+
+    printf("procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----\n");
+    printf(" r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st\n");
+    printf(" %2d %2d %6ld %6ld %6ld %6ld %4ld %4ld %5ld %5ld %4d %4d %2d %2d %2d %2d %2d\n",
+           0, 0, info.totalswap - info.freeswap, info.freeram / 1024, info.bufferram / 1024,
+           (info.freeram - info.bufferram) / 1024, 0L, 0L, 0L, 0L, 0, 0, 0, 0, 100, 0, 0);
+    return 0;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
@@ -838,6 +857,8 @@ int main(int argc, char *argv[]) {
         return hexdump(argc, argv);
     } else if (strcmp(cmd, "w") == 0) {
         return w();
+    } else if (strcmp(cmd, "vmstat") == 0) {
+        return vmstat();
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -869,7 +890,8 @@ int main(int argc, char *argv[]) {
                "xxd:      Make a hex dump\n"
                "od:       dump files in octal format\n"
                "hexdump:  Display a file in hexadecimal\n"
-               "w:        Display info about current users on machine (output broken)\n",
+               "w:        Display info about current users on machine (output broken)\n"
+               "vmstat:   Report virtual memory statistics\n (output broken)",
                VERSION);
         return 1;
     }

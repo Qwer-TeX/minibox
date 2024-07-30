@@ -40,6 +40,7 @@ xxd
 od
 hexdump
 w
+vmstat
 
 # Images
 MINIBOX.png
