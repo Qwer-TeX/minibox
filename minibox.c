@@ -606,6 +606,102 @@ int free_cmd(void) {
     return 0;
 }
 
+/* xxd program: hex dump */
+int xxd(int argc, char *argv[]) {
+    FILE *fp;
+    unsigned char buffer[16];
+    size_t bytesRead;
+
+    if (argc < 2) {
+        fprintf(stderr, "Usage: xxd <file>\n");
+        return 1;
+    }
+
+    fp = fopen(argv[1], "rb");
+    if (!fp) {
+        perror("fopen");
+        return 1;
+    }
+
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+        printf("%08x: ", (unsigned int)ftell(fp) - bytesRead);
+        for (size_t i = 0; i < bytesRead; i++) {
+            printf("%02x ", buffer[i]);
+        }
+        for (size_t i = bytesRead; i < sizeof(buffer); i++) {
+            printf("   ");
+        }
+        printf("| ");
+        for (size_t i = 0; i < bytesRead; i++) {
+            printf("%c", (buffer[i] >= 32 && buffer[i] <= 126) ? buffer[i] : '.');
+        }
+        printf("\n");
+    }
+
+    fclose(fp);
+    return 0;
+}
+
+/* od program: octal dump */
+int od(int argc, char *argv[]) {
+    FILE *fp;
+    unsigned char buffer[16];
+    size_t bytesRead;
+
+    if (argc < 2) {
+        fprintf(stderr, "Usage: od <file>\n");
+        return 1;
+    }
+
+    fp = fopen(argv[1], "rb");
+    if (!fp) {
+        perror("fopen");
+        return 1;
+    }
+
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+        printf("%08x: ", (unsigned int)ftell(fp) - bytesRead);
+        for (size_t i = 0; i < bytesRead; i++) {
+            printf("%02x ", buffer[i]);
+        }
+        for (size_t i = bytesRead; i < sizeof(buffer); i++) {
+            printf("   ");
+        }
+        printf("\n");
+    }
+
+    fclose(fp);
+    return 0;
+}
+
+/* hexdump program: display a file in hex */
+int hexdump(int argc, char *argv[]) {
+    FILE *fp;
+    unsigned char buffer[16];
+    size_t bytesRead;
+
+    if (argc < 2) {
+        fprintf(stderr, "Usage: hexdump <file>\n");
+        return 1;
+    }
+
+    fp = fopen(argv[1], "rb");
+    if (!fp) {
+        perror("fopen");
+        return 1;
+    }
+
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+        for (size_t i = 0; i < bytesRead; i++) {
+            printf("%02x ", buffer[i]);
+        }
+        printf("\n");
+    }
+
+    fclose(fp);
+    return 0;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
     if (argc < 1) {
@@ -675,6 +771,12 @@ int main(int argc, char *argv[]) {
         return hostname();
     } else if (strcmp(cmd, "free") == 0) {
         return free_cmd();
+    } else if (strcmp(cmd, "xxd") == 0) {
+        return xxd(argc, argv);
+    } else if (strcmp(cmd, "od") == 0) {
+        return od(argc, argv);
+    } else if (strcmp(cmd, "hexdump") == 0) {
+        return hexdump(argc, argv);
     } else {
         printf("MiniBox %s: A multi-call binary that combines many common Unix utilities\n"
                "into one that aims to be lightweight and memory efficient.\n"
@@ -702,7 +804,10 @@ int main(int argc, char *argv[]) {
                "mkdir:    Create directories\n"
                "mknod:    Create special files\n"
                "hostname: Print hostname\n"
-               "free:     Display memory stats (shared broken)\n",
+               "free:     Display memory stats (shared broken)\n"
+               "xxd:      Make a hex dump\n"
+               "od:       dump files in octal format\n"
+               "hexdump:  Display a file in hexadecimal\n",
                VERSION);
         return 1;
     }

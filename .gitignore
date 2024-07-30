@@ -36,6 +36,9 @@ mkdir
 mknod
 hostname
 free
+xxd
+od
+hexdump
 
 # Images
 MINIBOX.png
