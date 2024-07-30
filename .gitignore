@@ -39,6 +39,7 @@ free
 xxd
 od
 hexdump
+w
 
 # Images
 MINIBOX.png
