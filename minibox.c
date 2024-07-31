@@ -891,7 +891,7 @@ int main(int argc, char *argv[]) {
                "od:       dump files in octal format\n"
                "hexdump:  Display a file in hexadecimal\n"
                "w:        Display info about current users on machine (output broken)\n"
-               "vmstat:   Report virtual memory statistics\n (output broken)",
+               "vmstat:   Report virtual memory statistics (output broken)\n",
                VERSION);
         return 1;
     }
