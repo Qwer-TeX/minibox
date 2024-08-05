@@ -36,6 +36,9 @@
 #include <utmp.h>
 #include <time.h>
 #include <sys/sysinfo.h>
+#include <linux/limits.h>
+#include <fcntl.h>
+#include <linux/stat.h>
 
 /* minibox specific defines */
 #define VERSION "0.1.1"
