@@ -319,7 +319,8 @@ int echo(int argc, char *argv[]) {
 /* init program */
 /* Basic implementation of init - not production level yet */
 int init(void) {
-    printf("MiniBox %s init: Mantle(kernel) passes control to init\n", VERSION);
+    printf("MiniBox %s init: Starter(bootloader) ignites the linux Engine(kernel)\n", VERSION);
+    printf("MiniBox %s init: Engine(kernel) passes control to driver(init)\n", VERSION);
     printf("MiniBox %s init: Running init process\n", VERSION);
     printf("MiniBox %s init: World Initialized -- Hello, World!\n", VERSION);
 
