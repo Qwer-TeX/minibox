@@ -49,6 +49,11 @@ int compare_entries(const void *a, const void *b) {
   return strcmp(*(const char **)a, *(const char **)b);
 }
 
+// Comparison function for qsort
+int compare_lines(const void *a, const void *b) {
+  return strcmp(*(const char **)a, *(const char **)b);
+}
+
 /* wc program */
 /* Usage: wc [<] [infile] */
 int wc(FILE *strmin, FILE *strmout) {
@@ -968,6 +973,286 @@ int grep(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
+/* tr program */
+int tr(int argc, char *argv[]) {
+  if (argc != 4) {
+    fprintf(stderr, "Usage: %s SET1 SET2\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  const char *set1 = argv[1];
+  const char *set2 = argv[2];
+  if (strlen(set1) != strlen(set2)) {
+    fprintf(stderr, "SET1 and SET2 must be of the same length.\n");
+    return EXIT_FAILURE;
+  }
+
+  // Create a translation table
+  int translate[256];
+  for (int i = 0; i < 256; ++i) {
+    translate[i] = i; // Default to no translation
+  }
+
+  for (size_t i = 0; i < strlen(set1); ++i) {
+    translate[(unsigned char)set1[i]] = (unsigned char)set2[i];
+  }
+
+  // Read from standard input (or file if provided)
+  int c;
+  while ((c = getchar()) != EOF) {
+    putchar(translate[c]);
+  }
+
+  return EXIT_SUCCESS;
+}
+
+/* sort program */
+int sort(int argc, char *argv[]) {
+  char *lines[1000]; // Array to store lines (simple fixed-size buffer)
+  size_t count = 0;
+  size_t capacity = sizeof(lines) / sizeof(lines[0]);
+
+  // Read lines from standard input or file if provided
+  FILE *file = stdin;
+  if (argc == 2) {
+    file = fopen(argv[1], "r");
+    if (!file) {
+      perror("Error opening file");
+      return EXIT_FAILURE;
+    }
+  }
+
+  char buffer[1024];
+  while (fgets(buffer, sizeof(buffer), file)) {
+    if (count >= capacity) {
+      fprintf(stderr, "Too many lines to sort\n");
+      return EXIT_FAILURE;
+    }
+    // Remove newline character and allocate memory for line
+    buffer[strcspn(buffer, "\n")] = '\0';
+    lines[count] = strdup(buffer);
+    if (!lines[count]) {
+      perror("Memory allocation failed");
+      return EXIT_FAILURE;
+    }
+    count++;
+  }
+
+  if (file != stdin) {
+    fclose(file);
+  }
+
+  // Sort the lines
+  qsort(lines, count, sizeof(char *), compare_lines);
+
+  // Print the sorted lines
+  for (size_t i = 0; i < count; i++) {
+    puts(lines[i]);
+    free(lines[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+
+/* uniq program */
+int uniq(int argc, char *argv[]) {
+  char *prev_line = NULL;
+  char buffer[1024];
+
+  // Read lines from standard input or file if provided
+  FILE *file = stdin;
+  if (argc == 2) {
+    file = fopen(argv[1], "r");
+    if (!file) {
+      perror("Error opening file");
+      return EXIT_FAILURE;
+    }
+  }
+
+  while (fgets(buffer, sizeof(buffer), file)) {
+    buffer[strcspn(buffer, "\n")] = '\0'; // Remove newline character
+
+    if (prev_line == NULL || strcmp(prev_line, buffer) != 0) {
+      if (prev_line != NULL) {
+        puts(prev_line);
+        free(prev_line);
+      }
+      prev_line = strdup(buffer);
+      if (!prev_line) {
+        perror("Memory allocation failed");
+        return EXIT_FAILURE;
+      }
+    }
+  }
+
+  if (prev_line != NULL) {
+    puts(prev_line);
+    free(prev_line);
+  }
+
+  if (file != stdin) {
+    fclose(file);
+  }
+
+  return EXIT_SUCCESS;
+}
+
+/* uptime program */
+int uptime(int argc, char *argv[]) {
+  struct sysinfo info;
+
+  if (sysinfo(&info) != 0) {
+    perror("sysinfo");
+    return EXIT_FAILURE;
+  }
+
+  // Calculate uptime in days, hours, minutes, and seconds
+  long uptime_seconds = info.uptime;
+  long days = uptime_seconds / (24 * 3600);
+  uptime_seconds %= (24 * 3600);
+  long hours = uptime_seconds / 3600;
+  uptime_seconds %= 3600;
+  long minutes = uptime_seconds / 60;
+  long seconds = uptime_seconds % 60;
+
+  // Print uptime
+  printf("uptime: %ld day(s), %ld:%02ld:%02ld\n", days, hours, minutes,
+         seconds);
+
+  return EXIT_SUCCESS;
+}
+
+/* ps program */
+int ps(int argc, char *argv[]) {
+  DIR *proc_dir = opendir("/proc");
+  if (proc_dir == NULL) {
+    perror("opendir");
+    return EXIT_FAILURE;
+  }
+
+  struct dirent *entry;
+  while ((entry = readdir(proc_dir)) != NULL) {
+    // Check if the directory name is a number (i.e., a PID)
+    if (entry->d_type == DT_DIR && atoi(entry->d_name) > 0) {
+      char path[256];
+      snprintf(path, sizeof(path), "/proc/%s/comm", entry->d_name);
+
+      FILE *comm_file = fopen(path, "r");
+      if (comm_file) {
+        char process_name[256];
+        if (fgets(process_name, sizeof(process_name), comm_file)) {
+          // Remove the newline character at the end
+          process_name[strcspn(process_name, "\n")] = '\0';
+          printf("%d\t%s\n", atoi(entry->d_name), process_name);
+        }
+        fclose(comm_file);
+      } else {
+        // If the comm file cannot be opened, print an error message
+        fprintf(stderr, "Warning: Could not open %s: %s\n", path,
+                strerror(errno));
+      }
+    }
+  }
+
+  closedir(proc_dir);
+  return EXIT_SUCCESS;
+}
+
+/* kill program */
+int kill_process(int argc, char *argv[]) {
+  // Local function to convert signal name to signal number
+  int signal_name_to_number(const char *name) {
+    if (name == NULL)
+      return -1;
+
+    // List of known signals
+    static const struct {
+      const char *name;
+      int number;
+    } signals[] = {{"SIGHUP", SIGHUP},   {"SIGINT", SIGINT},
+                   {"SIGQUIT", SIGQUIT}, {"SIGILL", SIGILL},
+                   {"SIGTRAP", SIGTRAP}, {"SIGABRT", SIGABRT},
+                   {"SIGBUS", SIGBUS},   {"SIGFPE", SIGFPE},
+                   {"SIGKILL", SIGKILL}, {"SIGUSR1", SIGUSR1},
+                   {"SIGSEGV", SIGSEGV}, {"SIGUSR2", SIGUSR2},
+                   {"SIGPIPE", SIGPIPE}, {"SIGALRM", SIGALRM},
+                   {"SIGTERM", SIGTERM}, {"SIGSTKFLT", SIGSTKFLT},
+                   {"SIGCHLD", SIGCHLD}, {"SIGCONT", SIGCONT},
+                   {"SIGSTOP", SIGSTOP}, {"SIGTSTP", SIGTSTP},
+                   {"SIGTTIN", SIGTTIN}, {"SIGTTOU", SIGTTOU},
+                   {"SIGURG", SIGURG},   {"SIGXCPU", SIGXCPU},
+                   {"SIGXFSZ", SIGXFSZ}, {"SIGVTALRM", SIGVTALRM},
+                   {"SIGPROF", SIGPROF}, {"SIGWINCH", SIGWINCH},
+                   {"SIGIO", SIGIO},     {"SIGPWR", SIGPWR},
+                   {"SIGSYS", SIGSYS}};
+
+    for (size_t i = 0; i < sizeof(signals) / sizeof(signals[0]); i++) {
+      if (strcmp(name, signals[i].name) == 0) {
+        return signals[i].number;
+      }
+    }
+    return -1; // Signal name not found
+  }
+
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s [-signal] PID...\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  int signal = SIGTERM; // Default signal
+
+  if (argc >= 3 && argv[1][0] == '-') {
+    if (argv[1][1] == 'S') {
+      // Named signal (e.g., -SIGHUP)
+      signal = signal_name_to_number(argv[1] + 1);
+      if (signal == -1) {
+        fprintf(stderr, "Unknown signal: %s\n", argv[1]);
+        return EXIT_FAILURE;
+      }
+    } else {
+      // Signal number (e.g., -9)
+      char *endptr;
+      signal = strtol(argv[1] + 1, &endptr, 10);
+      if (*endptr != '\0' || signal <= 0 || signal >= NSIG) {
+        fprintf(stderr, "Invalid signal number: %s\n", argv[1]);
+        return EXIT_FAILURE;
+      }
+    }
+    // Shift arguments
+    argv++;
+    argc--;
+  }
+
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s [-signal] PID...\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  for (int i = 1; i < argc; i++) {
+    char *endptr;
+    pid_t pid = strtol(argv[i], &endptr, 10);
+    if (*endptr != '\0' || pid <= 0) {
+      fprintf(stderr, "Invalid PID: %s\n", argv[i]);
+      return EXIT_FAILURE;
+    }
+
+    if (kill(pid, signal) == -1) {
+      if (errno == ESRCH) {
+        fprintf(stderr, "No such process: %d\n", pid);
+      } else if (errno == EPERM) {
+        fprintf(stderr, "Permission denied to send signal to PID %d\n", pid);
+      } else {
+        perror("kill");
+      }
+      return EXIT_FAILURE;
+    }
+
+    printf("Sent signal %d to PID %d\n", signal, pid);
+  }
+
+  return EXIT_SUCCESS;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
   if (argc < 1) {
@@ -1051,6 +1336,18 @@ int main(int argc, char *argv[]) {
     return cut(argc, argv);
   } else if (strcmp(cmd, "grep") == 0) {
     return grep(argc, argv);
+  } else if (strcmp(cmd, "tr") == 0) {
+    return tr(argc, argv);
+  } else if (strcmp(cmd, "sort") == 0) {
+    return sort(argc, argv);
+  } else if (strcmp(cmd, "uniq") == 0) {
+    return uniq(argc, argv);
+  } else if (strcmp(cmd, "uptime") == 0) {
+    return uptime(argc, argv);
+  } else if (strcmp(cmd, "ps") == 0) {
+    return ps(argc, argv);
+  } else if (strcmp(cmd, "kill") == 0) {
+    return kill_process(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -1089,7 +1386,13 @@ int main(int argc, char *argv[]) {
            "broken)\n"
            "vmstat:   Report virtual memory statistics (output broken)\n"
            "cut:      exclude sections of lines in files and print to stdout\n"
-           "grep:     print lines that match the pattern in files\n",
+           "grep:     Print lines that match the pattern in files\n"
+           "tr:       Translate characters\n"
+           "sort:     Sort lines of text\n"
+           "uniq:     Report or omit duplicate lines\n"
+           "uptime:   Display how long the system has been running\n"
+           "ps:       Print current running processes snapshot\n"
+           "kill:     Send a signal to a process\n",
            VERSION);
     return 1;
   }

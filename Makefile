@@ -2,7 +2,8 @@ CC=gcc
 CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false ls echo init rm rmdir\
-			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut grep
+			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr \
+			sort uniq uptime ps kill
 
 VERSION=v0.1.1
 
@@ -26,8 +27,14 @@ strip: minibox
 	$@ -vs $^
 
 clean:
-	rm -rf *.o minibox minibox-${VERSION} ${PROGS}
+	rm -rf *.o minibox minibox-${VERSION} ${PROGS} _install
 
+install: minibox
+	@mkdir -p _install
+	@cp minibox _install/
+	for f in ${PROGS}; do \
+		ln -sf minibox _install/$$f; \
+	done
 
 dist:
 	tar czvf ../minibox-${VERSION}.tar.gz --exclude='.git' \

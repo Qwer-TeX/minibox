@@ -43,6 +43,12 @@ w
 vmstat
 cut
 grep
+tr
+sort
+uniq
+uptime
+ps
+kill
 
 # Images
 MINIBOX.png
