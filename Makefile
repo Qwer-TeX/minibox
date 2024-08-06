@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false ls echo init rm rmdir\
-			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut
+			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut grep
 
 VERSION=v0.1.1
 

@@ -42,6 +42,7 @@ hexdump
 w
 vmstat
 cut
+grep
 
 # Images
 MINIBOX.png
