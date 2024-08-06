@@ -804,6 +804,7 @@ int vmstat() {
   return 0;
 }
 
+/* cut program */
 int cut(int argc, char *argv[]) {
   char delimiter = '\t';  // Default delimiter (tab)
   char *field_str = NULL; // Field string
@@ -940,6 +941,33 @@ int cut(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
+/* grep program */
+int grep(int argc, char *argv[]) {
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s <pattern> <file>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  const char *pattern = argv[1];
+  const char *filename = argv[2];
+  FILE *file = fopen(filename, "r");
+
+  if (!file) {
+    perror("Error opening file");
+    return EXIT_FAILURE;
+  }
+
+  char line[1024]; // Buffer to store each line read from the file
+  while (fgets(line, sizeof(line), file)) {
+    if (strstr(line, pattern)) { // Check if the pattern is in the current line
+      printf("%s", line);        // Print the matching line
+    }
+  }
+
+  fclose(file);
+  return EXIT_SUCCESS;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
   if (argc < 1) {
@@ -1021,6 +1049,8 @@ int main(int argc, char *argv[]) {
     return vmstat();
   } else if (strcmp(cmd, "cut") == 0) {
     return cut(argc, argv);
+  } else if (strcmp(cmd, "grep") == 0) {
+    return grep(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -1058,7 +1088,8 @@ int main(int argc, char *argv[]) {
            "w:        Display info about current users on machine (output "
            "broken)\n"
            "vmstat:   Report virtual memory statistics (output broken)\n"
-           "cut:      exclude sections of lines in files and print to stdout\n",
+           "cut:      exclude sections of lines in files and print to stdout\n"
+           "grep:     print lines that match the pattern in files\n",
            VERSION);
     return 1;
   }
