@@ -1,7 +1,8 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyleft (C) 2024-2024 Robert Johnson <mitnew842 AT gmail dot com>
+ * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>. 
+ * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  * minibox-shell.c is the main shell source with all shell builtins.

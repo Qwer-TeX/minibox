@@ -1,7 +1,8 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyleft (C) 2024-2024 Robert Johnson <mitnew842 AT gmail dot com>
+ * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>. 
+ * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
@@ -52,6 +53,36 @@ int compare_entries(const void *a, const void *b) {
 // Comparison function for qsort
 int compare_lines(const void *a, const void *b) {
   return strcmp(*(const char **)a, *(const char **)b);
+}
+
+// Function to convert signal name to signal number
+int signal_name_to_number(const char *name) {
+  if (name == NULL)
+    return -1;
+
+  // List of known signals
+  static const struct {
+    const char *name;
+    int number;
+  } signals[] = {
+      {"SIGHUP", SIGHUP},       {"SIGINT", SIGINT},       {"SIGQUIT", SIGQUIT},
+      {"SIGILL", SIGILL},       {"SIGTRAP", SIGTRAP},     {"SIGABRT", SIGABRT},
+      {"SIGBUS", SIGBUS},       {"SIGFPE", SIGFPE},       {"SIGKILL", SIGKILL},
+      {"SIGUSR1", SIGUSR1},     {"SIGSEGV", SIGSEGV},     {"SIGUSR2", SIGUSR2},
+      {"SIGPIPE", SIGPIPE},     {"SIGALRM", SIGALRM},     {"SIGTERM", SIGTERM},
+      {"SIGSTKFLT", SIGSTKFLT}, {"SIGCHLD", SIGCHLD},     {"SIGCONT", SIGCONT},
+      {"SIGSTOP", SIGSTOP},     {"SIGTSTP", SIGTSTP},     {"SIGTTIN", SIGTTIN},
+      {"SIGTTOU", SIGTTOU},     {"SIGURG", SIGURG},       {"SIGXCPU", SIGXCPU},
+      {"SIGXFSZ", SIGXFSZ},     {"SIGVTALRM", SIGVTALRM}, {"SIGPROF", SIGPROF},
+      {"SIGWINCH", SIGWINCH},   {"SIGIO", SIGIO},         {"SIGPWR", SIGPWR},
+      {"SIGSYS", SIGSYS}};
+
+  for (size_t i = 0; i < sizeof(signals) / sizeof(signals[0]); i++) {
+    if (strcmp(name, signals[i].name) == 0) {
+      return signals[i].number;
+    }
+  }
+  return -1; // Signal name not found
 }
 
 /* wc program */
@@ -328,11 +359,6 @@ int echo(int argc, char *argv[]) {
 /* init program */
 /* Basic implementation of init - not production level yet */
 int init(void) {
-  printf(
-      "MiniBox %s init: Starter(bootloader) ignites the linux Engine(kernel)\n",
-      VERSION);
-  printf("MiniBox %s init: Engine(kernel) passes control to driver(init)\n",
-         VERSION);
   printf("MiniBox %s init: Running init process\n", VERSION);
   printf("MiniBox %s init: World Initialized -- Hello, World!\n", VERSION);
 
@@ -667,6 +693,7 @@ int xxd(int argc, char *argv[]) {
 }
 
 /* od program: octal dump */
+/* FIXME: First output column should be in octal not hexadecimal */
 int od(int argc, char *argv[]) {
   FILE *fp;
   unsigned char buffer[16];
@@ -1160,40 +1187,6 @@ int ps(int argc, char *argv[]) {
 
 /* kill program */
 int kill_process(int argc, char *argv[]) {
-  // Local function to convert signal name to signal number
-  int signal_name_to_number(const char *name) {
-    if (name == NULL)
-      return -1;
-
-    // List of known signals
-    static const struct {
-      const char *name;
-      int number;
-    } signals[] = {{"SIGHUP", SIGHUP},   {"SIGINT", SIGINT},
-                   {"SIGQUIT", SIGQUIT}, {"SIGILL", SIGILL},
-                   {"SIGTRAP", SIGTRAP}, {"SIGABRT", SIGABRT},
-                   {"SIGBUS", SIGBUS},   {"SIGFPE", SIGFPE},
-                   {"SIGKILL", SIGKILL}, {"SIGUSR1", SIGUSR1},
-                   {"SIGSEGV", SIGSEGV}, {"SIGUSR2", SIGUSR2},
-                   {"SIGPIPE", SIGPIPE}, {"SIGALRM", SIGALRM},
-                   {"SIGTERM", SIGTERM}, {"SIGSTKFLT", SIGSTKFLT},
-                   {"SIGCHLD", SIGCHLD}, {"SIGCONT", SIGCONT},
-                   {"SIGSTOP", SIGSTOP}, {"SIGTSTP", SIGTSTP},
-                   {"SIGTTIN", SIGTTIN}, {"SIGTTOU", SIGTTOU},
-                   {"SIGURG", SIGURG},   {"SIGXCPU", SIGXCPU},
-                   {"SIGXFSZ", SIGXFSZ}, {"SIGVTALRM", SIGVTALRM},
-                   {"SIGPROF", SIGPROF}, {"SIGWINCH", SIGWINCH},
-                   {"SIGIO", SIGIO},     {"SIGPWR", SIGPWR},
-                   {"SIGSYS", SIGSYS}};
-
-    for (size_t i = 0; i < sizeof(signals) / sizeof(signals[0]); i++) {
-      if (strcmp(name, signals[i].name) == 0) {
-        return signals[i].number;
-      }
-    }
-    return -1; // Signal name not found
-  }
-
   if (argc < 2) {
     fprintf(stderr, "Usage: %s [-signal] PID...\n", argv[0]);
     return EXIT_FAILURE;
@@ -1378,14 +1371,14 @@ int main(int argc, char *argv[]) {
            "mkdir:    Create directories\n"
            "mknod:    Create special files\n"
            "hostname: Print hostname\n"
-           "free:     Display memory stats (shared broken)\n"
+           "free:     Display memory stats (shared & used probably broken)\n"
            "xxd:      Make a hex dump\n"
-           "od:       dump files in octal format\n"
+           "od:       Dump files in octal format\n"
            "hexdump:  Display a file in hexadecimal\n"
            "w:        Display info about current users on machine (output "
            "broken)\n"
            "vmstat:   Report virtual memory statistics (output broken)\n"
-           "cut:      exclude sections of lines in files and print to stdout\n"
+           "cut:      Exclude sections of lines in files and print to stdout\n"
            "grep:     Print lines that match the pattern in files\n"
            "tr:       Translate characters\n"
            "sort:     Sort lines of text\n"

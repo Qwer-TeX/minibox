@@ -53,3 +53,6 @@ kill
 # Images
 MINIBOX.png
 MINIBOX-wTitle.png
+
+# Vim-type editor tags
+tags

@@ -29,12 +29,15 @@ strip: minibox
 clean:
 	rm -rf *.o minibox minibox-${VERSION} ${PROGS} _install
 
-install: minibox
+install: minibox strip
 	@mkdir -p _install
 	@cp minibox _install/
 	for f in ${PROGS}; do \
 		ln -sf minibox _install/$$f; \
 	done
+
+tags:
+	ctags minibox.c
 
 dist:
 	tar czvf ../minibox-${VERSION}.tar.gz --exclude='.git' \
