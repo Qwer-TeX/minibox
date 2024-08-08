@@ -3,7 +3,7 @@ CFLAGS= -g
 LDFLAGS=
 PROGS=wc cat cp sync yes update sleep whoami true false ls echo init rm rmdir\
 			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr \
-			sort uniq uptime ps kill
+			sort uniq uptime ps kill tty link unlink nohup dirname basename
 
 VERSION=v0.1.1
 

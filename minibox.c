@@ -1,7 +1,7 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>. 
+ * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>.
  * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
@@ -1246,6 +1246,142 @@ int kill_process(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
+/* tty program */
+int tty(void) {
+  char *tty_path;
+  int fd;
+
+  // Get the path of the terminal device
+  tty_path = ttyname(STDIN_FILENO);
+  if (!tty_path) {
+    fprintf(stderr, "Not a terminal.\n");
+    return 1;
+  }
+
+  // Attempt to open the terminal device to ensure it's valid
+  fd = open(tty_path, O_RDONLY);
+  if (fd < 0) {
+    perror("tty");
+    return 1;
+  }
+
+  // Print the terminal path
+  printf("%s\n", tty_path);
+
+  // Close the file descriptor
+  close(fd);
+
+  return 0;
+}
+
+/* link program */
+int create_link(int argc, char *argv[]) {
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s FILE1 FILE2\n", argv[0]);
+    return 1;
+  }
+
+  if (link(argv[1], argv[2]) != 0) {
+    perror("link");
+    return 1;
+  }
+  return 0;
+}
+
+/* unlink program */
+int remove_link(int argc, char *argv[]) {
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
+    return 1;
+  }
+
+  if (unlink(argv[1]) != 0) {
+    perror("unlink");
+    return 1;
+  }
+  return 0;
+}
+
+/* nohup program */
+int nohup(int argc, char *argv[]) {
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s <command> [arguments...]\n", argv[0]);
+    return 1;
+  }
+
+  // Fork a child process
+  pid_t pid = fork();
+  if (pid < 0) {
+    perror("fork");
+    return 1;
+  }
+
+  if (pid == 0) {
+    // In the child process
+
+    // Ignore SIGHUP signal
+    signal(SIGHUP, SIG_IGN);
+
+    // Redirect stdout and stderr to a file
+    freopen("nohup.out", "a", stdout);
+    freopen("nohup.out", "a", stderr);
+
+    // Execute the command
+    execvp(argv[1], &argv[1]);
+
+    // If execvp fails
+    perror("execvp");
+    exit(1);
+  }
+
+  // In the parent process
+  // Wait for the child process to finish
+  int status;
+  waitpid(pid, &status, 0);
+
+  return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+}
+
+/* dirname program */
+int print_dirname(int argc, char *argv[]) {
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <path>\n", argv[0]);
+    return 1;
+  }
+
+  char *path_copy = strdup(argv[1]);
+  if (!path_copy) {
+    perror("strdup");
+    return 1;
+  }
+
+  char *dir = dirname(path_copy);
+  printf("%s\n", dir);
+
+  free(path_copy);
+  return 0;
+}
+
+/* basename program */
+int print_basename(int argc, char *argv[]) {
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <path>\n", argv[0]);
+    return 1;
+  }
+
+  char *path_copy = strdup(argv[1]);
+  if (!path_copy) {
+    perror("strdup");
+    return 1;
+  }
+
+  char *base = basename(path_copy);
+  printf("%s\n", base);
+
+  free(path_copy);
+  return 0;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
   if (argc < 1) {
@@ -1341,6 +1477,18 @@ int main(int argc, char *argv[]) {
     return ps(argc, argv);
   } else if (strcmp(cmd, "kill") == 0) {
     return kill_process(argc, argv);
+  } else if (strcmp(cmd, "tty") == 0) {
+    return tty();
+  } else if (strcmp(cmd, "link") == 0) {
+    return create_link(argc, argv);
+  } else if (strcmp(cmd, "unlink") == 0) {
+    return remove_link(argc, argv);
+  } else if (strcmp(cmd, "nohup") == 0) {
+    return nohup(argc, argv);
+  } else if (strcmp(cmd, "dirname") == 0) {
+    return print_dirname(argc, argv);
+  } else if (strcmp(cmd, "basename") == 0) {
+    return print_basename(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -1385,7 +1533,13 @@ int main(int argc, char *argv[]) {
            "uniq:     Report or omit duplicate lines\n"
            "uptime:   Display how long the system has been running\n"
            "ps:       Print current running processes snapshot\n"
-           "kill:     Send a signal to a process\n",
+           "kill:     Send a signal to a process\n"
+           "tty:      Print the terminal connected to stdin\n"
+           "link:     Call link() to create a link to a file\n"
+           "unlink:   Call unlink() to remove a link to a file\n"
+           "nohup:    Run command immune to SIGHUP and all output to file\n"
+           "dirname:  Strip last component from filename\n"
+           "basename: Strip directory and suffix from filenames\n",
            VERSION);
     return 1;
   }

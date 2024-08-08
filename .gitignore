@@ -49,6 +49,12 @@ uniq
 uptime
 ps
 kill
+tty
+link
+unlink
+nohup
+dirname
+basename
 
 # Images
 MINIBOX.png

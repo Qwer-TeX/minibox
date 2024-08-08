@@ -1,4 +1,4 @@
-7/25/2024 V0.1.1		 - patch level 394
+8/8/2024  V0.1.1		- patch level 481
 	* Updated LICENSE headers in sources
 	* Added mknod, and hostname commands to set of utilities
 	* Added free
@@ -6,6 +6,9 @@
 	* Added w and vmstat
 	* Added cut and grep
 	* Added tr, sort, uniq, uptime ps, and kill to set of utilities
+	* BugFix sources
+	* Added link and unlink
+	* Added nohup, dirname, and basename
 
 7/17/2024 V0.1.0		 - patch level 241
 	* Merged example3 to the Minibox SHell
