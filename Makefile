@@ -17,7 +17,7 @@ OBJS = $(SRCS:.c=.o)
 
 VERSION=v0.2.2
 
-all: $(EXEC) strip links
+all: $(EXEC) strip
 
 $(EXEC): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
@@ -42,7 +42,7 @@ links:
 		ln -s minibox $$i > /dev/null 2>&1; done
 
 clean:
-	rm -rf $(EXEC) $(OBJS) tags install_dir ${PROGS}
+	rm -rf minibox $(EXEC) $(OBJS) tags install_dir ${PROGS}
 
 .PHONY: all strip tags dist links install clean
 

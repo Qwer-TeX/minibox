@@ -20,11 +20,12 @@
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
-#include "minibox.h"
+#ifndef UTILS_H
+#define UTILS_H
 
-/* sync program */
-/* commit filesystem caches to disk - sync(2) */
-int _sync(void) {
-  sync();
-  return 0;
-}
+// Function declarations
+int compare_entries(const void *a, const void *b);
+int compare_lines(const void *a, const void *b);
+int signal_name_to_number(const char *name);
+
+#endif // !UTILS_H
