@@ -1,7 +1,17 @@
 #include "minibox.h"
 
+int check_if_minibox(char *argv0) {
+  return strcmp(basename(argv0), "minibox") == 0;
+}
+
 /* Update main function */
 int main(int argc, char *argv[]) {
+  int is_minibox = check_if_minibox(argv[0]);
+
+  if (is_minibox && argc > 1) {
+    argc--; // Decrease the count to exclude the program name
+    argv++; // Move argv to exclude the program name
+  }
   if (argc < 1) {
     fprintf(stderr, "No command specified\n");
     return 1;
