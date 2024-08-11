@@ -816,7 +816,7 @@ int w(void) {
 /* vmstat program */
 /* report virtual memory statistics */
 /* FIXME: Outputs info not in their respective columns */
-int vmstat() {
+int vmstat(void) {
   struct sysinfo info;
 
   if (sysinfo(&info) != 0) {
