@@ -1,44 +1,48 @@
-CC=gcc
-CFLAGS= -g
-LDFLAGS=
-PROGS=wc cat cp sync yes update sleep whoami true false ls echo init rm rmdir\
-			mv cmp mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr \
-			sort uniq uptime ps kill tty link unlink nohup dirname basename
+CC = gcc
+CFLAGS = -Oz -Wall -Wextra -Iinclude
+LDFLAGS =
+EXEC = minibox_unstripped
 
-VERSION=v0.1.1
+PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
+				rmdir mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr sort uniq \
+				uptime ps kill tty link unlink nohup dirname basename
 
-all: minibox strip
+SRCS = src/minibox.c src/wc.c src/cpcat.c src/sync.c src/yes.c src/update.c src/sleep.c \
+			 src/whoami.c src/true.c src/false.c src/ls.c src/echo.c src/init.c src/cmp.c \
+			 src/rm.c src/rmdir.c src/mkdir.c src/mknod.c src/hostname.c src/free.c src/xxd.c \
+       src/od.c src/hexdump.c src/w.c src/vmstat.c src/cut.c src/grep.c src/tr.c \
+			 src/sort.c src/uniq.c src/uptime.c src/ps.c src/kill.c src/tty.c src/link.c \
+			 src/unlink.c src/nohup.c src/dirname.c src/basename.c
+OBJS = $(SRCS:.c=.o)
 
+VERSION=v0.2.2
 
-minibox: minibox.o links
-	${CC} ${LDFLAGS} ${CFLAGS} -o minibox minibox.o
-	ls -l $@
-	size $@
+all: $(EXEC) strip links
 
+$(EXEC): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
-minibox.o: minibox.c clean
-	${CC} ${CFLAGS} -c minibox.c -o minibox.o
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-links:
-	for f in ${PROGS}; do \
-		ln -s minibox $$f > /dev/null 2>&1; done
-
-strip: minibox
-	$@ -vs $^
-
-clean:
-	rm -rf *.o minibox minibox-${VERSION} ${PROGS} _install
-
-install: minibox strip
-	@mkdir -p _install
-	@cp minibox _install/
-	for f in ${PROGS}; do \
-		ln -sf minibox _install/$$f; \
-	done
+strip: $(EXEC)
+	$@ -s -R .note -R .comment $^ -o minibox
+	ls -l minibox
+	size minibox
 
 tags:
-	ctags minibox.c
+	ls src/*.c | xargs ctags -a
 
 dist:
 	tar czvf ../minibox-${VERSION}.tar.gz --exclude='.git' \
 		--exclude='.gitignore' ../minibox
+
+links:
+	@for i in ${PROGS}; do \
+		ln -s minibox $$i > /dev/null 2>&1; done
+
+clean:
+	rm -rf $(EXEC) $(OBJS) tags install_dir ${PROGS}
+
+.PHONY: all strip tags dist links install clean
+

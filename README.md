@@ -33,6 +33,3 @@ NOTE:
   it one of the reasons I made the code to this project novice understandable ;).
 
   I'd be surprised if I found MiniBox in a embedded system.
-
-  Split source for this project is a no no right now since I saw a small size increase when 
-  compiling with GCC. Others like LLVM/Clang, TCC, and PCC could do the same, I haven't tested.
