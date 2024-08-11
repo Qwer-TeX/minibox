@@ -1,6 +1,7 @@
 # Object files
 *.o
 minibox
+minibox_unstripped
 
 # Libraries
 *.a
