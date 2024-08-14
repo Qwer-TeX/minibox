@@ -10,6 +10,3 @@ busybox or toybox replacement, though this project lacks (many) options (-l, -v,
 (without options) is compatible with other commands and not for some.
 
 This project is simple and self-explanitory enough that you can implement your own command set!
-
-Use `Make -j` not `-j2` or `j16` since `-j` is the fastest I've seen with this project and doesn't limit
-how many jobs are made.
