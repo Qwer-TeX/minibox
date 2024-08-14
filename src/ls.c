@@ -24,7 +24,7 @@
 #include "utils.h"
 
 /* Function to compare two directory entries for qsort */
-int compare_entries(const void *a, const void *b) {
+extern inline int compare_entries(const void *a, const void *b) {
   return strcmp(*(const char **)a, *(const char **)b);
 }
 

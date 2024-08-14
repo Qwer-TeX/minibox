@@ -24,7 +24,7 @@
 #include "utils.h"
 
 // Comparison function for qsort
-int compare_lines(const void *a, const void *b) {
+extern inline int compare_lines(const void *a, const void *b) {
   return strcmp(*(const char **)a, *(const char **)b);
 }
 
