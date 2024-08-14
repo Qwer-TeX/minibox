@@ -21,8 +21,10 @@
  */
 
 #include "minibox.h"
+#include "utils.h"
 
-int check_if_minibox(char *argv0) {
+// Function to check if invoked as minibox (inline so no function overhead)
+extern inline int check_if_minibox(char *argv0) {
   return strcmp(basename(argv0), "minibox") == 0;
 }
 

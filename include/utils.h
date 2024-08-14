@@ -27,5 +27,6 @@
 int compare_entries(const void *a, const void *b);
 int compare_lines(const void *a, const void *b);
 int signal_name_to_number(const char *name);
+int check_if_minibox(char *argv0);
 
 #endif // !UTILS_H
