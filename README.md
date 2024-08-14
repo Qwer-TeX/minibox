@@ -1,5 +1,5 @@
 # MiniBox
-A ultra small and simple micro-embedded Linux command set
+Ultra small and simple micro-embedded Linux command set
 
 MiniBox - 
 
