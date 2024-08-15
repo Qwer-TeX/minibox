@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
   } else if (strcmp(cmd, "kill") == 0) {
     return kill_process(argc, argv);
   } else if (strcmp(cmd, "tty") == 0) {
-    return tty();
+    return tty(argc, argv);
   } else if (strcmp(cmd, "link") == 0) {
     return create_link(argc, argv);
   } else if (strcmp(cmd, "unlink") == 0) {

@@ -152,7 +152,7 @@ int ps(void);
 int kill_process(int argc, char *argv[]);
 
 /* tty program */
-int tty(void);
+int tty(int argc, char *argv[]);
 
 /* link program */
 int create_link(int argc, char *argv[]);
