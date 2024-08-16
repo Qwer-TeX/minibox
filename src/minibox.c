@@ -22,9 +22,10 @@
 
 #include "minibox.h"
 #include "utils.h"
+#include <string.h>
 
 // Function to check if invoked as minibox (inline so no function overhead)
-extern inline int check_if_minibox(char *argv0) {
+int check_if_minibox(char *argv0) {
   return strcmp(basename(argv0), "minibox") == 0;
 }
 
@@ -141,6 +142,8 @@ int main(int argc, char *argv[]) {
     return print_dirname(argc, argv);
   } else if (strcmp(cmd, "basename") == 0) {
     return print_basename(argc, argv);
+  } else if (strcmp(cmd, "cal") == 0) {
+    return cal(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -191,7 +194,8 @@ int main(int argc, char *argv[]) {
            "unlink:   Call unlink() to remove a link to a file\n"
            "nohup:    Run command immune to SIGHUP and all output to file\n"
            "dirname:  Strip last component from filename\n"
-           "basename: Strip directory and suffix from filenames\n",
+           "basename: Strip directory and suffix from filenames\n"
+           "cal:      Display calendar\n",
            VERSION);
     return 1;
   }

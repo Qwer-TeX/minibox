@@ -26,6 +26,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <grp.h>
 #include <libgen.h>
 #include <linux/limits.h>
 #include <linux/stat.h>
@@ -168,5 +169,8 @@ int print_dirname(int argc, char *argv[]);
 
 /* basename program */
 int print_basename(int argc, char *argv[]);
+
+/* cal program */
+int cal(int argc, char *argv[]);
 
 #endif // !COMMANDS_H

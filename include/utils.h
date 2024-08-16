@@ -22,11 +22,20 @@
 
 #ifndef UTILS_H
 #define UTILS_H
+#include "minibox.h"
 
 // Function declarations
+// ls
 int compare_entries(const void *a, const void *b);
+void print_size(off_t size, int human_readable);
+void print_long_format(const char *path, const char *filename,
+                       int human_readable);
+
+// sort
 int compare_lines(const void *a, const void *b);
+// kill
 int signal_name_to_number(const char *name);
+// main
 int check_if_minibox(char *argv0);
 
 #endif // !UTILS_H
