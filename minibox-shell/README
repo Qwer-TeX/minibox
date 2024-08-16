@@ -1,29 +1,9 @@
-README:     This file.
+This is where the shell source is stored. There are examples in this directory to 
+help make understanding how the shell works easier. The real shell minibox-shell.c
+is not as advance as busybox ash, dash, or bash. If you expect a shell with all 
+features, don't go which this one. 
 
-example.c:  The original barebones shell without variable expansion, cursor navigation, etc.
-
-example2.c: Imporved version of the barebones shell but with the help of libreadline which
-            makes it now support variable expansion, cursor navigation, and history management.
-            though it still doesn't support redirection. Is linking a small shell with a huge
-            bloated libreadline make any sense? It looks like to me its some black magic dealing
-            with terminals. Approx 30K lines of code for libreadline and also 20K for 
-            libeditline, are you kidding me, its the most bloated libraries I've ever seen in my
-            life. Does it even make sense to link to those libraries for your small program under
-            16k?
-
-example3:   The lightest we've gotten with emacs-like keybindings, but without variable 
-            expansion, etc using liblinenoise this time which is the lightest.
-
-linenoise:        A simple line editing library that aims to the idea that a line editing library
-                  shouldn't excede 20,000 lines of code (aka code bloat). This would be used from 
-                  here on. You can find it by searching linenoise in the github search. It 
-                  features almost anything you would want. Just to name a few, tab completion, 
-                  hints, emacs keybindings, history navigation, history save/load to/from disk. 
-                  Comes to around 35K when compiled and linked, a massive achievement over other 
-                  libraries when including all expected features. But we could go even smaller
-                  since 36K is 2.25x the original size of 16K.
-
-NOTE:       Making a real shell involves more just than variable expansion, history management, 
-            and cursor management, etc. It also needs to be able to run shell scripts. These 
-            examples don't implement if, else, case, until, for, set, shopt, echo, although
-            it includes export and cd. Each file has its own compilation command.
+If you expect a simple, plain shell without the shell programming functions, 
+advanced variable expansion, brace expansion, and shell arithmetic, then go with this
+but do remember that this is still beta and most importantly, if you see anything broken,
+TELL ME, create a issue in my repository and we'll go from there.
