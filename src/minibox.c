@@ -143,6 +143,26 @@ int main(int argc, char *argv[]) {
     return print_basename(argc, argv);
   } else if (strcmp(cmd, "cal") == 0) {
     return cal(argc, argv);
+  } else if (strcmp(cmd, "clear") == 0) {
+    return clear(argc, argv);
+  } else if (strcmp(cmd, "env") == 0) {
+    return env(argc, argv);
+  } else if (strcmp(cmd, "expand") == 0) {
+    return expand(argc, argv);
+  } else if (strcmp(cmd, "unexpand") == 0) {
+    return unexpand(argc, argv);
+  } else if (strcmp(cmd, "fold") == 0) {
+    return fold(argc, argv);
+  } else if (strcmp(cmd, "factor") == 0) {
+    return factor(argc, argv);
+  } else if (strcmp(cmd, "touch") == 0) {
+    return touch(argc, argv);
+  } else if (strcmp(cmd, "head") == 0) {
+    return head(argc, argv);
+  } else if (strcmp(cmd, "tail") == 0) {
+    return tail(argc, argv);
+  } else if (strcmp(cmd, "paste") == 0) {
+    return paste(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -194,7 +214,17 @@ int main(int argc, char *argv[]) {
            "nohup:    Run command immune to SIGHUP and all output to file\n"
            "dirname:  Strip last component from filename\n"
            "basename: Strip directory and suffix from filenames\n"
-           "cal:      Display calendar\n",
+           "cal:      Display calendar\n"
+           "clear:    Clear the terminal screen\n"
+           "env:      Run a program in a custom environment\n"
+           "expand:   Convert tabs to spaces\n"
+           "unexpand: Convert spaces to tabs\n"
+           "fold:     Wrap lines in input files to stdout\n"
+           "factor:   Display prime factors of a number\n"
+           "touch:    Create or change file timestamps\n"
+           "head:     Output the first part of a file\n"
+           "tail:     Output the last part of a file\n"
+           "paste:    Merge lines from files\n",
            VERSION);
     return 1;
   }

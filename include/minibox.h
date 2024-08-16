@@ -30,6 +30,7 @@
 #include <linux/limits.h>
 #include <linux/stat.h>
 #include <pwd.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,10 +41,11 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <utime.h>
 #include <utmp.h>
 
 /* minibox specific defines */
-#define VERSION "0.2.2"
+#define VERSION "0.3.1"
 
 // Function to compare two directory entries for qsort
 int compare_entries(const void *a, const void *b);
@@ -171,5 +173,35 @@ int print_basename(int argc, char *argv[]);
 
 /* cal program */
 int cal(int argc, char *argv[]);
+
+/* clear program */
+int clear(int argc, char *argv[]);
+
+/* env program */
+int env(int argc, char *argv[]);
+
+/* expand program */
+int expand(int argc, char *argv[]);
+
+/* unexpand program */
+int unexpand(int argc, char *argv[]);
+
+/* fold program */
+int fold(int argc, char *argv[]);
+
+/* factor program */
+int factor(int argc, char *argv[]);
+
+/* touch program */
+int touch(int argc, char *argv[]);
+
+/* head program */
+int head(int argc, char *argv[]);
+
+/* tail program */
+int tail(int argc, char *argv[]);
+
+/* paste program */
+int paste(int argc, char *argv[]);
 
 #endif // !COMMANDS_H

@@ -57,6 +57,14 @@ nohup
 dirname
 basename
 cal
+clear
+env
+expand
+unexpand
+fold
+factor
+touch
+paste
 
 # Images
 MINIBOX.png
