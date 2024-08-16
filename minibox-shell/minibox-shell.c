@@ -1,7 +1,7 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>. 
+ * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>.
  * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
@@ -61,20 +61,87 @@
 #define MAX_TOKENS 64
 #define TOKEN_DELIMITERS " \t\r\n\a"
 
+// Function to evaluate arithmetic expressions in $(())
+int evaluate_arithmetic_expression(const char *expression) {
+  int result = 0;
+  sscanf(expression, "%d", &result);
+  return result;
+}
+
 // Function to expand variables prefixed with '$'
 char *expand_variable(char *token) {
+  char *expanded;
   if (token[0] == '$') {
-    char *var_name = token + 1; // Skip the '$'
-    char *value = getenv(var_name);
-    if (value != NULL) {
-      return strdup(value); // Duplicate the value since getenv returns a
-                            // pointer to an internal buffer
+    if (token[1] == '{') {
+      // Handle ${VAR} syntax
+      char *end_brace = strchr(token, '}');
+      if (end_brace) {
+        char var_name[64];
+        strncpy(var_name, token + 2, end_brace - token - 2);
+        var_name[end_brace - token - 2] = '\0';
+        char *value = getenv(var_name);
+        if (value) {
+          expanded = malloc(strlen(value) + 1);
+          if (!expanded) {
+            fprintf(stderr, "allocation error\n");
+            exit(EXIT_FAILURE);
+          }
+          strcpy(expanded, value);
+          return expanded;
+        } else {
+          fprintf(stderr, "Variable '%s' not set\n", var_name);
+          return NULL;
+        }
+      } else {
+        fprintf(stderr, "Unmatched '{' in variable expansion\n");
+        return NULL;
+      }
+    } else if (token[1] == '(' && token[2] == '(') {
+      // Handle $((...)) syntax
+      char *end_paren = strstr(token, "))");
+      if (end_paren) {
+        char expression[64];
+        strncpy(expression, token + 3, end_paren - token - 3);
+        expression[end_paren - token - 3] = '\0';
+        int result = evaluate_arithmetic_expression(expression);
+        char result_str[16];
+        snprintf(result_str, sizeof(result_str), "%d", result);
+        expanded = malloc(strlen(result_str) + 1);
+        if (!expanded) {
+          fprintf(stderr, "allocation error\n");
+          exit(EXIT_FAILURE);
+        }
+        strcpy(expanded, result_str);
+        return expanded;
+      } else {
+        fprintf(stderr, "Unmatched '((' in arithmetic expansion\n");
+        return NULL;
+      }
     } else {
-      fprintf(stderr, "Variable '%s' not set\n", var_name);
-      return NULL;
+      // Handle $VAR syntax
+      char *var_name = token + 1;
+      char *value = getenv(var_name);
+      if (value != NULL) {
+        expanded = malloc(strlen(value) + 1);
+        if (!expanded) {
+          fprintf(stderr, "allocation error\n");
+          exit(EXIT_FAILURE);
+        }
+        strcpy(expanded, value);
+        return expanded;
+      } else {
+        fprintf(stderr, "Variable '%s' not set\n", var_name);
+        return NULL;
+      }
     }
   } else {
-    return strdup(token); // No expansion needed
+    expanded = malloc(strlen(token) + 1);
+    if (!expanded) {
+      fprintf(stderr, "allocation error\n");
+      exit(EXIT_FAILURE);
+    }
+    strcpy(expanded, token);
+    return expanded;
   }
 }
 
@@ -132,10 +199,14 @@ int shell_export(char **args) {
   if (args[1] == NULL) {
     fprintf(stderr, "expected argument to \"export\"\n");
   } else {
-    char *var = strtok(args[1], "=");
-    char *val = strtok(NULL, "=");
-    if (val) {
-      setenv(var, val, 1);
+    char *eq_sign = strchr(args[1], '=');
+    if (eq_sign) {
+      *eq_sign = '\0';
+      char *var = args[1];
+      char *val = eq_sign + 1;
+      if (setenv(var, val, 1) != 0) {
+        perror("export");
+      }
     } else {
       fprintf(stderr, "export: invalid format\n");
     }
@@ -170,16 +241,11 @@ int shell_echo(char **args) {
 }
 
 // List of built-in commands
-char *builtin_str[] = {
-    "cd", "exit", "export", "history",
-    "echo" // Added echo to the list of built-in commands
-};
+char *builtin_str[] = {"cd", "exit", "export", "history", "echo"};
 
 // Corresponding functions for built-in commands
-int (*builtin_func[])(char **) = {
-    &shell_cd, &shell_exit, &shell_export, &shell_history,
-    &shell_echo // Added shell_echo function pointer
-};
+int (*builtin_func[])(char **) = {&shell_cd, &shell_exit, &shell_export,
+                                  &shell_history, &shell_echo};
 
 // Function to execute built-in commands
 int execute_builtin(char **args) {
@@ -189,6 +255,40 @@ int execute_builtin(char **args) {
     }
   }
   return -1; // Not a built-in command
+}
+
+// Function to handle variable assignment
+int handle_variable_assignment(char *arg) {
+  char *eq_sign = strchr(arg, '=');
+  if (eq_sign) {
+    *eq_sign = '\0';
+    char *var = arg;
+    char *val = eq_sign + 1;
+    if (setenv(var, val, 1) != 0) {
+      perror("setenv");
+    }
+    return 1; // Variable assignment handled
+  }
+  return 0; // Not a variable assignment
+}
+
+// Function to execute a command
+int execute_command(char **args) {
+  if (args[0] == NULL) {
+    // An empty command was entered
+    return 1;
+  }
+
+  if (handle_variable_assignment(args[0])) {
+    return 1; // Handled as variable assignment
+  }
+
+  int builtin_status = execute_builtin(args);
+  if (builtin_status != -1) {
+    return builtin_status;
+  }
+
+  return launch_program(args);
 }
 
 // Function to launch a program
@@ -214,21 +314,6 @@ int launch_program(char **args) {
   }
 
   return 1;
-}
-
-// Function to execute a command
-int execute_command(char **args) {
-  if (args[0] == NULL) {
-    // An empty command was entered
-    return 1;
-  }
-
-  int builtin_status = execute_builtin(args);
-  if (builtin_status != -1) {
-    return builtin_status;
-  }
-
-  return launch_program(args);
 }
 
 // Main loop
