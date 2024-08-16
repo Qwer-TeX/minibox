@@ -5,7 +5,6 @@
  * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
- * minibox-shell.c is the main shell source with all shell builtins.
  *
  * When adding programs or features, please consider if they can be
  * accomplished in a sane way with standard unix tools. If they're
@@ -100,7 +99,7 @@ int ls(int argc, char *argv[]) {
           show_all = 1;
           break;
         default:
-          fprintf(stderr, "Usage: %s [-l] [-h] [-a] [directory]\n", argv[0]);
+          fprintf(stderr, "Usage: %s [-lha] [directory]\n", argv[0]);
           return 1;
         }
       }

@@ -2,7 +2,10 @@
 	* Fully and completely Modulerized the project making it
 	  now more easier to add even more additional utilites -
 		the patchlevel explains it all.
-	* Introduced a bunch of new utilities
+	* Enhanced shell to now support brace expansion, and arithmetic
+		expansion now currently broken.
+	* Added some more commands like cal
+	* Enhanced ls to now support -l, -h, and -a
 
 8/8/2024  V0.1.1		- patch level 481
 	* Updated LICENSE headers in sources

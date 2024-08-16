@@ -26,7 +26,6 @@ $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 strip: $(EXEC)
-	#strip --strip-unneeded --remove-section=.comment --remove-section=.symtab --remove-section=.strtab --strip-debug myfile
 	$@ -s -R .note -R .comment -R .symtab -R.strtab $^ -o minibox
 	ls -l minibox
 	size minibox

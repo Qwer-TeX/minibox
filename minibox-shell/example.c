@@ -1,15 +1,15 @@
 /*
- * A small example of a shell implementation created by Robert Johnson, yes, I had time, but no
- * I didn't have enough time to create it all. At least you've got a ultra minimal shell
- * implementation. I would call it the umsh ( the ummm shell :D ) since like ummm, why doesn't
- * echo $PATH print the path or umm, why doesn't the shell recognize the case builtin, umm, why
- * is export broken, umm, I can't export variables, umm, this shell sucks, etc.
+ * A small example of a shell implementation created by Robert Johnson
+ * I would call it the umsh ( the ummm shell :D ) since like ummm, why doesn't
+ * echo $PATH print the path or umm, why doesn't the shell recognize the case
+ * builtin, umm, why is export broken, umm, I can't export variables, umm, this
+ * shell sucks, etc.
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #define MAX_HISTORY_SIZE 20
 
@@ -37,9 +37,7 @@ void print_history() {
 }
 
 // Function to print the prompt
-void print_prompt() {
-  printf("$ ");
-}
+void print_prompt() { printf("$ "); }
 
 // Function to read a line of input from the user
 char *read_line() {
@@ -75,7 +73,8 @@ char *expand_vars(char *line) {
       char varname[64] = {0};
       int var_len = 0;
 
-      while (*ptr && (*ptr != ' ') && (*ptr != '$') && var_len < sizeof(varname) - 1) {
+      while (*ptr && (*ptr != ' ') && (*ptr != '$') &&
+             var_len < sizeof(varname) - 1) {
         varname[var_len++] = *ptr++;
       }
       varname[var_len] = '\0';
@@ -96,7 +95,7 @@ char *expand_vars(char *line) {
 // Function to split a line into tokens (arguments)
 char **split_line(char *line) {
   int bufsize = 64, position = 0;
-  char **tokens = malloc(bufsize * sizeof(char*));
+  char **tokens = malloc(bufsize * sizeof(char *));
   char *token;
 
   if (!tokens) {
@@ -111,7 +110,7 @@ char **split_line(char *line) {
 
     if (position >= bufsize) {
       bufsize += 64;
-      tokens = realloc(tokens, bufsize * sizeof(char*));
+      tokens = realloc(tokens, bufsize * sizeof(char *));
       if (!tokens) {
         fprintf(stderr, "allocation error\n");
         exit(EXIT_FAILURE);
@@ -125,9 +124,7 @@ char **split_line(char *line) {
 }
 
 // Built-in command: exit
-int shell_exit(char **args) {
-  return 0;
-}
+int shell_exit(char **args) { return 0; }
 
 // Built-in command: cd
 int shell_cd(char **args) {
@@ -164,20 +161,11 @@ int shell_history(char **args) {
 }
 
 // List of built-in commands
-char *builtin_str[] = {
-  "cd",
-  "exit",
-  "export",
-  "history"
-};
+char *builtin_str[] = {"cd", "exit", "export", "history"};
 
 // Corresponding functions for built-in commands
-int (*builtin_func[]) (char **) = {
-  &shell_cd,
-  &shell_exit,
-  &shell_export,
-  &shell_history
-};
+int (*builtin_func[])(char **) = {&shell_cd, &shell_exit, &shell_export,
+                                  &shell_history};
 
 // Function to execute built-in commands
 int execute_builtin(char **args) {
@@ -288,7 +276,7 @@ void shell_loop() {
 int main(int argc, char **argv) {
   // Source the .profile file if it exists
   // Commented out since this feature is currently broken
-  //source_profile();
+  // source_profile();
 
   // Run command loop.
   shell_loop();

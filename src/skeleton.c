@@ -1,7 +1,7 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>.
+ * Copyright (C) 2024 AUTHOR <AUTHOR@MAIL_SERVER.protocol>.
  * All Rights Reserved.
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
@@ -20,23 +20,21 @@
  */
 
 #include "minibox.h"
+#include "utils.h"
 
-/* dirname program */
-int print_dirname(int argc, char *argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <path>\n", argv[0]);
+// Put its definition in utils.h
+void do_this() {
+  printf("This is a template used to code in more utilites for MiniBox\n");
+}
+
+/* program example */
+// Its defintion is in minibox.h
+int skel(int argc, char *argv[]) {
+  puts("My function");
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s [-lsdfv]\n", argv[0]);
     return 1;
   }
-
-  char *path_copy = strdup(argv[1]);
-  if (!path_copy) {
-    perror("strdup");
-    return 1;
-  }
-
-  char *dir = dirname(path_copy);
-  printf("%s\n", dir);
-
-  free(path_copy);
+  do_this();
   return 0;
 }
