@@ -58,13 +58,9 @@ int main(int argc, char *argv[]) {
       return res;
     }
   } else if (strcmp(cmd, "cat") == 0) {
-    return cpcat(argc > 1 ? argv[1] : NULL, NULL);
+    return cat(argc, argv);
   } else if (strcmp(cmd, "cp") == 0) {
-    if (argc != 3) {
-      fprintf(stderr, "Usage: cp [source] [destination]\n");
-      return 1;
-    }
-    return cpcat(argv[1], argv[2]);
+    return cp(argc, argv);
   } else if (strcmp(cmd, "sync") == 0) {
     return _sync();
   } else if (strcmp(cmd, "yes") == 0) {

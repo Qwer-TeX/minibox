@@ -60,8 +60,9 @@ int signal_name_to_number(const char *name);
 int wc(FILE *strmin, FILE *strmout);
 
 /* cat [infile] */
+int cat(int argc, char *argv[]);
 /* cp [source] [destination] */
-int cpcat(const char *strmin, const char *strmout);
+int cp(int argc, char *argv[]);
 
 /* sync program */
 int _sync(void);

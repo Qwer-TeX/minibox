@@ -8,14 +8,7 @@ PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
 				uptime ps kill tty link unlink nohup dirname basename cal clear env expand \
 				unexpand fold factor touch head tail paste
 
-SRCS = src/minibox.c src/wc.c src/cpcat.c src/sync.c src/yes.c src/update.c src/sleep.c \
-			 src/whoami.c src/true.c src/false.c src/ls.c src/echo.c src/init.c src/cmp.c \
-			 src/rm.c src/rmdir.c src/mkdir.c src/mknod.c src/hostname.c src/free.c src/xxd.c \
-       src/od.c src/hexdump.c src/w.c src/vmstat.c src/cut.c src/grep.c src/tr.c \
-			 src/sort.c src/uniq.c src/uptime.c src/ps.c src/kill.c src/tty.c src/link.c \
-			 src/unlink.c src/nohup.c src/dirname.c src/basename.c src/cal.c src/clear.c \
-			 src/env.c src/expand.c src/unexpand.c src/fold.c src/factor.c src/touch.c \
-			 src/head.c src/tail.c src/paste.c
+SRCS = $(addprefix src/, $(PROGS:=.c)) src/minibox.c
 OBJS = $(SRCS:.c=.o)
 
 VERSION=v0.3.1
