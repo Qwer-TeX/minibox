@@ -25,20 +25,32 @@
 int cut(int argc, char *argv[]) {
   char delimiter = '\t';  // Default delimiter (tab)
   char *field_str = NULL; // Field string
-  int opt;
   size_t num_fields = 0;
   int *fields = NULL;
 
-  // Parse command-line options
-  while ((opt = getopt(argc, argv, "d:f:")) != -1) {
-    switch (opt) {
-    case 'd':
-      delimiter = optarg[0];
-      break;
-    case 'f':
-      field_str = optarg;
-      break;
-    default:
+  // Parse command-line options manually
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') {
+      if (strcmp(argv[i], "-d") == 0) {
+        if (i + 1 < argc) {
+          delimiter = argv[++i][0];
+        } else {
+          fprintf(stderr, "Error: Option -d requires an argument.\n");
+          return EXIT_FAILURE;
+        }
+      } else if (strcmp(argv[i], "-f") == 0) {
+        if (i + 1 < argc) {
+          field_str = argv[++i];
+        } else {
+          fprintf(stderr, "Error: Option -f requires an argument.\n");
+          return EXIT_FAILURE;
+        }
+      } else {
+        fprintf(stderr, "Usage: %s [-d delimiter] -f fields [file...]\n",
+                argv[0]);
+        return EXIT_FAILURE;
+      }
+    } else {
       fprintf(stderr, "Usage: %s [-d delimiter] -f fields [file...]\n",
               argv[0]);
       return EXIT_FAILURE;
@@ -82,7 +94,7 @@ int cut(int argc, char *argv[]) {
   free(str);
 
   // Process lines from stdin or files
-  if (optind == argc) {
+  if (argc == 1 || (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'f')) {
     // No files specified, read from stdin
     char line[1024];
     while (fgets(line, sizeof(line), stdin)) {
@@ -113,7 +125,10 @@ int cut(int argc, char *argv[]) {
     }
   } else {
     // Process each file
-    for (int i = optind; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
+      if (argv[i][0] == '-')
+        continue; // Skip options
+
       FILE *file = fopen(argv[i], "r");
       if (!file) {
         perror(argv[i]);

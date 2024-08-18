@@ -28,32 +28,44 @@ int tail(int argc, char *argv[]) {
   int lines = DEFAULT_LINES;
   int bytes = DEFAULT_BYTES;
   int follow = 0;
-  int opt;
 
-  while ((opt = getopt(argc, argv, "c:n:f")) != -1) {
-    switch (opt) {
-    case 'c':
-      bytes = atoi(optarg);
+  // Manual argument parsing
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') {
+      if (strcmp(argv[i], "-c") == 0) {
+        if (i + 1 < argc) {
+          bytes = atoi(argv[++i]);
+        } else {
+          fprintf(stderr, "Error: Option -c requires an argument.\n");
+          return 1;
+        }
+      } else if (strcmp(argv[i], "-n") == 0) {
+        if (i + 1 < argc) {
+          lines = atoi(argv[++i]);
+        } else {
+          fprintf(stderr, "Error: Option -n requires an argument.\n");
+          return 1;
+        }
+      } else if (strcmp(argv[i], "-f") == 0) {
+        follow = 1;
+      } else {
+        fprintf(stderr, "Usage: %s [-c bytes] [-n lines] [-f] [file...]\n",
+                argv[0]);
+        return 1;
+      }
+    } else {
+      // Handle file arguments
       break;
-    case 'n':
-      lines = atoi(optarg);
-      break;
-    case 'f':
-      follow = 1;
-      break;
-    default:
-      fprintf(stderr, "Usage: %s [-c bytes] [-n lines] [-f] [file...]\n",
-              argv[0]);
-      return 1;
     }
   }
 
-  if (optind >= argc) {
+  if (argc <= 1 ||
+      (argc > 1 && argv[1][0] == '-' && strcmp(argv[1], "--") != 0)) {
     fprintf(stderr, "No file specified\n");
     return 1;
   }
 
-  for (int i = optind; i < argc; i++) {
+  for (int i = argc - (argc - (argv[1][0] == '-' ? 2 : 1)); i < argc; i++) {
     const char *filename = argv[i];
     int fd = open(filename, O_RDONLY);
     if (fd < 0) {

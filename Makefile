@@ -22,6 +22,7 @@ $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 strip: $(EXEC)
+	# Lets reduce the executable size even more by removing useless sections
 	$@ -s -R .note -R .comment -R .symtab -R.strtab $^ -o minibox
 	ls -l minibox
 	size minibox

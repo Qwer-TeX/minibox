@@ -25,32 +25,38 @@
 
 // Function to print the usage of the command
 static void print_usage(const char *prog_name) {
-  fprintf(stderr, "Usage: %s [-d delimiter] [-s] file1 [file2 ...]\n",
+  fprintf(stderr,
+          "Usage: %s [-d delimiter] [-s] file1 [file2 ...]\n"
+          "  -d delimiter  Use the specified delimiter between columns.\n"
+          "  -s            Paste lines serially rather than side-by-side.\n",
           prog_name);
-  fprintf(stderr,
-          "  -d delimiter  Use the specified delimiter between columns.\n");
-  fprintf(stderr,
-          "  -s            Paste lines serially rather than side-by-side.\n");
 }
 
 // Function to paste files side-by-side or serially
 int paste(int argc, char *argv[]) {
-  int option;
   char delimiter = '\t'; // Default delimiter is tab
   int serial_mode = 0;   // Default is side-by-side mode
 
-  // Parse command-line arguments
-  while ((option = getopt(argc, argv, "d:s")) != -1) {
-    switch (option) {
-    case 'd':
-      delimiter = optarg[0];
+  // Parse command-line arguments manually
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') {
+      if (strcmp(argv[i], "-d") == 0) {
+        if (i + 1 < argc) {
+          delimiter = argv[++i][0];
+        } else {
+          fprintf(stderr, "Error: Option -d requires an argument.\n");
+          print_usage(argv[0]);
+          return EXIT_FAILURE;
+        }
+      } else if (strcmp(argv[i], "-s") == 0) {
+        serial_mode = 1;
+      } else {
+        print_usage(argv[0]);
+        return EXIT_FAILURE;
+      }
+    } else {
+      // Treat any non-option arguments as files
       break;
-    case 's':
-      serial_mode = 1;
-      break;
-    default:
-      print_usage(argv[0]);
-      return EXIT_FAILURE;
     }
   }
 

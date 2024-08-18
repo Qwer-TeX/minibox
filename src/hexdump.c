@@ -27,15 +27,20 @@ int hexdump(int argc, char *argv[]) {
   unsigned char buffer[16];
   size_t bytesRead;
 
-  if (argc < 2) {
-    fprintf(stderr, "Usage: hexdump <file>\n");
+  // Determine whether to use stdin or a file
+  if (argc > 2) {
+    fprintf(stderr, "Usage: hexdump [file]\n");
     return 1;
   }
 
-  fp = fopen(argv[1], "rb");
-  if (!fp) {
-    perror("fopen");
-    return 1;
+  if (argc == 2) {
+    fp = fopen(argv[1], "rb");
+    if (!fp) {
+      perror("fopen");
+      return 1;
+    }
+  } else {
+    fp = stdin;
   }
 
   while ((bytesRead = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
@@ -45,6 +50,10 @@ int hexdump(int argc, char *argv[]) {
     printf("\n");
   }
 
-  fclose(fp);
+  // Close the file only if it's not stdin
+  if (fp != stdin) {
+    fclose(fp);
+  }
+
   return 0;
 }

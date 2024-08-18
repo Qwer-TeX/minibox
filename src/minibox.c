@@ -21,7 +21,6 @@
 
 #include "minibox.h"
 #include "utils.h"
-#include <string.h>
 
 // Function to check if invoked as minibox (inline so no function overhead)
 int check_if_minibox(char *argv0) {

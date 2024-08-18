@@ -22,25 +22,33 @@
 #include "minibox.h"
 
 /* od program: octal dump */
-/* FIXME: First output column should be in octal not hexadecimal */
 int od(int argc, char *argv[]) {
   FILE *fp;
   unsigned char buffer[16];
   size_t bytesRead;
 
-  if (argc < 2) {
-    fprintf(stderr, "Usage: od <file>\n");
+  // Determine whether to use stdin or a file
+  if (argc > 2) {
+    fprintf(stderr, "Usage: od [file]\n");
     return 1;
   }
 
-  fp = fopen(argv[1], "rb");
-  if (!fp) {
-    perror("fopen");
-    return 1;
+  if (argc == 2) {
+    fp = fopen(argv[1], "rb");
+    if (!fp) {
+      perror("fopen");
+      return 1;
+    }
+  } else {
+    fp = stdin;
   }
 
   while ((bytesRead = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
-    printf("%08zx: ", (unsigned int)ftell(fp) - bytesRead);
+    // Display the offset in octal
+    static long offset = 0;
+    printf("%08lo: ", offset);
+
+    // Display the data in hexadecimal
     for (size_t i = 0; i < bytesRead; i++) {
       printf("%02x ", buffer[i]);
     }
@@ -48,8 +56,14 @@ int od(int argc, char *argv[]) {
       printf("   ");
     }
     printf("\n");
+
+    offset += bytesRead;
   }
 
-  fclose(fp);
+  // Close the file only if it's not stdin
+  if (fp != stdin) {
+    fclose(fp);
+  }
+
   return 0;
 }
