@@ -2,8 +2,8 @@
 Ultra small and simple micro-embedded Linux command set
 
 MiniBox - 
+![MINIBOX-wTitle](https://github.com/user-attachments/assets/5e0caa54-876e-40a6-8fe3-186027ac4fa3)
 
-![MINIBOX-wTitle](https://github.com/Qwer-TeX/minibox/assets/128016252/df4b6b83-2adf-434a-9d46-a907a9641a51)
 
 This projects aims to be small and efficient, enough to be suitable for micro-embedded systems or just a 
 busybox or toybox replacement, though this project lacks (many) options (-l, -v, -n) its core functionality
