@@ -22,7 +22,8 @@
 #include "minibox.h"
 #include "utils.h"
 
-// Put its definition in utils.h
+// Put its definition in utils.h or if other utilites would use this function,
+// define it in utils.h
 void do_this() {
   printf("This is a template used to code in more utilites for MiniBox\n");
 }
