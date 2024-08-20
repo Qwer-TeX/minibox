@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-result -Iinclude
+CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-result -Iinclude
 LDFLAGS = -flto
 EXEC = minibox_unstripped
 
 PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
 				rmdir mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr sort uniq \
 				uptime ps kill tty link unlink nohup dirname basename cal clear env expand \
-				unexpand fold factor touch head tail paste
+				unexpand fold factor touch head tail paste arch date
 
 SRCS = $(addprefix src/, $(PROGS:=.c)) src/minibox.c
 OBJS = $(SRCS:.c=.o)

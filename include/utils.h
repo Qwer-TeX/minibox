@@ -34,6 +34,12 @@ void print_long_format(const char *path, const char *filename,
 int compare_lines(const void *a, const void *b);
 // kill
 int signal_name_to_number(const char *name);
+// date
+static void print_usage();
+static void print_rfc2822_time(time_t timestamp);
+static void print_iso8601_time(time_t timestamp, const char *spec);
+static time_t parse_time(const char *time_str, const char *fmt);
+static void print_file_modification_time(const char *filename);
 // main
 int check_if_minibox(char *argv0);
 

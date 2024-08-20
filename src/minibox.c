@@ -158,6 +158,10 @@ int main(int argc, char *argv[]) {
     return tail(argc, argv);
   } else if (strcmp(cmd, "paste") == 0) {
     return paste(argc, argv);
+  } else if (strcmp(cmd, "arch") == 0) {
+    return arch(argc, argv);
+  } else if (strcmp(cmd, "date") == 0) {
+    return date(argc, argv);
   } else {
     printf("MiniBox %s: A multi-call binary that combines many common Unix "
            "utilities\n"
@@ -219,7 +223,9 @@ int main(int argc, char *argv[]) {
            "touch:    Create or change file timestamps\n"
            "head:     Output the first part of a file\n"
            "tail:     Output the last part of a file\n"
-           "paste:    Merge lines from files\n",
+           "paste:    Merge lines from files\n"
+           "arch:     Print machine hardware architecture\n"
+           "date:     print/set system time and date\n",
            VERSION);
     return 1;
   }

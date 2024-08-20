@@ -44,6 +44,7 @@
 #include <sys/sysinfo.h>
 #include <sys/sysmacros.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <utime.h>
@@ -215,5 +216,11 @@ int tail(int argc, char *argv[]);
 
 /* paste program */
 int paste(int argc, char *argv[]);
+
+/* arch program */
+int arch(int argc, char *argv[]);
+
+/* date program */
+int date(int argc, char *argv[]);
 
 #endif // !COMMANDS_H

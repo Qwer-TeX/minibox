@@ -65,6 +65,8 @@ fold
 factor
 touch
 paste
+arch
+date
 
 # Images
 MINIBOX.png
