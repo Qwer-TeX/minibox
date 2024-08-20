@@ -1,8 +1,9 @@
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
- * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>.
- * All Rights Reserved.
+ * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>,
+ * Enhanced by Stephen M. Jones <support@actmac.com>
+ *            -- All Rights Reserved.
  *
  * Licensed under WTFPL, see file LICENSE in this source tree.
  *
@@ -24,32 +25,30 @@
 /* cmp program */
 /* Usage: cmp [comparer] [comparent] */
 int cmp(const char *file1, const char *file2) {
-  FILE *f1 = fopen(file1, "r");
-  FILE *f2 = fopen(file2, "r");
-  int ch1, ch2;
-
+  FILE *f1 = fopen(file1, "rb");
+  FILE *f2 = fopen(file2, "rb");
   if (!f1 || !f2) {
+    if (f1)
+      fclose(f1);
+    if (f2)
+      fclose(f2);
     fprintf(stderr, "cmp: Cannot open file\n");
     return 2;
   }
-
-  while ((ch1 = fgetc(f1)) != EOF && (ch2 = fgetc(f2)) != EOF) {
+  int ret = 0;
+  while (1) {
+    int ch1 = fgetc(f1);
+    int ch2 = fgetc(f2);
     if (ch1 != ch2) {
-      printf("Files differ\n");
-      fclose(f1);
-      fclose(f2);
-      return 1;
+      ret = 1;
+      break;
     }
+    if (ch1 == EOF)
+      break;
   }
-
-  if ((ch1 != EOF) || (ch2 != EOF)) {
+  if (ret)
     printf("Files differ\n");
-    fclose(f1);
-    fclose(f2);
-    return 1;
-  }
-
   fclose(f1);
   fclose(f2);
-  return 0;
+  return ret;
 }
