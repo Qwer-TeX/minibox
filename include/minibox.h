@@ -22,6 +22,16 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#ifdef _WIN32
+#include <direct.h>
+#include <fcntl.h>
+#include <io.h>
+#include <process.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <windows.h>
+#define PATH_MAX MAX_PATH
+#else
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -30,20 +40,21 @@
 #include <linux/limits.h>
 #include <linux/stat.h>
 #include <pwd.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/sysinfo.h>
 #include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <time.h>
 #include <unistd.h>
 #include <utime.h>
 #include <utmp.h>
+#endif
 
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 /* minibox specific defines */
 #define VERSION "0.3.1"
 
