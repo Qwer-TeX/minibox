@@ -141,9 +141,9 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     return cmp(argv[1], argv[2]);
-  } else {
-    return execute_command(cmd, argc - 1, &argv[1]);
   }
+
+  return execute_command(cmd, argc, argv);
   // else {
   //   printf("MiniBox %s: A multi-call binary that combines many common Unix "
   //          "utilities\n"
