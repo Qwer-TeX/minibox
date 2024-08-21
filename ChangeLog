@@ -6,6 +6,12 @@
 	* Added fold with -b, -s, and -w, touch, tail with -c, -f, and -n, and head
 		with -#, -c, and -n
 	* Added paste with -d, -s, factor, and clear with -x
+	* Added arch
+	* Added date with all options busybox supports ;)
+	* Updated many if else statments to become "return
+		execute_command(cmd, argc, argv)"; which binary searches through a struct
+		with a program name and its corresponding function making it easier to
+		add more programs in :)"
 
 8/10/2024 V0.2.2		- patch level 2996
 	* Fully and completely Modulerized the project making it
