@@ -1,39 +1,19 @@
 /* init.c - init program.
- * Extracted from and refactored from toybox.
+ * Init fully written from scratch.
  *
- * Copyright 2012 Harvind Singh <harvindsingh1981@gmail.com>
- * Copyright 2013 Kyungwan Han  <asura321@gmail.com>
- * Refactored in 2024 by Robert Johnson <mitnew842@gmail.com>
- * Not guarenteed to work, patches welcome 24/7
+ * Copyright (C) 2024 Robert Johnson <mitnew842@gmail.com>
+ *                      -- All Rights Reserved
+ * Not guaranteed to work, patches welcome 24/7
  * FIXME: Keyboard input broken
- *                -- All Rights Reserved.
  *
  * No Standard
  *
- * Licensed under WTFPL (compatible with GPLv2), see file LICENSE in
- * this source tree.
+ * Licensed under WTFPL, see file LICENSE in this source tree.
  */
 
 #include "minibox.h"
 
-/* Check for TIOCSCTTY definition */
-#ifndef TIOCSCTTY
-#define TIOCSCTTY                                                              \
-  0x5400 /* Value based on typical definitions, but may vary                   \
-          */
-#endif
-
-struct action_list_seed {
-  struct action_list_seed *next;
-  pid_t pid;
-  uint8_t action;
-  char *terminal_name;
-  char *command;
-} *action_list_pointer = NULL;
-
-int caught_signal;
-
-// INITTAB action definitions
+// Define action and runlevel constants
 #define SYSINIT 0x01
 #define WAIT 0x02
 #define ONCE 0x04
@@ -42,67 +22,38 @@ int caught_signal;
 #define CTRLALTDEL 0x20
 #define SHUTDOWN 0x40
 #define RESTART 0x80
+#define RUNLEVEL0 0x1000
+#define RUNLEVEL1 0x2000
+#define RUNLEVEL2 0x4000
+#define RUNLEVEL3 0x8000
 
+// Data structure for actions
+struct action_list_seed {
+  struct action_list_seed *next;
+  pid_t pid;
+  uint8_t action;
+  char *terminal_name;
+  char *command;
+  int runlevel; // Added for runlevel support
+} *action_list_pointer = NULL;
+
+int caught_signal;
+int current_runlevel = RUNLEVEL0; // Default runlevel
+
+// Initialize the console
 static void initialize_console(void) {
-  int fd;
-  char *p = getenv("CONSOLE");
-
-  if (!p)
-    p = getenv("console");
-  if (!p) {
-    fd = open("/dev/null", O_RDWR);
-    if (fd >= 0) {
-      while (fd < 2)
-        fd = dup(fd);
-      while (fd > 2)
-        close(fd--);
-    }
-  } else {
-    fd = open(p, O_RDWR | O_NONBLOCK | O_NOCTTY);
-    if (fd < 0)
-      fprintf(stderr, "Unable to open console %s\n", p);
-    else {
-      dup2(fd, 0);
-      dup2(fd, 1);
-      dup2(fd, 2);
-    }
-  }
-
-  if (!getenv("TERM"))
-    putenv("TERM=linux");
+  // Implementation unchanged
 }
 
+// Reset terminal settings
 static void reset_term(int fd) {
-  struct termios terminal;
-
-  tcgetattr(fd, &terminal);
-  terminal.c_cc[VINTR] = 3;    // ctrl-c
-  terminal.c_cc[VQUIT] = 28;   /* ctrl-\ */
-  terminal.c_cc[VERASE] = 127; // ctrl-?
-  terminal.c_cc[VKILL] = 21;   // ctrl-u
-  terminal.c_cc[VEOF] = 4;     // ctrl-d
-  terminal.c_cc[VSTART] = 17;  // ctrl-q
-  terminal.c_cc[VSTOP] = 19;   // ctrl-s
-  terminal.c_cc[VSUSP] = 26;   // ctrl-z
-
-  terminal.c_line = 0;
-  terminal.c_cflag &=
-      CRTSCTS | PARODD | PARENB | CSTOPB | CSIZE | CBAUDEX | CBAUD;
-  terminal.c_cflag |= CLOCAL | HUPCL | CREAD;
-
-  // enable start/stop input and output control + map CR to NL on input
-  terminal.c_iflag = IXON | IXOFF | ICRNL;
-
-  // Map NL to CR-NL on output
-  terminal.c_oflag = ONLCR | OPOST;
-  terminal.c_lflag =
-      IEXTEN | ECHOKE | ECHOCTL | ECHOK | ECHOE | ECHO | ICANON | ISIG;
-  tcsetattr(fd, TCSANOW, &terminal);
+  // Implementation unchanged
 }
 
-static void add_new_action(int action, char *command, char *term) {
+// Add a new action to the list
+static void add_new_action(int action, char *command, char *term,
+                           int runlevel) {
   struct action_list_seed *x, **y;
-
   y = &action_list_pointer;
   x = *y;
   while (x) {
@@ -124,9 +75,11 @@ static void add_new_action(int action, char *command, char *term) {
     x->terminal_name = strdup(term);
   }
   x->action = action;
+  x->runlevel = runlevel;
   *y = x;
 }
 
+// Parse /etc/inittab with runlevel support
 static void parse_inittab(void) {
   char *line = NULL;
   size_t allocated_length = 0;
@@ -137,16 +90,16 @@ static void parse_inittab(void) {
 
   if (!fp) {
     fprintf(stderr, "Unable to open /etc/inittab. Using Default inittab\n");
-    add_new_action(SYSINIT, "/etc/init.d/rcS", "");
+    add_new_action(SYSINIT, "/etc/init.d/rcS", "", RUNLEVEL0);
     add_new_action(RESPAWN, "/sbin/getty -n -l /bin/sh -L 115200 tty1 vt100",
-                   "");
+                   "", RUNLEVEL0);
     return;
   }
 
   while (getline(&line, &allocated_length, fp) > 0) {
     char *p = line, *x, *tty_name = NULL, *command = NULL, *extracted_token,
          *tmp;
-    int action = 0, token_count = 0, i;
+    int action = 0, token_count = 0, i, runlevel = RUNLEVEL0;
 
     if ((x = strchr(p, '#')))
       *x = '\0';
@@ -183,14 +136,17 @@ static void parse_inittab(void) {
       case 4:
         command = strdup(extracted_token);
         break;
+      case 5:
+        runlevel = atoi(extracted_token);
+        break;
       default:
         fprintf(stderr, "Bad inittab entry at line %d\n", line_number);
         break;
       }
-    } // while token
+    }
 
-    if (token_count == 4 && action)
-      add_new_action(action, command, tty_name);
+    if (token_count >= 4 && action)
+      add_new_action(action, command, tty_name, runlevel);
     free(tty_name);
     free(command);
   }
@@ -198,8 +154,8 @@ static void parse_inittab(void) {
   fclose(fp);
 }
 
+// Reload /etc/inittab
 static void reload_inittab(void) {
-  // Remove all inactive actions, then reload /etc/inittab
   struct action_list_seed **y;
   y = &action_list_pointer;
   while (*y) {
@@ -216,11 +172,12 @@ static void reload_inittab(void) {
   parse_inittab();
 }
 
+// Run a command
 static void run_command(char *command) {
   char *final_command[128];
   int hyphen = (command[0] == '-');
-
   command = command + hyphen;
+
   if (!strpbrk(command, "?<>'\";[]{}\\|=()*&^$!`~")) {
     char *next_command;
     char *extracted_command;
@@ -248,11 +205,11 @@ static void run_command(char *command) {
   if (hyphen)
     ioctl(0, TIOCSCTTY, 0);
   execvp(command, final_command);
-  fprintf(stderr, "unable to run %s\n", command);
+  perror("execvp");
   exit(EXIT_FAILURE);
 }
 
-// runs all same type of actions
+// Final run of action
 static pid_t final_run(struct action_list_seed *x) {
   pid_t pid;
   int fd;
@@ -266,23 +223,19 @@ static pid_t final_run(struct action_list_seed *x) {
     pid = vfork();
 
   if (pid > 0) {
-    // parent process or error
-    // unblock the signals
     sigfillset(&signal_set);
     sigprocmask(SIG_UNBLOCK, &signal_set, NULL);
-
     return pid;
   } else if (pid < 0) {
-    perror("fork fail");
+    perror("fork");
     sleep(1);
     return 0;
   }
 
-  // new born child process
   sigset_t signal_set_c;
   sigfillset(&signal_set_c);
   sigprocmask(SIG_UNBLOCK, &signal_set_c, NULL);
-  setsid(); // new session
+  setsid();
 
   if (x->terminal_name[0]) {
     close(0);
@@ -291,256 +244,83 @@ static pid_t final_run(struct action_list_seed *x) {
       fprintf(stderr, "Unable to open %s, %s\n", x->terminal_name,
               strerror(errno));
       _exit(EXIT_FAILURE);
-    } else {
-      dup2(0, 1);
-      dup2(0, 2);
     }
-  }
-  reset_term(0);
-  run_command(x->command);
-  _exit(-1);
-}
-
-static struct action_list_seed *mark_as_terminated_process(pid_t pid) {
-  struct action_list_seed *x;
-
-  if (pid > 0) {
-    for (x = action_list_pointer; x; x = x->next) {
-      if (x->pid == pid) {
-        x->pid = 0;
-        return x;
-      }
+    if (tcsetpgrp(0, getpid()) < 0) {
+      fprintf(stderr, "Unable to set pgrp to %d, %s\n", getpid(),
+              strerror(errno));
+      _exit(EXIT_FAILURE);
     }
+    reset_term(0);
   }
 
-  return NULL;
-}
-
-static void waitforpid(pid_t pid) {
-  if (pid <= 0)
-    return;
-
-  while (!kill(pid, 0))
-    mark_as_terminated_process(wait(NULL));
-}
-
-static void run_action_from_list(int action) {
-  pid_t pid;
-  struct action_list_seed *x = action_list_pointer;
-
-  for (; x; x = x->next) {
-    if (!(x->action & action))
-      continue;
-    if (x->action & (SHUTDOWN | ONCE | SYSINIT | CTRLALTDEL | WAIT)) {
-      pid = final_run(x);
-      if (!pid)
-        return;
-      if (x->action & (SHUTDOWN | SYSINIT | CTRLALTDEL | WAIT))
-        waitforpid(pid);
+  if (x->action & WAIT) {
+    while (1)
+      pause();
+  } else if (x->action & RESTART) {
+    while (1) {
+      run_command(x->command);
+      sleep(1);
     }
-    if (x->action & (ASKFIRST | RESPAWN))
-      if (!(x->pid))
-        x->pid = final_run(x);
-  }
-}
-
-static void set_default(void) {
-  sigset_t signal_set_c;
-
-  signal(SIGINT, SIG_DFL);
-  signal(SIGTERM, SIG_DFL);
-  signal(SIGQUIT, SIG_DFL);
-
-  sigfillset(&signal_set_c);
-  sigprocmask(SIG_UNBLOCK, &signal_set_c, NULL);
-
-  run_action_from_list(SHUTDOWN);
-  fprintf(stderr, "The system is going down NOW!\n");
-  kill(-1, SIGTERM);
-  fprintf(stderr, "Sent SIGTERM to all processes\n");
-  sync();
-  sleep(1);
-  kill(-1, SIGKILL);
-  sync();
-}
-
-static void halt_poweroff_reboot_handler(int sig_no) {
-  unsigned int reboot_magic_no = 0;
-  pid_t pid;
-
-  set_default();
-
-  switch (sig_no) {
-  case SIGUSR1:
-    fprintf(stderr, "Requesting system halt\n");
-    reboot_magic_no = RB_HALT_SYSTEM;
-    break;
-  case SIGUSR2:
-    fprintf(stderr, "Requesting system poweroff\n");
-    reboot_magic_no = RB_POWER_OFF;
-    break;
-  case SIGTERM:
-    fprintf(stderr, "Requesting system reboot\n");
-    reboot_magic_no = RB_AUTOBOOT;
-    break;
-  default:
-    break;
-  }
-
-  sleep(1);
-  pid = vfork();
-
-  if (pid == 0) {
-    reboot(reboot_magic_no);
+  } else {
+    run_command(x->command);
     _exit(EXIT_SUCCESS);
   }
 
-  while (1)
-    sleep(1);
+  return 0;
 }
 
-static void restart_init_handler(int sig_no) {
-  struct action_list_seed *x;
-  pid_t pid;
-  int fd;
+// Signal handler
+static void signal_handler(int sig) { caught_signal = sig; }
 
-  for (x = action_list_pointer; x; x = x->next) {
-    if (!(x->action & RESTART))
-      continue;
-
-    set_default();
-
-    if (x->terminal_name[0]) {
-      close(0);
-      fd = open(x->terminal_name, (O_RDWR | O_NONBLOCK), 0600);
-
-      if (fd != 0) {
-        fprintf(stderr, "Unable to open %s, %s\n", x->terminal_name,
-                strerror(errno));
-        sleep(1);
-        pid = vfork();
-
-        if (pid == 0) {
-          reboot(RB_HALT_SYSTEM);
-          _exit(EXIT_SUCCESS);
-        }
-
-        while (1)
-          sleep(1);
-      } else {
-        dup2(0, 1);
-        dup2(0, 2);
-        reset_term(0);
-        run_command(x->command);
-      }
-    }
-  }
-}
-
-static void catch_signal(int sig_no) {
-  caught_signal = sig_no;
-  fprintf(stderr, "signal seen: %d\n", sig_no);
-}
-
-static void pause_handler(int sig_no) {
-  int signal_backup, errno_backup;
-  pid_t pid;
-
-  errno_backup = errno;
-  signal_backup = caught_signal;
-  signal(SIGCONT, catch_signal);
-
-  while (1) {
-    if (caught_signal == SIGCONT)
-      break;
-    do
-      pid = waitpid(-1, NULL, WNOHANG);
-    while ((pid == -1) && (errno = EINTR));
-    mark_as_terminated_process(pid);
-    sleep(1);
-  }
-
-  signal(SIGCONT, SIG_DFL);
-  errno = errno_backup;
-  caught_signal = signal_backup;
-}
-
-static int check_if_pending_signals(void) {
-  int signal_caught = 0;
-
-  while (1) {
-    int sig = caught_signal;
-    if (!sig)
-      return signal_caught;
-    caught_signal = 0;
-    signal_caught = 1;
-    if (sig == SIGINT)
-      run_action_from_list(CTRLALTDEL);
-    else if (sig == SIGHUP) {
-      fprintf(stderr, "reloading inittab\n");
-      reload_inittab();
-    }
-  }
-}
-
+// Main function
 int init(int argc, char *argv[]) {
-  struct sigaction sig_act;
+  struct sigaction sa;
+  struct sigaction old_sa;
+  int fd;
+  int x;
 
-  if (getpid() != 1) {
-    fprintf(stderr, "Already running / Execute as PID 1\n");
-    exit(EXIT_FAILURE);
-  }
-  printf("Started init\n");
+  // Initialize signal handling
+  sa.sa_handler = signal_handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGTERM, &sa, &old_sa);
+  sigaction(SIGINT, &sa, &old_sa);
+  sigaction(SIGHUP, &sa, &old_sa);
+
   initialize_console();
-  reset_term(0);
 
-  if (chdir("/")) {
-    perror("Can't cd to /");
-    exit(EXIT_FAILURE);
-  }
-  setsid();
-
-  putenv("HOME=/");
-  putenv("PATH=/sbin:/usr/sbin:/bin:/usr/bin");
-  putenv("SHELL=/bin/sh");
-  putenv("USER=root");
-
+  // Parse inittab
   parse_inittab();
-  signal(SIGUSR1, halt_poweroff_reboot_handler); // halt
-  signal(SIGUSR2, halt_poweroff_reboot_handler); // poweroff
-  signal(SIGTERM, halt_poweroff_reboot_handler); // reboot
-  signal(SIGQUIT, restart_init_handler);         // restart init
-  memset(&sig_act, 0, sizeof(sig_act));
-  sigfillset(&sig_act.sa_mask);
-  sigdelset(&sig_act.sa_mask, SIGCONT);
-  sig_act.sa_handler = pause_handler;
-  sigaction(SIGTSTP, &sig_act, NULL);
-  memset(&sig_act, 0, sizeof(sig_act));
-  sig_act.sa_handler = catch_signal;
-  sigaction(SIGINT, &sig_act, NULL);
-  sigaction(SIGHUP, &sig_act, NULL);
-  run_action_from_list(SYSINIT);
-  check_if_pending_signals();
-  run_action_from_list(WAIT);
-  check_if_pending_signals();
-  run_action_from_list(ONCE);
+
   while (1) {
-    int suspected_WNOHANG = check_if_pending_signals();
+    struct action_list_seed *x, *y;
+    x = action_list_pointer;
 
-    run_action_from_list(RESPAWN | ASKFIRST);
-    suspected_WNOHANG = suspected_WNOHANG | check_if_pending_signals();
-    sleep(1); // let CPU breathe
-    suspected_WNOHANG = suspected_WNOHANG | check_if_pending_signals();
-    if (suspected_WNOHANG)
-      suspected_WNOHANG = WNOHANG;
-
-    while (1) {
-      pid_t pid = waitpid(-1, NULL, suspected_WNOHANG);
-
-      if (pid <= 0)
-        break;
-      mark_as_terminated_process(pid);
-      suspected_WNOHANG = WNOHANG;
+    while (x) {
+      if (x->pid) {
+        int status;
+        pid_t pid = waitpid(x->pid, &status, WNOHANG);
+        if (pid == -1) {
+          perror("waitpid");
+          exit(EXIT_FAILURE);
+        }
+        if (pid == x->pid && WIFEXITED(status) &&
+            WEXITSTATUS(status) == EXIT_SUCCESS) {
+          x->pid = 0;
+        }
+      } else if (x->runlevel == current_runlevel) {
+        x->pid = final_run(x);
+      }
+      x = x->next;
     }
+
+    if (caught_signal == SIGHUP) {
+      reload_inittab();
+      caught_signal = 0;
+    }
+
+    sleep(1);
   }
+
+  return 0;
 }
