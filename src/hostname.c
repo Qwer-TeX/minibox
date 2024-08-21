@@ -22,7 +22,7 @@
 #include "minibox.h"
 
 /* hostname program */
-int hostname(void) {
+int hostname(int argc, char *argv[]) {
   char hostname[1024];
   if (gethostname(hostname, sizeof(hostname)) == -1) {
     perror("gethostname");

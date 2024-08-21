@@ -23,20 +23,20 @@
 
 /* sleep program */
 /* Usage: sleep [seconds] */
-int _sleep(int argsc, char *argsv[]) {
+int _sleep(int argc, char *argv[]) {
   char *endptr;
   errno = 0;
   long secs;
 
-  if (argsc != 2) {
+  if (argc != 2) {
     fprintf(stderr, "Usage: sleep [seconds]\n");
     return 1;
   }
 
-  secs = strtol(argsv[1], &endptr, 10);
+  secs = strtol(argv[1], &endptr, 10);
 
   if (errno != 0 || *endptr != '\0' || secs < 0) {
-    fprintf(stderr, "Invalid number of seconds: %s\n", argsv[1]);
+    fprintf(stderr, "Invalid number of seconds: %s\n", argv[1]);
     return 1;
   }
 

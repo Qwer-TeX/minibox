@@ -24,7 +24,7 @@
 /* free program */
 /* Display the amount of free and used memory in the system */
 /* FIXME: free displays 0 for shared while coreutils free displays non-zero */
-int free_cmd(void) {
+int free_cmd(int argc, char *argv[]) {
   FILE *file = fopen("/proc/meminfo", "r");
   if (!file) {
     perror("fopen");

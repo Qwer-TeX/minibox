@@ -22,7 +22,7 @@
 #include "minibox.h"
 
 /* ps program */
-int ps() {
+int ps(int argc, char *argv[]) {
   DIR *proc_dir = opendir("/proc");
   if (proc_dir == NULL) {
     perror("opendir");

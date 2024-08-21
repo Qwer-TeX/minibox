@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/reboot.h>
 #include <sys/stat.h>
 #include <sys/sysinfo.h>
@@ -84,25 +85,25 @@ int cat(int argc, char *argv[]);
 int cp(int argc, char *argv[]);
 
 /* sync program */
-int _sync(void);
+int _sync(int argc, char *argv[]);
 
 /* update program */
-int update(void);
+int update(int argc, char *argv[]);
 
 /* yes program */
-int yes(char *args[]);
+int yes(int argc, char *argv[]);
 
 /* sleep program */
-int _sleep(int argsc, char *argsv[]);
+int _sleep(int argc, char *argv[]);
 
 /* whoami program */
-int whoami(void);
+int whoami(int argc, char *argv[]);
 
 /* true program */
-int _true(void);
+int _true(int argc, char *argv[]);
 
 /* false program */
-int _false(void);
+int _false(int argc, char *argv[]);
 
 /* ls program */
 int ls(int argc, char *argv[]);
@@ -111,7 +112,7 @@ int ls(int argc, char *argv[]);
 int echo(int argc, char *argv[]);
 
 /* init program */
-int init(void);
+int init(int argc, char *argv[]);
 
 /* cmp program */
 int cmp(const char *file1, const char *file2);
@@ -129,10 +130,10 @@ int mkdir_cmd(int argc, char *argv[]);
 int mknod_command(int argc, char *argv[]);
 
 /* hostname program */
-int hostname(void);
+int hostname(int argc, char *argv[]);
 
 /* free program */
-int free_cmd(void);
+int free_cmd(int argc, char *argv[]);
 
 /* xxd program */
 int xxd(int argc, char *argv[]);
@@ -144,10 +145,10 @@ int od(int argc, char *argv[]);
 int hexdump(int argc, char *argv[]);
 
 /* w program */
-int w(void);
+int w(int argc, char *argv[]);
 
 /* vmstat program */
-int vmstat(void);
+int vmstat(int argc, char *argv[]);
 
 /* cut program */
 int cut(int argc, char *argv[]);
@@ -165,10 +166,10 @@ int sort(int argc, char *argv[]);
 int uniq(int argc, char *argv[]);
 
 /* uptime program */
-int uptime(void);
+int uptime(int argc, char *argv[]);
 
 /* ps program */
-int ps(void);
+int ps(int argc, char *argv[]);
 
 /* kill program */
 int kill_process(int argc, char *argv[]);

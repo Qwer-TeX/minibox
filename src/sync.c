@@ -23,7 +23,7 @@
 
 /* sync program */
 /* commit filesystem caches to disk - sync(2) */
-int _sync(void) {
+int _sync(int argc, char *argv[]) {
   sync();
   return 0;
 }

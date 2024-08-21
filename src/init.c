@@ -483,7 +483,7 @@ static int check_if_pending_signals(void) {
   }
 }
 
-int init(void) {
+int init(int argc, char *argv[]) {
   struct sigaction sig_act;
 
   if (getpid() != 1) {

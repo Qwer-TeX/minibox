@@ -22,7 +22,7 @@
 #include "minibox.h"
 
 /* uptime program */
-int uptime() {
+int uptime(int argc, char *argv[]) {
   struct sysinfo info;
 
   if (sysinfo(&info) != 0) {

@@ -22,12 +22,12 @@
 #include "minibox.h"
 
 /* update program */
-int update(void) {
+int update(int argc, char *argv[]) {
   for (int i = 0; i != 3; ++i)
     close(i);
   chdir("/");
   while (1) {
-    _sync();
+    sync();
     sleep(30);
   }
 }

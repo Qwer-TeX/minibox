@@ -25,7 +25,7 @@
 /* Display logged-in users and their activities */
 /* FIXME: Output is broken and doesn't display info in their correct respective
  * columns */
-int w(void) {
+int w(int argc, char *argv[]) {
   struct sysinfo si;
   struct utmp *ut;
   struct tm *tm;

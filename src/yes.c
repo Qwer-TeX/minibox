@@ -24,9 +24,9 @@
 /* yes program */
 /* output y or a character repeatedly until killed */
 /* yes [repeatent] */
-int yes(char *args[]) {
+int yes(int argc, char *argv[]) {
   while (1) {
-    printf("%s\n", args ? args[1] : "y");
+    printf("%s\n", argv ? argv[1] : "y");
   }
   return 0;
 }

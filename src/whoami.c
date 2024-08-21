@@ -24,7 +24,7 @@
 /* whoami program */
 /* print current effective user */
 /* Usage: whoami */
-int whoami(void) {
+int whoami(int argc, char *argv[]) {
   struct passwd *pw_ent = getpwuid(geteuid());
   if (pw_ent == NULL) {
     fprintf(stderr, "Error: Cannot determine current user\n");

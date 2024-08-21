@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-result -Iinclude
+CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude
 LDFLAGS = -flto
 EXEC = minibox_unstripped
 
