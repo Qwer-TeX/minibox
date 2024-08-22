@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude
+CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude -DVERSION=\"$(VERSION)\"
 LDFLAGS = -flto
 EXEC = minibox_unstripped
 
@@ -11,7 +11,7 @@ PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
 SRCS = $(addprefix src/, $(PROGS:=.c)) src/help.c src/minibox.c
 OBJS = $(SRCS:.c=.o)
 
-VERSION=v0.3.1
+VERSION=0.3.1
 
 all: $(EXEC) strip
 

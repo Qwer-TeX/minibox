@@ -64,8 +64,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-/* minibox specific defines */
-#define VERSION "0.3.1"
 
 // Function to compare two directory entries for qsort
 int compare_entries(const void *a, const void *b);
