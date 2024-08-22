@@ -4,7 +4,7 @@
  * Copyright (C) 2024 Robert Johnson et al <mitnew842@gmail.com>.
  * All Rights Reserved.
  *
- * Licensed under WTFPL, see file LICENSE in this source tree.
+ * Licensed under Unlicense License, see file LICENSE in this source tree.
  * minibox-shell.c is the main shell source with all shell builtins.
  *
  * When adding programs or features, please consider if they can be
@@ -17,7 +17,7 @@
  * I haven't tested but it could compile on windows systems with MSYS/MinGW or
  * Cygwin. MiniBox should be fairly portable for POSIX systems.
  *
- * Licensed under WTFPL, see file LICENSE in this source tree.
+ * Licensed under Unlicense License, see file LICENSE in this source tree.
  */
 
 /*

@@ -8,7 +8,7 @@
  *
  * No Standard
  *
- * Licensed under WTFPL, see file LICENSE in this source tree.
+ * Licensed under Unlicense License, see file LICENSE in this source tree.
  */
 
 #include "minibox.h"
