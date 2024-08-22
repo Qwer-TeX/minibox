@@ -8,7 +8,7 @@ PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
 				uptime ps kill tty link unlink nohup dirname basename cal clear env expand \
 				unexpand fold factor touch head tail paste arch date
 
-SRCS = $(addprefix src/, $(PROGS:=.c)) src/minibox.c
+SRCS = $(addprefix src/, $(PROGS:=.c)) src/help.c src/minibox.c
 OBJS = $(SRCS:.c=.o)
 
 VERSION=v0.3.1
