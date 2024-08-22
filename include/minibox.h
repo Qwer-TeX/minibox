@@ -234,4 +234,7 @@ int date(int argc, char *argv[]);
 /* help function */ // Not a program
 int help(int argc, char *argv[]);
 
+/* version function */ // Not a program
+int version(int argc, char *argv[]);
+
 #endif // !COMMANDS_H

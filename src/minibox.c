@@ -102,7 +102,7 @@ int execute_command(const char *cmd, int argc, char *argv[]) {
       return commands[i].cmd_func(argc, argv);
     }
   }
-  fprintf(stderr, "Unknown command: %s\n", cmd);
+  fprintf(stderr, "Unknown command or option specifed: %s\n", cmd);
   return 1;
 }
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 
   char *cmd = basename(argv[0]);
 
-  if (strcmp(cmd, "wc") == 0) {
+  if (!strcmp(cmd, "wc")) {
     if (argc == 1) {
       return wc(stdin, stdout);
     } else {
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
       fclose(f);
       return res;
     }
-  } else if (strcmp(cmd, "cmp") == 0) {
+  } else if (!strcmp(cmd, "cmp")) {
     if (argc != 3) {
       fprintf(stderr, "Usage: cmp [file1] [file2]\n");
       return 1;
@@ -143,6 +143,9 @@ int main(int argc, char *argv[]) {
     return cmp(argv[1], argv[2]);
   } else if (!strcmp(cmd, "-h") || !strcmp(cmd, "--help")) {
     return help(argc, argv);
+  } else if (!strcmp(cmd, "-v") || !strcmp(cmd, "--version")) {
+    printf("MiniBox %s\n", VERSION);
+    return 0;
   }
 
   return execute_command(cmd, argc, argv);
