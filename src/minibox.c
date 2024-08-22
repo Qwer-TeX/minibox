@@ -141,6 +141,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     return cmp(argv[1], argv[2]);
+  } else if (!strcmp(cmd, "-h") || !strcmp(cmd, "--help")) {
+    return help(argc, argv);
   }
 
   return execute_command(cmd, argc, argv);
