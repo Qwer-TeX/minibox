@@ -43,7 +43,7 @@ clean:
 
 distclean: clean
 	rm -f include/config.h
-	./toggle_ifdef.sh -D
+	./scripts/toggle_ifdef.sh -D
 
 .PHONY: all strip tags dist links install clean distclean
 
