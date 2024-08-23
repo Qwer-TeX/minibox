@@ -75,7 +75,10 @@ echo "#endif /* CONFIG_H */" >> $CONFIG_H
 # Feedback to the user
 echo ""
 echo "Configuration complete. Generated $CONFIG_H."
-echo "Would you like to continue with the build process?"
+
+# Execute ./toggle_ifdef.sh
+echo "Running ./toggle_ifdef.sh to update source files..."
+./toggle_ifdef.sh
 
 # Function to prompt the user to continue
 prompt_continue() {
