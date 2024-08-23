@@ -10,10 +10,3 @@ busybox or toybox replacement, though this project lacks (many) options (-l, -v,
 (without options) is compatible with other commands and not for some.
 
 This project is simple and self-explanitory enough that you can implement your own command set!
-
-## Disclaimer
-
-This software is provided "as-is", without any express or implied warranties. The authors make no 
-representations about the suitability of this software for any purpose. Use it at your own risk. 
-The authors shall not be liable for any damages arising from the use of this software.
-
