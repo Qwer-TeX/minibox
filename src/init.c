@@ -2,6 +2,8 @@
  * Init fully written from scratch.
  *
  * Copyright (C) 2024 Robert Johnson <mitnew842@gmail.com>
+ * Copyright 2012 Harvind Singh <harvindsingh1981@gmail.com>
+ * Copyright 2013 Kyungwan Han  <asura321@gmail.com>
  *                      -- All Rights Reserved
  * Not guaranteed to work, patches welcome 24/7
  * FIXME: Keyboard input broken
