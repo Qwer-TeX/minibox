@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Oz -flto -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude -DVERSION=\"$(VERSION)\"
+CFLAGS = -Oz -flto -g -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude -DVERSION=\"$(VERSION)\"
 LDFLAGS = -flto
 EXEC = minibox_unstripped
 
@@ -41,5 +41,9 @@ links:
 clean:
 	rm -rf minibox $(EXEC) $(OBJS) tags install_dir
 
-.PHONY: all strip tags dist links install clean
+distclean: clean
+	rm -f include/config.h
+	./toggle_ifdef.sh -D
+
+.PHONY: all strip tags dist links install clean distclean
 

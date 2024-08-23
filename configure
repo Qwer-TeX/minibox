@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Welcome message
+echo "Welcome to the Minibox configuration script."
+echo "Please select the features you want to include in your build."
+echo ""
+
+# Initialize config.h
+CONFIG_H="include/config.h"
+echo "/* Auto-generated configuration header */" > $CONFIG_H
+echo "#ifndef CONFIG_H" >> $CONFIG_H
+echo "#define CONFIG_H" >> $CONFIG_H
+echo "" >> $CONFIG_H
+
+# Determine the .c files in the src/ directory
+SRC_DIR="src"
+c_files=($(ls $SRC_DIR/*.c 2>/dev/null))
+num_c_files=${#c_files[@]}
+
+# Check if there are any .c files
+if [ "$num_c_files" -eq 0 ]; then
+    echo "No .c files found in the src/ directory. Exiting."
+    exit 1
+fi
+
+# Function to prompt the user for yes/no
+prompt_yes_no() {
+    local prompt_text="$1"
+    local default_value="$2"
+    local choice
+
+    while true; do
+        read -p "$prompt_text (yes/no) [default: $default_value]: " choice
+        case "$choice" in
+            yes|y|Y )
+                echo "yes"
+                return
+                ;;
+            no|n|N )
+                echo "no"
+                return
+                ;;
+            "" )
+                echo "$default_value"
+                return
+                ;;
+            * )
+                echo "Please answer yes or no."
+                ;;
+        esac
+    done
+}
+
+# Generate features based on .c files
+default_value="yes"
+for c_file in "${c_files[@]}"; do
+    # Extract feature name from the .c file name
+    feature_name=$(basename "$c_file" .c)
+    feature_text="Enable $feature_name command"
+    feature_define="CONFIG_${feature_name^^}" # Convert to uppercase for define
+
+    # Prompt user for feature inclusion
+    result=$(prompt_yes_no "$feature_text" "$default_value")
+    if [ "$result" = "yes" ]; then
+        echo "#define $feature_define 1" >> $CONFIG_H
+    else
+        echo "/* $feature_define disabled */" >> $CONFIG_H
+    fi
+    echo "" >> $CONFIG_H
+done
+
+# Close the config.h file
+echo "#endif /* CONFIG_H */" >> $CONFIG_H
+
+# Feedback to the user
+echo ""
+echo "Configuration complete. Generated $CONFIG_H."
+echo "Would you like to continue with the build process?"
+
+# Function to prompt the user to continue
+prompt_continue() {
+    local choice
+    while true; do
+        read -p "Do you want to continue? (yes/no): " choice
+        case "$choice" in
+            yes|y|Y )
+                echo "Continuing with the build..."
+                return 0
+                ;;
+            no|n|N )
+                echo "Exiting. You can run 'make' manually when ready."
+                return 1
+                ;;
+            * )
+                echo "Please answer yes or no."
+                ;;
+        esac
+    done
+}
+
+# Check if the user wants to continue
+if prompt_continue; then
+    # Optionally modify the Makefile or run make
+    echo "Building Minibox..."
+    make
+else
+    echo "Configuration completed but build not started."
+fi
+
