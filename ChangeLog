@@ -1,4 +1,4 @@
-8/16/2024 v0.3.1		- patch level 3441
+8/16/2024 v0.3.1		- patch level 3763
 	* Added some new utilites which incoporate some commonly used options so we
 		decied to add those commonly used options included with them
 	* Added env with -i and -t, expand with -i and -t, and unexpand with -a, -f,
@@ -12,6 +12,12 @@
 		execute_command(cmd, argc, argv)"; which binary searches through a struct
 		with a program name and its corresponding function making it easier to
 		add more programs in :)"
+	* Added a configure script which creates config.h from what the user wants
+		(Almost same as Kconfig but smaller) That config.h the cpp takes and
+		compiles accordingly. Command table and help funcion has been fully
+		adapted conditionally, major imporvement, 
+	* 3rd huge milestone crossed for
+		this project after modulerization, and shell examples.
 
 8/10/2024 V0.2.2		- patch level 2996
 	* Fully and completely Modulerized the project making it
