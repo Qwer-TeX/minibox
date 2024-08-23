@@ -36,61 +36,165 @@ typedef struct {
   CommandFunc cmd_func;
 } Command;
 
-// Create command table
+// Create command table conditionally
 Command commands[] = {
-    {"wc", (CommandFunc)wc},
+#ifdef CONFIG_WC
+    {"wc", wc},
+#endif
+#ifdef CONFIG_CAT
     {"cat", cat},
+#endif
+#ifdef CONFIG_CP
     {"cp", cp},
+#endif
+#ifdef CONFIG_SYNC
     {"sync", _sync},
+#endif
+#ifdef CONFIG_YES
     {"yes", yes},
+#endif
+#ifdef CONFIG_UPDATE
     {"update", update},
+#endif
+#ifdef CONFIG_SLEEP
     {"sleep", _sleep},
+#endif
+#ifdef CONFIG_WHOAMI
     {"whoami", whoami},
+#endif
+#ifdef CONFIG_TRUE
     {"true", _true},
+#endif
+#ifdef CONFIG_FALSE
     {"false", _false},
+#endif
+#ifdef CONFIG_LS
     {"ls", ls},
+#endif
+#ifdef CONFIG_ECHO
     {"echo", echo},
+#endif
+#ifdef CONFIG_INIT
     {"init", init},
-    {"cmp", (CommandFunc)cmp},
+#endif
+#ifdef CONFIG_CMP
+    {"cmp", cmp},
+#endif
+#ifdef CONFIG_RM
     {"rm", rm},
+#endif
+#ifdef CONFIG_RMDIR
     {"rmdir", rmdir_cmd},
+#endif
+#ifdef CONFIG_MKDIR
     {"mkdir", mkdir_cmd},
+#endif
+#ifdef CONFIG_MKNOD
     {"mknod", mknod_command},
+#endif
+#ifdef CONFIG_HOSTNAME
     {"hostname", hostname},
+#endif
+#ifdef CONFIG_FREE
     {"free", free_cmd},
+#endif
+#ifdef CONFIG_XXD
     {"xxd", xxd},
+#endif
+#ifdef CONFIG_OD
     {"od", od},
+#endif
+#ifdef CONFIG_HEXDUMP
     {"hexdump", hexdump},
+#endif
+#ifdef CONFIG_W
     {"w", w},
+#endif
+#ifdef CONFIG_VMSTAT
     {"vmstat", vmstat},
+#endif
+#ifdef CONFIG_CUT
     {"cut", cut},
+#endif
+#ifdef CONFIG_GREP
     {"grep", grep},
+#endif
+#ifdef CONFIG_TR
     {"tr", tr},
+#endif
+#ifdef CONFIG_SORT
     {"sort", sort},
+#endif
+#ifdef CONFIG_UNIQ
     {"uniq", uniq},
+#endif
+#ifdef CONFIG_UPTIME
     {"uptime", uptime},
+#endif
+#ifdef CONFIG_PS
     {"ps", ps},
+#endif
+#ifdef CONFIG_KILL
     {"kill", kill_process},
+#endif
+#ifdef CONFIG_TTY
     {"tty", tty},
+#endif
+#ifdef CONFIG_LINK
     {"link", create_link},
+#endif
+#ifdef CONFIG_UNLINK
     {"unlink", remove_link},
+#endif
+#ifdef CONFIG_NOHUP
     {"nohup", nohup},
+#endif
+#ifdef CONFIG_DIRNAME
     {"dirname", print_dirname},
+#endif
+#ifdef CONFIG_BASENAME
     {"basename", print_basename},
+#endif
+#ifdef CONFIG_CAL
     {"cal", cal},
+#endif
+#ifdef CONFIG_CLEAR
     {"clear", clear},
+#endif
+#ifdef CONFIG_ENV
     {"env", env},
+#endif
+#ifdef CONFIG_EXPAND
     {"expand", expand},
+#endif
+#ifdef CONFIG_UNEXPAND
     {"unexpand", unexpand},
+#endif
+#ifdef CONFIG_FOLD
     {"fold", fold},
+#endif
+#ifdef CONFIG_FACTOR
     {"factor", factor},
+#endif
+#ifdef CONFIG_TOUCH
     {"touch", touch},
+#endif
+#ifdef CONFIG_HEAD
     {"head", head},
+#endif
+#ifdef CONFIG_TAIL
     {"tail", tail},
+#endif
+#ifdef CONFIG_PASTE
     {"paste", paste},
+#endif
+#ifdef CONFIG_ARCH
     {"arch", arch},
-    {"date", date}
-    // Add more commands here
+#endif
+#ifdef CONFIG_DATE
+    {"date", date},
+#endif
+    // Add more commands here as needed
 };
 
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
@@ -102,7 +206,7 @@ int execute_command(const char *cmd, int argc, char *argv[]) {
       return commands[i].cmd_func(argc, argv);
     }
   }
-  fprintf(stderr, "Unknown command or option specifed: %s\n", cmd);
+  fprintf(stderr, "Unknown command or option specified: %s\n", cmd);
   return 1;
 }
 
