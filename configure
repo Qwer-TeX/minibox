@@ -78,7 +78,7 @@ echo "Configuration complete. Generated $CONFIG_H."
 
 # Execute ./scripts/toggle_ifdef.sh
 echo "Running ./scripts/toggle_ifdef.sh to update source files..."
-./scripts/toggle_ifdef.sh
+./scripts/toggle_ifdef.sh > /dev/null 2>&1
 
 # Function to prompt the user to continue
 prompt_continue() {
