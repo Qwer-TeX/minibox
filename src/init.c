@@ -10,7 +10,7 @@
  *
  * No Standard
  *
- * Licensed under Unlicense License, see file LICENSE in this source tree.
+ * Licensed under GPLv2, compatible with the Unlicense license.
  */
 
 #include "minibox.h"
