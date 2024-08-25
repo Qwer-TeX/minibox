@@ -118,7 +118,7 @@ int echo(int argc, char *argv[]);
 int init(int argc, char *argv[]);
 
 /* cmp program */
-int cmp(const char *file1, const char *file2);
+int cmp(int argc, char *argv[]);
 
 /* rm program */
 int rm(int argc, char *argv[]);

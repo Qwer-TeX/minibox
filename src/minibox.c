@@ -225,13 +225,7 @@ int main(int argc, char *argv[]) {
 
   char *cmd = basename(argv[0]);
 
-  if (!strcmp(cmd, "cmp")) {
-    if (argc != 3) {
-      fprintf(stderr, "Usage: cmp [file1] [file2]\n");
-      return 1;
-    }
-    return cmp(argv[1], argv[2]);
-  } else if (!strcmp(cmd, "-h") || !strcmp(cmd, "--help")) {
+  if (!strcmp(cmd, "-h") || !strcmp(cmd, "--help")) {
     return help(argc, argv);
   } else if (!strcmp(cmd, "-v") || !strcmp(cmd, "--version")) {
     printf("MiniBox %s\n", VERSION);

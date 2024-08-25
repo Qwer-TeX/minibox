@@ -24,7 +24,15 @@
 
 /* cmp program */
 /* Usage: cmp [comparer] [comparent] */
-int cmp(const char *file1, const char *file2) {
+int cmp(int argc, char *argv[]) {
+  if (argc < 3) {
+    fprintf(stderr, "Usage: cmp <file1> <file2>\n");
+    return 2;
+  }
+
+  const char *file1 = argv[1];
+  const char *file2 = argv[2];
+
   FILE *f1 = fopen(file1, "rb");
   FILE *f2 = fopen(file2, "rb");
   if (!f1 || !f2) {
@@ -35,6 +43,7 @@ int cmp(const char *file1, const char *file2) {
     fprintf(stderr, "cmp: Cannot open file\n");
     return 2;
   }
+
   int ret = 0;
   while (1) {
     int ch1 = fgetc(f1);
@@ -46,6 +55,7 @@ int cmp(const char *file1, const char *file2) {
     if (ch1 == EOF)
       break;
   }
+
   if (ret)
     printf("Files differ\n");
   fclose(f1);
