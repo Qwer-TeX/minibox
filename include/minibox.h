@@ -65,6 +65,11 @@
 #include <string.h>
 #include <time.h>
 
+// MiniBox specific defines
+#ifndef VERSION
+#define VERSION "undef_ver"
+#endif
+
 // Function to compare two directory entries for qsort
 int compare_entries(const void *a, const void *b);
 
@@ -75,7 +80,7 @@ int compare_lines(const void *a, const void *b);
 int signal_name_to_number(const char *name);
 
 /* wc program */
-int wc(FILE *strmin, FILE *strmout);
+int wc(int argc, char *argv[]);
 
 /* cat [infile] */
 int cat(int argc, char *argv[]);

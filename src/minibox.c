@@ -225,21 +225,7 @@ int main(int argc, char *argv[]) {
 
   char *cmd = basename(argv[0]);
 
-  if (!strcmp(cmd, "wc")) {
-    if (argc == 1) {
-      return wc(stdin, stdout);
-    } else {
-      // FIXME: Integrate this into the wc function
-      FILE *f = fopen(argv[1], "r");
-      if (!f) {
-        fprintf(stderr, "wc: %s: No such file or directory\n", argv[1]);
-        return 1;
-      }
-      int res = wc(f, stdout);
-      fclose(f);
-      return res;
-    }
-  } else if (!strcmp(cmd, "cmp")) {
+  if (!strcmp(cmd, "cmp")) {
     if (argc != 3) {
       fprintf(stderr, "Usage: cmp [file1] [file2]\n");
       return 1;

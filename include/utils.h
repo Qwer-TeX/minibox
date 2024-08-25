@@ -24,6 +24,11 @@
 #include "minibox.h"
 
 // Function declarations
+// Universal Functions
+int is_option(const char *arg, char opt);
+// wc
+void count_stream(FILE *stream, int *lines, int *words, int *bytes, int *chars,
+                  int opt_m);
 // ls
 int compare_entries(const void *a, const void *b);
 void print_size(off_t size, int human_readable);
