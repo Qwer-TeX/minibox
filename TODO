@@ -1,2 +1,5 @@
 * Add tests alongside with PGO (Profile-guided Optimization)
+
 * Add Makefile targets to upx compress the executable and PGO it
+
+* Configure ./configure to detect system and adapt accordingly
