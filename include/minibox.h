@@ -32,13 +32,18 @@
 #include <windows.h>
 #define PATH_MAX MAX_PATH
 #else
+/* local compatibility headers under include to increase UNIX coverage */
+#include "limits.h"
+#include "signals.h"
+#include "stat.h"
+#include "sysmacros.h"
+#include "utmp.h"
+
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
 #include <libgen.h>
-#include <linux/limits.h>
-#include <linux/stat.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdint.h>
@@ -47,17 +52,16 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/reboot.h>
-#include <sys/stat.h>
+/* For the BSDs, libsysinfo port is required and `-I/usr/local/include` must be added to CFLAGS in Makefile */
 #include <sys/sysinfo.h>
-#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
 #include <utime.h>
-#include <utmp.h>
 #endif
+
 
 #include <stdbool.h>
 #include <stdio.h>
