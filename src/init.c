@@ -1,5 +1,5 @@
 /* init.c - init program.
- * Init fully written from scratch.
+ * Init extensively refactored.
  *
  * Copyright (C) 2024 Robert Johnson <mitnew842@gmail.com>
  * Copyright 2012 Harvind Singh <harvindsingh1981@gmail.com>
