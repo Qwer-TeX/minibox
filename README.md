@@ -68,7 +68,8 @@ IMPORTANT:
    one of these first, `make distclean` or (recommended) `./scripts/toggle_ifdef.sh -D`, choose which one fits you best.
 
 2. Second, go edit the respective source of the utility you want to compile, remove `#include "minibox.h"` and replace with
-   its respective headers and function definitions (I recommend creating a copy of the utility source into your $HOME directory).
+   its respective headers and function definitions (I recommend creating a copy of the utility source into your $HOME directory)
+   or don't remove the header and go to step 3.
 
 3. Last but not least, add the main function, it always will look like the one below:
 
