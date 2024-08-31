@@ -46,14 +46,14 @@ Plain and simple:
 
   To uninstall (you can't, because it's copied to install_dir, but something familiar):
 
-    1. make distclean
+    1. make clean
 
 
 IMPORTANT:
 
   After running ./configure, if you ever need to edit any code, run one of these first!!
 
-    1a. make distclean
+    1a. make clean
 
     OR
 
@@ -65,7 +65,7 @@ IMPORTANT:
 
 # Standalone Compilation
 1. To compile a utilitiy standalone, it is very easy, first don't run `./configure` or `make`, if you already have, run
-   one of these first, `make distclean` or (recommended) `./scripts/toggle_ifdef.sh -D`, choose which one fits you best.
+   one of these first, `make clean` or (recommended) `./scripts/toggle_ifdef.sh -D`, choose which one fits you best.
 
 2. Second, go edit the respective source of the utility you want to compile, remove `#include "minibox.h"` and replace with
    its respective headers and function definitions (I recommend creating a copy of the utility source into your $HOME directory)
