@@ -1,6 +1,6 @@
 CC			= gcc
 CFLAGS	= -g -Oz -Wall -Wextra
-FUNC		= xmalloc xrealloc
+FUNC		= xmalloc xrealloc xfopen
 SOURCES	= $(FUNC:=.c)
 OBJECTS = $(SOURCES:.c=.o)
 LIB			= libmb/libmb.a
