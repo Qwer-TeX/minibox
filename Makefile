@@ -40,10 +40,10 @@ links:
 
 clean:
 	rm -rf minibox $(EXEC) $(OBJS) tags install_dir
+	./scripts/toggle_ifdef.sh -D > /dev/null 2>&1
 
 distclean: clean
 	rm -f include/config.h
-	./scripts/toggle_ifdef.sh -D > /dev/null 2>&1
 
 .PHONY: all strip tags dist links install clean distclean
 
