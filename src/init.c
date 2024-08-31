@@ -6,7 +6,8 @@
  * Copyright 2013 Kyungwan Han  <asura321@gmail.com>
  *                      -- All Rights Reserved
  * Not guaranteed to work, patches welcome 24/7
- * FIXME: Keyboard input broken
+ * FIXME: Keyboard input has been untested, if no input, open an issue
+ *        on github.
  *
  * No Standard
  *
@@ -44,12 +45,66 @@ int current_runlevel = RUNLEVEL0; // Default runlevel
 
 // Initialize the console
 static void initialize_console(void) {
-  // Implementation unchanged
+  int fd;
+  char *p = getenv("CONSOLE");
+
+  if (!p)
+    p = getenv("console");
+  if (!p)
+    p = (char *)"/dev/console";
+  if (!p) {
+    fd = open("/dev/null", O_RDWR);
+    fprintf(stderr, "CONSOLE variable not set, defaulting to /dev/null\n");
+    if (fd >= 0) {
+      while (fd < 2)
+        fd = dup(fd);
+      while (fd > 2)
+        close(fd--);
+    }
+  } else {
+    fd = open(p, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    if (fd < 0)
+      fprintf(stderr, "Unable to open console %s\n", p);
+    else {
+      dup2(fd, 0);
+      dup2(fd, 1);
+      dup2(fd, 2);
+    }
+  }
+
+  if (!getenv("TERM"))
+    putenv("TERM=linux");
+  else if (!getenv("TERM"))
+    putenv("TERM=vt102");
 }
 
 // Reset terminal settings
 static void reset_term(int fd) {
-  // Implementation unchanged
+  struct termios terminal;
+
+  tcgetattr(fd, &terminal);
+  terminal.c_cc[VINTR] = 3;    // ctrl-c
+  terminal.c_cc[VQUIT] = 28;   /* ctrl-\ */
+  terminal.c_cc[VERASE] = 127; // ctrl-?
+  terminal.c_cc[VKILL] = 21;   // ctrl-u
+  terminal.c_cc[VEOF] = 4;     // ctrl-d
+  terminal.c_cc[VSTART] = 17;  // ctrl-q
+  terminal.c_cc[VSTOP] = 19;   // ctrl-s
+  terminal.c_cc[VSUSP] = 26;   // ctrl-z
+
+  terminal.c_line = 0;
+  terminal.c_cflag &=
+      CRTSCTS | PARODD | PARENB | CSTOPB | CSIZE | CBAUDEX | CBAUD;
+  terminal.c_cflag |= CLOCAL | HUPCL | CREAD;
+
+  // enable start/stop input and output control + map CR to NL on input
+  terminal.c_iflag = IXON | IXOFF | ICRNL;
+
+  // Map NL to CR-NL on output
+  terminal.c_oflag = ONLCR | OPOST;
+  terminal.c_lflag =
+      IEXTEN | ECHOKE | ECHOCTL | ECHOK | ECHOE | ECHO | ICANON | ISIG;
+  tcsetattr(fd, TCSANOW, &terminal);
 }
 
 // Add a new action to the list
