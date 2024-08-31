@@ -100,14 +100,19 @@ IMPORTANT:
     1. Find what function is from libmb
     2. The corresponding function would be stored in libmb/<function name>.c
     3. Copy the code for that function to the program you want to compile standalone
-    4. If you can find more function from libmb in the program, do steps 1 - 3 again.
+    4. If you can find more function from libmb in the program, do steps 1 - 3 again. (Medium difficulty)
 
     OR
 
     1. Find what function is from libmb.
     2. Inspect the code for that function from libmb and try to create your own
-    3. Create your own clone of that function from libmb into your program.
-    4. Do the same again if you find more functions from libmb
+    3. Create your own clone of that function from libmb into your program (yes, I mean get hands on into that source.)
+    4. Do the same again if you find more functions from libmb (Difficulty level self-explanitory, depends for each person)
+
+    OR
+
+    1. Compile libmb and at step 7, add `-Llibmb -lmb` so that the linker can respectively link the objects the
+       standalone program needs from the minibox library archive. (Easiest difficulty)
 
 6. Now compilation time
 
