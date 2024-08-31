@@ -34,7 +34,7 @@ Plain and simple:
 
   To build:
 
-    1. ./configure (no options)
+    1. ./configure (no options) OR if you want to compile all commands `yes | ./configure` would be fine
 
     2. make
 
