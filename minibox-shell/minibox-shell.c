@@ -21,18 +21,8 @@
  */
 
 /*
- * Plain and simple, creating a shell is a very complex task hence why there
- * are so little. I created this one to serve as a not so advanced shell with a
- * few POSIX compliance, don't think about using it as your daily driver or to
- * executable shell scripts, that functionality is not implemented yet. It
- * cannot read from a configuration file because the shell programming interface
- * is not implemented yet.
- *
- * But if you need a small shell that is not advanced like bash or busybox ash,
- * like for use in a text editor or something like that, give this a try, I warn
- * you though, it doesn't have many features you would expect and may have
- * unfound bugs. If you are a C programmer like me and want to make some
- * enhancements, contribute them! They'll help make this shell better.
+ * Plain and Simple:
+ * MiniBox Stupid-Ass SHell (SASH)
  */
 
 #include "linenoise/linenoise.h"
@@ -172,7 +162,7 @@ int shell_cd(char **args) {
     fprintf(stderr, "expected argument to \"cd\"\n");
   } else {
     if (chdir(args[1]) != 0) {
-      perror("mbsh");
+      perror("sash");
     }
   }
   return 1;
@@ -256,6 +246,31 @@ int handle_variable_assignment(char *arg) {
   return 0; // Not a variable assignment
 }
 
+// Function to launch a program
+int launch_program(char **args) {
+  pid_t pid, wpid;
+  int status;
+
+  pid = fork();
+  if (pid == 0) {
+    // Child process
+    if (execvp(args[0], args) == -1) {
+      perror("sash");
+      exit(EXIT_FAILURE);
+    }
+  } else if (pid < 0) {
+    // Error forking
+    perror("sash");
+  } else {
+    // Parent process
+    do {
+      wpid = waitpid(pid, &status, WUNTRACED);
+    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+  }
+
+  return 1;
+}
+
 // Function to execute a command
 int execute_command(char **args) {
   if (args[0] == NULL) {
@@ -273,31 +288,6 @@ int execute_command(char **args) {
   }
 
   return launch_program(args);
-}
-
-// Function to launch a program
-int launch_program(char **args) {
-  pid_t pid, wpid;
-  int status;
-
-  pid = fork();
-  if (pid == 0) {
-    // Child process
-    if (execvp(args[0], args) == -1) {
-      perror("mbsh");
-      exit(EXIT_FAILURE);
-    }
-  } else if (pid < 0) {
-    // Error forking
-    perror("mbsh");
-  } else {
-    // Parent process
-    do {
-      wpid = waitpid(pid, &status, WUNTRACED);
-    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-  }
-
-  return 1;
 }
 
 // Main loop

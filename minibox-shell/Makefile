@@ -2,11 +2,11 @@ CC=gcc
 CFLAGS=
 LDFLAGS=
 
-all: mbsh examples
+all: sash examples
 
-mbsh: minibox-shell.o
+sash: minibox-shell.o
 	$(CC) -s -o $@ $^ linenoise/linenoise.c
-	ln -s mbsh sh
+	ln -s sash sh
 
 minibox-shell.o: minibox-shell.c
 	$(CC) -s -Os -Ilinenoise -c $^
@@ -23,5 +23,5 @@ example3:
 	$(CC) -s -Os -Ilinenoise -o example3 example3.c linenoise/linenoise.c
 
 clean:
-	rm -rf *.o mbsh sh example1 example2 example3
+	rm -rf *.o sash sh example1 example2 example3
 
