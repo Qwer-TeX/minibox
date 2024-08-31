@@ -1,0 +1,39 @@
+This is library minibox, where all commonly used function for programs are stored
+that makes the code reusable, smaller, more efficient, and ultimatly faster.
+
+------------ What is the purpose of this library you may ask? -----------
+
+  The purpose of this library is to include as many commonly used functions as possible
+  so that the repetition of commonly used function doesn't increase the executable's size.
+
+  The general idea is to resuse/share common code with programs. This procedure can prove
+  beneficial, BusyBox and ToyBox use this technique. Most of the time, programs need 
+  to parse command line options like -a, -h, -v, etc. Many programs use the same option
+  parsing code described below.
+
+        +---------------------------------------+
+        |                                       |
+        |   // Option parsera                   |
+        |   for (int i = 1; i < argc; i++) {    |
+        |     if (argc[i][0] == '-') {          |
+        |       /~/~/~/ parse /~/~/~/~/         |
+        |       if (!strcmp.......)             |
+        |     }                                 |
+        |   }                                   |
+        |                                       |
+        +---------------------------------------+
+
+Each program uses the same code over and over again which makes the compiler think that the
+whole parsing code is different in every file but in reality it is not, the linker on the other
+hand can optimize for all files to use 1 function called again and again only if the objects are
+linked with the function stored in a seperate file. In simple terms, gcc cannot optimize code
+to be reused, but the linker can optimize the function object to be reused so why not make
+a library where that option parsing code is stored and the linker can link that function's object
+to the program object, then the linker at the end can make those object reuse code, sorry if you
+cannot understand what I said, try asking ChatGPT :) .
+
+------------- STANDALONE COMPILATION ---------------
+
+If you are in the case of trying to compile a program standalone without relying on 
+minibox and its library, you may freely and absolutely copy and paste the function's 
+code that the program relys on into the program from this library source.
