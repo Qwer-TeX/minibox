@@ -105,7 +105,7 @@ prompt_continue() {
 if prompt_continue; then
     # Optionally modify the Makefile or run make
     echo "Building Minibox..."
-    make
+    make -j$(nproc)
 else
     echo "Configuration completed but build not started."
 fi
