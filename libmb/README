@@ -13,7 +13,7 @@ that makes the code reusable, smaller, more efficient, and ultimatly faster.
 
         +---------------------------------------+
         |                                       |
-        |   // Option parsera                   |
+        |   // Option parser                    |
         |   for (int i = 1; i < argc; i++) {    |
         |     if (argc[i][0] == '-') {          |
         |       /~/~/~/ parse /~/~/~/~/         |
@@ -30,7 +30,7 @@ linked with the function stored in a seperate file. In simple terms, gcc cannot 
 to be reused, but the linker can optimize the function object to be reused so why not make
 a library where that option parsing code is stored and the linker can link that function's object
 to the program object, then the linker at the end can make those object reuse code, sorry if you
-cannot understand what I said, try asking ChatGPT :) .
+cannot understand what I said, try asking ChatGPT about it :) .
 
 ------------- STANDALONE COMPILATION ---------------
 
