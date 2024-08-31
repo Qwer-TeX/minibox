@@ -39,4 +39,8 @@ cannot understand what I said, try asking ChatGPT about it :) .
 
 If you are in the case of trying to compile a program standalone without relying on 
 minibox and its library, you may freely and absolutely copy and paste the function's 
-code that the program relys on into the program from this library source.
+code that the program relys on into the program from this library source, but that
+is not the only options, an easier options is to compile this whole library
+and link the static library to the standalone program (Steps described in README.md).
+The linker would link the respective objects the standalone program needs and omit
+the ones the standalone program doesn't, your choice, your freedom.
