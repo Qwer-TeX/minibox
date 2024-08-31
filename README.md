@@ -93,13 +93,27 @@ IMPORTANT:
     4a. Add `#define VERSION <some random chars>` or include `-DVERSION=\"some rand chars\"`
     4b. Remove `VERSION` and the corresponding `%s` in the {f}printf statement as a whole and/or replace with your fitting.
 
-5. Now compilation time
+5. Most of the time, programs use reusable functions from libmb, in that case, do the following:
+
+    1. Find what function is from libmb
+    2. The corresponding function would be stored in libmb/<function name>.c
+    3. Copy the code for that function to the program you want to compile standalone
+    4. If you can find more function from libmb in the program, do steps 1 - 3 again.
+
+    OR
+
+    1. Find what function is from libmb.
+    2. Inspect the code for that function from libmb and try to create your own
+    3. Create your own clone of that function from libmb into your program.
+    4. Do the same again if you find more functions from libmb
+
+6. Now compilation time
 
     `gcc -flto -o <utility> <utility>.c`, that was simple enough, you are not limited to add more compilation flags in,
     like from the Makefile `-Wall -Wextra` for extra warnings or `-g` to include debugging symbols, '-s' to not include 
     any debugging symbols, '-Oz' aggressive size optimization, `-O2` for performance optimization, etc.
 
-6. (Optional) Static Standalone Compilation:
+7. (Optional) Static Standalone Compilation:
 
     To statically compile without depending on any libraries, repeat steps 1 - 4 from Standalone Compilation.
 
@@ -114,7 +128,7 @@ IMPORTANT:
     Adding in your own utilites is very simple, decide what program you want to add to MiniBox
     then do the following.
 
-    1. To add the program, create the (example would be used from here on) `touch src/example.c`
+    1. To add the program, create its source file (example would be used from here on) (e.g. src/example.c)
 
     2.  Now edit it to include `#include "minibox.h"`, because all headers go into minibox.h
     2b. If your program consist of more than 1 function then `#include "utils.h"` and add its
