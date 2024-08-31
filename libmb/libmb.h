@@ -23,6 +23,9 @@
 
 /* All minibox library declaration go here */
 
+// All functions starting with x<func> abort if <func> fails
 void *xmalloc(size_t size);
 void *xrealloc(void *ptr, size_t size);
 FILE *xfopen(char *path, char *mode);
+
+// These are functions subsidised by the libmb itself
