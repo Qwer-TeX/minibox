@@ -118,7 +118,8 @@ IMPORTANT:
 
     2.  Now edit it to include `#include "minibox.h"`, because all headers go into minibox.h
     2b. If your program consist of more than 1 function then `#include "utils.h"` and add its
-        function definitions in utils.h
+        function definitions in utils.h because they can be used in other program too, if not,
+        still just add them.
 
     3. Add the program's function defintions in minibox.h, an example is described below
 
@@ -134,17 +135,17 @@ IMPORTANT:
         |   ~                                                                                         |
         |   ~                                                                                         |
         |   ~                                                                                         |
-        +---------------------------------------------------------------------------------------------|
+        +---------------------------------------------------------------------------------------------+
 
     4. Create the function with the program name in src/example.c and code what it does.
        (NOTE that your program has to do manual option parsing not using getopt because of maintaining
-       a small size, see other files to see how they do it)
+       a small size, see other files to see how they do it, a option parser would be added in libmb
+       in later versions)
 
     5. After you are done writing your program, in src/example.c edit src/minibox.c to update the commands
        table, the table is a struct described below:
 
         +-----------------------------------+
-        |                                   |
         |                                   |
         |   // Command struct               |
         |   typedef struct {                |
@@ -170,7 +171,7 @@ IMPORTANT:
         |       #ifdef CONFIG_EXAMPLE                                                                 |
         |           {"example", example},                                                             |
         |       #endif                                                                                |
-        +---------------------------------------------------------------------------------------------|
+        +---------------------------------------------------------------------------------------------+
 
         a.  `const char *cmd_name` would be how example() would be invoked, can be invoked with 
         b.  `./minibox example` or `./example` if example is a symlink to minibox
@@ -179,7 +180,7 @@ IMPORTANT:
 
         The struct was only made to simplify and more modularize the code to make adding in more programs
         easier, before, it used the `else if !strcmp(cmd, "example")` which was too much and would cause
-        more function overhead.
+        more function overhead and increase the executable size.
 
     6. Add into Makefile
     
