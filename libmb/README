@@ -1,6 +1,9 @@
 This is library minibox, where all commonly used function for programs are stored
 that makes the code reusable, smaller, more efficient, and ultimatly faster.
 
+If you notice the symlink to minibox.h header, it is there to not confuse anybody's
+high-fi editors (nvim, vscode, etc) :)
+
 ------------ What is the purpose of this library you may ask? -----------
 
   The purpose of this library is to include as many commonly used functions as possible
