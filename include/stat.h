@@ -1,4 +1,5 @@
 #if defined(__linux__)
 #include <linux/stat.h>
-#endif
+#else
 #include <sys/stat.h>
+#endif
