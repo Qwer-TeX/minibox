@@ -1,5 +1,5 @@
 CC			= gcc
-CFLAGS	= -g -Oz -Wall -Wextra
+CFLAGS	= -g -Oz -Wall -Wextra -I../include
 FUNC		= xmalloc xrealloc xfopen
 SOURCES	= $(FUNC:=.c)
 OBJECTS = $(SOURCES:.c=.o)
