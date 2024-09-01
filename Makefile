@@ -45,7 +45,7 @@ clean:
 	rm -rf minibox $(EXEC) $(OBJS) tags install_dir
 
 distclean: clean
-	rm -f include/config.h
+	rm -f include/config.h compile_commands.json
 	./scripts/toggle_ifdef.sh -D > /dev/null 2>&1
 
 .PHONY: all strip tags dist links install clean distclean
