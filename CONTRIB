@@ -3,6 +3,9 @@ CONTRIBUTERS:
   * Stephen M. Jones <support@actmac.com>
     Enhanced cmp.c
 
+  * Brad D <https://github.com/bedwardly-down>
+    Added local headers to improve Unix compatibility
+
 -----------------------------------------------------------------------
 How to Contribute:
 
