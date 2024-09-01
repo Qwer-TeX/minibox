@@ -1,218 +1,113 @@
+
 # MiniBox
-Ultra small and simple micro-embedded Linux command set
+Ultra-small and simple micro-embedded Linux command set
 
-MiniBox - 
-![MINIBOX-wTitle](https://github.com/user-attachments/assets/5e0caa54-876e-40a6-8fe3-186027ac4fa3)
+![MiniBox](https://github.com/user-attachments/assets/5e0caa54-876e-40a6-8fe3-186027ac4fa3)
 
+MiniBox is not a fork of BusyBox or ToyBox; it is entirely written from scratch. Inspired by the "small and simple is beautiful" philosophy of Thompson and Ritchie, MiniBox embodies a minimalistic approach that aligns with its name.
 
-This project is not a fork of any BusyBox or ToyBox, it is fully written from scratch. It follows the
-original Thompson and Ritchie "small and simple is beautiful" philosophy, which is very attractive for
-this project regarding the name.
+## What is this project?
+MiniBox is a collection of ultra-miniature C utilities comparable to the full-sized GNU Coreutils. The key difference is that MiniBox utilities omit uncommon options and prioritize size over features. Each utility can be compiled standalone, separate from the MiniBox suite.
 
-# What is this project?
+## Why MiniBox?
+Why choose MiniBox? Here are some reasons:
 
-This project contains many ultra mini sized utilies made in C that compares to the full sized coretuils'
-utilites. 1 major difference is that the mini sized utilites lack very uncommon options and prioritizes
-size over features, they can be compiled standalone seperatly from MiniBox at your own will.
+1. **Extremely Small**: MiniBox comes in under 60KB.
+2. **Blazingly Fast**: It is 7.3x faster than BusyBox and 3.1x faster than ToyBox.
+3. **Simple Source Code**: The code is easy to understand with zero bloat.
+4. **Universal libc Support**: Compatible with dietlibc, uclibc, musl, glibc, etc.
+5. **No Dependencies**: Except for libc, MiniBox requires no external dependencies.
+6. **Standalone Utilities**: Each utility can be compiled independently (see Standalone Compilation).
 
-# Why MiniBox
-Honestly, why would anyone use this?
+## How to Build
+Follow these simple steps to build MiniBox:
 
-  1. Very small, comes under 60K.
+1. **Configure**:
+   - Run `./configure` (no options) to configure the build.
+   - To compile all commands, you can use `yes | ./configure`.
 
-  2. Very fast, (7.3x faster than BusyBox) (3.1x ToyBox)
+2. **Compile**:
+   - Run `make`.
 
-  3. Simple, easy to understand source (0 code bloat).
+3. **Install**:
+   - Run `make install` to install MiniBox to `install_dir`.
 
-  4. Supports all libc's (dietlibc, uclibc, musl, glibc, etc.)
+### Cleaning Up
+- **Remove compiled objects**: Run `make distclean`.
+- **Uninstall**: Since files are copied to `install_dir`, you can't uninstall traditionally, but you can clean up with `make distclean`.
 
-  5. 0 Dependencies (with the exception of libc.)
+### Important Notes
+If you need to edit any code after running `./configure`, you must first run:
 
-  6. All utilities can compile standalone* (see Standalone Compilation) .
+1. `make distclean`
+   - **OR**
+2. `./scripts/toggle_ifdef.sh -D` (recommended)
 
+This will remove the `#ifdef` statements from the source files so that everything compiles without running `./configure`.
 
-# How To Build
-Plain and simple:
+## Standalone Compilation
+To compile a utility standalone:
 
-  To build:
+1. **Clean Up**:
+   - If you've already run `./configure` or `make`, run `make distclean` or `./scripts/toggle_ifdef.sh -D`.
 
-    1. ./configure (no options) OR if you want to compile all commands `yes | ./configure` would be fine
+2. **Edit the Source**:
+   - Remove `#include "minibox.h"` and replace it with the necessary headers and function definitions (or copy the source to your home directory before modifying).
 
-    2. make
+3. **Add a Main Function**:
+   - Your main function should look like this:
 
-    3. make install (Installs to install_dir)
+```c
+int main(int argc, char *argv[]) {
+    return example(argc, argv);
+}
+```
 
-  To remove individually compiled objects
+4. **Handle the VERSION Macro**:
+   - Either add `#define VERSION <some_random_chars>` or remove `VERSION` and the corresponding `%s` in the printf statement.
 
-    1. make distclean
+5. **Handle Reusable Functions**:
+   - If your program uses functions from `libmb`, either copy the code from `libmb/<function_name>.c` into your program or compile `libmb` and link it with `-Llibmb -lmb`.
 
-  To uninstall (you can't, because it's copied to install_dir, but something familiar):
+6. **Compile**:
+   - Use `gcc -flto -o <utility> <utility>.c`. You can add additional compilation flags as needed.
 
-    1. make distclean
+7. **Optional: Static Compilation**:
+   - To compile statically, use `gcc -static -flto -o <utility> <utility>.c -lc`. If compilation fails, ensure that all necessary libraries are included.
 
+## Adding Your Own Utilities
+If you want to contribute or add your own utilities:
 
-IMPORTANT:
+1. **Create the Source File**:
+   - Create the source file (e.g., `src/example.c`).
 
-  After running ./configure, if you ever need to edit any code, run one of these first!!
+2. **Include Headers**:
+   - Include `#include "minibox.h"` in your source file.
+   - If your program has multiple functions, also include `#include "utils.h"`.
 
-    1a. make distclean
+3. **Define Functions**:
+   - Add the function definitions to `minibox.h`:
 
-    OR
+```c
+int example(int argc, char *argv[]);
+```
 
-    1b. ./scripts/toggle_ifdef.sh -D (recommended)
+4. **Implement the Program**:
+   - Implement the program in `src/example.c`. Manual option parsing is required (do not use `getopt`).
 
-  This would remove the ifdefs from the source files so that all compile without ./configure
-  this is also respectively self-explanitory if you understand the purpose.
+5. **Update the Commands Table**:
+   - Add your program to the commands table in `src/minibox.c`:
 
-
-# Standalone Compilation
-1. To compile a utilitiy standalone, it is very easy, first don't run `./configure` or `make`, if you already have, run
-   one of these first, `make distclean` or (recommended) `./scripts/toggle_ifdef.sh -D`, choose which one fits you best.
-
-2. Second, go edit the respective source of the utility you want to compile, remove `#include "minibox.h"` and replace with
-   its respective headers and function definitions (I recommend creating a copy of the utility source into your $HOME directory)
-   or don't remove the header and go to step 3.
-
-3. Last but not least, add the main function, it always will look like the one below:
-
-    +---------------------------------------------------------------------------------------------+
-    |   example.c:                                                                                |
-    |                                                                                             |
-    |   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/ utility code in example() /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~  |
-    |                                                                                             |
-    |   int main(int argc, char *argv[])                                                          |
-    |   {                                                                                         |
-    |       return example(argc, argv);                                                           |
-    |   }                                                                                         |
-    |   ~                                                                                         |
-    |   ~                                                                                         |
-    |   ~                                                                                         |
-    |   ~                                                                                         |
-    +---------------------------------------------------------------------------------------------|
-
-4. If you ever see the define `VERSION` in any source code, respectively choose one of the following:
-    
-    4a. Add `#define VERSION <some random chars>` or include `-DVERSION=\"some rand chars\"`
-    4b. Remove `VERSION` and the corresponding `%s` in the {f}printf statement as a whole and/or replace with your fitting.
-
-5. Most of the time, programs use reusable functions from libmb, in that case, do the following:
-
-    1. Find what function is from libmb
-    2. The corresponding function would be stored in libmb/<function name>.c
-    3. Copy the code for that function to the program you want to compile standalone
-    4. If you can find more function from libmb in the program, do steps 1 - 3 again. (Medium difficulty)
-
-    OR
-
-    1. Find what function is from libmb.
-    2. Inspect the code for that function from libmb and try to create your own
-    3. Create your own clone of that function from libmb into your program (yes, I mean get hands on into that source.)
-    4. Do the same again if you find more functions from libmb (Difficulty level self-explanitory, depends for each person)
-
-    OR
-
-    1. Compile libmb and at step 7, add `-Llibmb -lmb` so that the linker can respectively link the objects the
-       standalone program needs from the minibox library archive. (Easiest difficulty)
-
-6. Now compilation time
-
-    `gcc -flto -o <utility> <utility>.c`, that was simple enough, you are not limited to add more compilation flags in,
-    like from the Makefile `-Wall -Wextra` for extra warnings or `-g` to include debugging symbols, '-s' to not include 
-    any debugging symbols, '-Oz' aggressive size optimization, `-O2` for performance optimization, etc.
-
-7. (Optional) Static Standalone Compilation:
-
-    To statically compile without depending on any libraries, repeat steps 1 - 4 from Standalone Compilation.
-
-    `gcc -static -flto -o <utility> <utility>.c -lc`, if compilation fails, check to see what functions is the utility using
-    and check from where is the function avaliable from a library, a math function belongs in libm, so include `-lm` or gcc
-    could do that for you sometimes.
-
-
-# Adding your own implementation of utilites
-    If you want to contribute or add your very own utilities, then this section is for you.
-
-    Adding in your own utilites is very simple, decide what program you want to add to MiniBox
-    then do the following.
-
-    1. To add the program, create its source file (example would be used from here on) (e.g. src/example.c)
-
-    2.  Now edit it to include `#include "minibox.h"`, because all headers go into minibox.h
-    2b. If your program consist of more than 1 function then `#include "utils.h"` and add its
-        function definitions in utils.h because they can be used in other program too, if not,
-        still just add them.
-
-    3. Add the program's function defintions in minibox.h, an example is described below
-
-        +---------------------------------------------------------------------------------------------+
-        |   include/minibox.h:                                                                        |
-        |                                                                                             |
-        |   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/ minibox.h /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~                  |
-        |                                                                                             |
-        |   /* example program */                                                                     |
-        |   int example(int argc, char *argv[]);                                                      |
-        |                                                                                             |
-        |   ~                                                                                         |
-        |   ~                                                                                         |
-        |   ~                                                                                         |
-        |   ~                                                                                         |
-        +---------------------------------------------------------------------------------------------+
-
-    4. Create the function with the program name in src/example.c and code what it does.
-       (NOTE that your program has to do manual option parsing not using getopt because of maintaining
-       a small size, see other files to see how they do it, a option parser would be added in libmb
-       in later versions)
-
-    5. After you are done writing your program, in src/example.c edit src/minibox.c to update the commands
-       table, the table is a struct described below:
-
-        +-----------------------------------+
-        |                                   |
-        |   // Command struct               |
-        |   typedef struct {                |
-        |     const char *cmd_name;         |
-        |     CommandFunc cmd_func;         |
-        |   } Command;                      |
-        |                                   |
-        +-----------------------------------+
-
-        and this is how you would append your program to the end of the commands table
-
-
-        +---------------------------------------------------------------------------------------------+
-        |   include/minibox.c:                                                                        |
-        |                                                                                             |
-        |   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/ minibox.c /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/                   |
-        |                                                                                             |
-        |       Command commands[] = {                                                                |
-        |       #ifdef CONFIG_WC                                                                      |
-        |           {"wc", wc},                                                                       |
-        |       #endif                                                                                |
-        |       /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/                       |
-        |       #ifdef CONFIG_EXAMPLE                                                                 |
-        |           {"example", example},                                                             |
-        |       #endif                                                                                |
-        +---------------------------------------------------------------------------------------------+
-
-        a.  `const char *cmd_name` would be how example() would be invoked, can be invoked with 
-        b.  `./minibox example` or `./example` if example is a symlink to minibox
-        c.  `CommandFunc cmd_func;` would be the function executed when minibox is invoked as described
-            in subsection b
-
-        The struct was only made to simplify and more modularize the code to make adding in more programs
-        easier, before, it used the `else if !strcmp(cmd, "example")` which was too much and would cause
-        more function overhead and increase the executable size.
-
-    6. Add into Makefile
-    
-        Edit the makefile to include the `example` program into the PROGS variable.
-
-        Then you are done, the ./configure and ./scripts/toggle_ifdef.sh would automatically do the job for you,
-        no need to edit those unless you want to improve upon them.
-
-    7. Test and execute
-
-        Now you can select yes or press enter when running ./configure to example.
-        Now you can compile and link that program into the minibox executable.
-
-        Hope this helps :)
+```c
+Command commands[] = {
+    #ifdef CONFIG_EXAMPLE
+        {"example", example},
+    #endif
+};
+```
+
+6. **Edit the Makefile**:
+   - Add your program to the `PROGS` variable in the Makefile.
+
+7. **Test**:
+   - Run `./configure` and select your program for compilation.
