@@ -13,7 +13,10 @@ OBJS = $(SRCS:.c=.o)
 
 VERSION=0.3.1
 
-all: $(EXEC) strip
+all: subdir_all $(EXEC) strip
+
+subdir_all:
+	$(MAKE) -C libmb
 
 $(EXEC): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
