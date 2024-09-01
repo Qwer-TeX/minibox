@@ -80,33 +80,7 @@ echo "Configuration complete. Generated $CONFIG_H."
 echo "Running ./scripts/toggle_ifdef.sh to update source files..."
 ./scripts/toggle_ifdef.sh > /dev/null 2>&1
 
-# Function to prompt the user to continue
-prompt_continue() {
-    local choice
-    while true; do
-        read -p "Do you want to continue? (yes/no): " choice
-        case "$choice" in
-            yes|y|Y )
-                echo "Continuing with the build..."
-                return 0
-                ;;
-            no|n|N )
-                echo "Exiting. You can run 'make' manually when ready."
-                return 1
-                ;;
-            * )
-                echo "Please answer yes or no."
-                ;;
-        esac
-    done
-}
-
-# Check if the user wants to continue
-if prompt_continue; then
-    # Optionally modify the Makefile or run make
-    echo "Building Minibox..."
-    make -j$(nproc)
-else
-    echo "Configuration completed but build not started."
-fi
+# # Directly proceed to build
+# echo "Building Minibox..."
+# make -j$(nproc)
 
