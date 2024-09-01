@@ -27,7 +27,7 @@ Follow these simple steps to build MiniBox:
    - To compile all commands, you can use `yes | ./configure`.
 
 2. **Compile**:
-   - Run `make`.
+   - Run `make`. (if you select yes to continue, `./configure` would do it for you)
 
 3. **Install**:
    - Run `make install` to install MiniBox to `install_dir`.
