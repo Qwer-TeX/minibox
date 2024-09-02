@@ -21,7 +21,7 @@
 #include "libmb.h"
 
 void *xzalloc(size_t size) {
-  void *ret = xmalloc(size);
-  memset(ret, 0, size);
-  return ret;
+  void *retval = xmalloc(size);
+  memset(retval, 0, size);
+  return retval;
 }
