@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_FALSE
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -24,3 +26,4 @@
 /* false program */
 /* return false or 1 */
 int _false(int argc, char *argv[]) { return 1; }
+#endif /* CONFIG_FALSE */

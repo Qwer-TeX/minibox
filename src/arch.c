@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_ARCH
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -53,3 +55,4 @@ int arch(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_ARCH */

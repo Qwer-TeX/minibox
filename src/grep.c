@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_GREP
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -47,3 +49,4 @@ int grep(int argc, char *argv[]) {
   fclose(file);
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_GREP */

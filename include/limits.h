@@ -3,8 +3,12 @@
 
 #if defined(__linux__)
 #include <linux/limits.h>
+#elif defined(__APPLE__)
+#include <sys/syslimits.h>
 #else
-#include <sys/limits.h>
+#include <limits.h>
+#ifndef PATH_MAX
 #define PATH_MAX 4096
+#endif
 #endif
 #endif

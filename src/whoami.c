@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_WHOAMI
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -33,3 +35,4 @@ int whoami(int argc, char *argv[]) {
   printf("%s\n", pw_ent->pw_name);
   return 0;
 }
+#endif /* CONFIG_WHOAMI */

@@ -7,6 +7,11 @@ CONFIG_PREFIX="CONFIG_"
 add_ifdef_guards() {
     for file in "$SRC_DIR"/*.c; do
         filename=$(basename "$file" .c)
+        # Never touch the core dispatcher; it has special handling for
+        # CONFIG_MINIBOX and unconditional new commands + sentinel.
+        if [ "$filename" = "minibox" ]; then
+            continue
+        fi
         macro="${CONFIG_PREFIX}$(echo $filename | tr '[:lower:]' '[:upper:]')"
 
         # Check if the file already has the guard
@@ -40,6 +45,13 @@ add_ifdef_guards() {
 remove_ifdef_guards() {
     for file in "$SRC_DIR"/*.c; do
         filename=$(basename "$file" .c)
+        # Protect core + the added commands (not in base git history) so that
+        # distclean + "make clean && make" still yields a full working build
+        # with clean gcc lines (no need for the old -DCONFIG spam).
+        case "$filename" in
+            minibox|help|uname|mkfifo|ln|chmod|chown|printf|pidof|lsmod|rmmod|insmod|modprobe|mount|umount|df|su|login|poweroff)
+                continue ;;
+        esac
         macro="${CONFIG_PREFIX}$(echo $filename | tr '[:lower:]' '[:upper:]')"
 
         # Remove #ifdef guard

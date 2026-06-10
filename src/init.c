@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_INIT
 /* init.c - init program.
  * Init extensively refactored.
  *
@@ -92,9 +94,11 @@ static void reset_term(int fd) {
   terminal.c_cc[VSTOP] = 19;   // ctrl-s
   terminal.c_cc[VSUSP] = 26;   // ctrl-z
 
+#if defined(__linux__)
   terminal.c_line = 0;
   terminal.c_cflag &=
       CRTSCTS | PARODD | PARENB | CSTOPB | CSIZE | CBAUDEX | CBAUD;
+#endif
   terminal.c_cflag |= CLOCAL | HUPCL | CREAD;
 
   // enable start/stop input and output control + map CR to NL on input
@@ -253,8 +257,8 @@ static void run_command(char *command) {
     final_command[x] = NULL;
   } else {
     snprintf((char *)malloc(strlen(command) + 6), 64, "exec %s", command);
-    command = "-/bin/sh" + 1;
-    final_command[0] = "-/bin/sh" + !hyphen;
+    command = &"-/bin/sh"[1];
+    final_command[0] = &"-/bin/sh"[!hyphen];
     final_command[1] = "-c";
     final_command[2] = command;
     final_command[3] = NULL;
@@ -277,7 +281,12 @@ static pid_t final_run(struct action_list_seed *x) {
   if (x->action & ASKFIRST)
     pid = fork();
   else
+#if defined(__linux__)
     pid = vfork();
+#else
+    pid = fork();
+#endif
+
 
   if (pid > 0) {
     sigfillset(&signal_set);
@@ -381,3 +390,4 @@ int init(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_INIT */

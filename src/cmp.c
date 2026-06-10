@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_CMP
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -62,3 +64,4 @@ int cmp(int argc, char *argv[]) {
   fclose(f2);
   return ret;
 }
+#endif /* CONFIG_CMP */

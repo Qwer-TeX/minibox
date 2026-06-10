@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_CP
 #include "minibox.h"
 
 #define BUFFER_SIZE 1024
@@ -43,3 +45,4 @@ int cp(int argc, char *argv[]) {
 
   return (bytes_read < 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
+#endif /* CONFIG_CP */

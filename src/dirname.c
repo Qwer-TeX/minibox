@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_DIRNAME
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -40,3 +42,4 @@ int print_dirname(int argc, char *argv[]) {
   free(path_copy);
   return 0;
 }
+#endif /* CONFIG_DIRNAME */

@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_CUT
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -172,3 +174,4 @@ int cut(int argc, char *argv[]) {
   free(fields);
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_CUT */

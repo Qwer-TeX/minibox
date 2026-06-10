@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_SLEEP
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -43,3 +45,4 @@ int _sleep(int argc, char *argv[]) {
   sleep((unsigned int)secs);
   return 0;
 }
+#endif /* CONFIG_SLEEP */

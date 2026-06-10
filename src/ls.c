@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_LS
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -32,7 +34,7 @@ void print_size(off_t size, int human_readable) {
   }
 
   const char suffixes[] = "BKMGT";
-  int i = 0;
+  size_t i = 0;
   double size_d = size;
 
   while (size_d >= 1024 && i < sizeof(suffixes) - 1) {
@@ -54,7 +56,7 @@ void print_long_format(const char *path, const char *filename,
   }
 
   printf("%c", S_ISDIR(file_info.st_mode) ? 'd' : '-');
-  printf("%c%c%c%c%c%c%c%c ", (file_info.st_mode & S_IRUSR) ? 'r' : '-',
+  printf("%c%c%c%c%c%c%c%c%c ", (file_info.st_mode & S_IRUSR) ? 'r' : '-',
          (file_info.st_mode & S_IWUSR) ? 'w' : '-',
          (file_info.st_mode & S_IXUSR) ? 'x' : '-',
          (file_info.st_mode & S_IRGRP) ? 'r' : '-',
@@ -165,3 +167,4 @@ int ls(int argc, char *argv[]) {
   free(entries);
   return 0;
 }
+#endif /* CONFIG_LS */

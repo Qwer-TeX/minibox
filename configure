@@ -57,7 +57,8 @@ for c_file in "${c_files[@]}"; do
     # Extract feature name from the .c file name
     feature_name=$(basename "$c_file" .c)
     feature_text="Enable $feature_name command"
-    feature_define="CONFIG_${feature_name^^}" # Convert to uppercase for define
+    # Use tr instead of ${^^} for portability (Apple ships bash 3.2 which doesn't support ^^)
+    feature_define="CONFIG_$(echo "$feature_name" | tr '[:lower:]' '[:upper:]')"
 
     # Prompt user for feature inclusion
     result=$(prompt_yes_no "$feature_text" "$default_value")
@@ -79,6 +80,11 @@ echo "Configuration complete. Generated $CONFIG_H."
 # Execute ./scripts/toggle_ifdef.sh
 echo "Running ./scripts/toggle_ifdef.sh to update source files..."
 ./scripts/toggle_ifdef.sh > /dev/null 2>&1
+
+echo ""
+echo "Tip: If you just want everything enabled quickly, you can also run:"
+echo "    yes | ./configure"
+echo "    make"
 
 # # Directly proceed to build
 # echo "Building Minibox..."

@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_KILL
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -112,3 +114,4 @@ int kill_process(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_KILL */

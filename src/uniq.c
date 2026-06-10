@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_UNIQ
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -63,3 +65,4 @@ int uniq(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_UNIQ */

@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_DATE
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -246,3 +248,4 @@ static void print_file_modification_time(const char *filename) {
     perror("stat");
   }
 }
+#endif /* CONFIG_DATE */

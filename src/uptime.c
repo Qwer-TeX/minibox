@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_UPTIME
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -23,6 +25,7 @@
 
 /* uptime program */
 int uptime(int argc, char *argv[]) {
+#if defined(__linux__)
   struct sysinfo info;
 
   if (sysinfo(&info) != 0) {
@@ -42,6 +45,9 @@ int uptime(int argc, char *argv[]) {
   // Print uptime
   printf("uptime: %ld day(s), %ld:%02ld:%02ld\n", days, hours, minutes,
          seconds);
-
+#else
+  printf("uptime: not available on this platform\n");
+#endif
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_UPTIME */

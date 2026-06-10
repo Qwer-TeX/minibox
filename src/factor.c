@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_FACTOR
 #include "minibox.h"
 
 // I remember I made a similar program like this to aid in learning C, that
@@ -40,3 +42,4 @@ int factor(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_FACTOR */

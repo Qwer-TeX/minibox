@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_PS
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -56,3 +58,4 @@ int ps(int argc, char *argv[]) {
   closedir(proc_dir);
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_PS */

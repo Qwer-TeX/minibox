@@ -1,12 +1,14 @@
 CC = gcc
 CFLAGS = -Oz -flto -g -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-result -Iinclude -DVERSION=\"$(VERSION)\"
+
 LDFLAGS = -flto
 EXEC = minibox_unstripped
 
 PROGS = wc cp cat sync yes update sleep whoami true false ls echo init cmp rm \
 				rmdir mkdir mknod hostname free xxd od hexdump w vmstat cut grep tr sort uniq \
 				uptime ps kill tty link unlink nohup dirname basename cal clear env expand \
-				unexpand fold factor touch head tail paste arch date
+				unexpand fold factor touch head tail paste arch date uname mkfifo ln chmod \
+				chown printf pidof lsmod rmmod insmod modprobe mount umount df su login poweroff
 
 SRCS = $(addprefix src/, $(PROGS:=.c)) src/help.c src/minibox.c
 OBJS = $(SRCS:.c=.o)
@@ -26,7 +28,11 @@ $(EXEC): $(OBJS)
 
 strip: $(EXEC)
 	# Lets reduce the executable size even more by removing useless sections
-	$@ -s -R .note -R .comment -R .symtab -R.strtab $^ -o minibox
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		cp $^ minibox && strip -S minibox; \
+	else \
+		strip -s -R .note -R .comment -R .symtab -R.strtab $^ -o minibox; \
+	fi
 	ls -l minibox
 	size minibox
 
@@ -46,7 +52,6 @@ clean:
 
 distclean: clean
 	rm -f include/config.h compile_commands.json
-	./scripts/toggle_ifdef.sh -D > /dev/null 2>&1
 
 .PHONY: all strip tags dist links install clean distclean
 

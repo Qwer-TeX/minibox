@@ -53,7 +53,9 @@
 #include <sys/ioctl.h>
 #include <sys/reboot.h>
 /* For the BSDs, libsysinfo port is required and `-I/usr/local/include` must be added to CFLAGS in Makefile */
+#if defined(__linux__)
 #include <sys/sysinfo.h>
+#endif
 #include <sys/types.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
@@ -243,5 +245,71 @@ int help(int argc, char *argv[]);
 
 /* version function */ // Not a program
 int version(int argc, char *argv[]);
+
+/* printf program */
+int printf_cmd(int argc, char *argv[]);
+
+/* pidof program */
+int pidof(int argc, char *argv[]);
+
+/* lsmod program */
+int lsmod(int argc, char *argv[]);
+
+/* rmmod program */
+int rmmod(int argc, char *argv[]);
+
+/* insmod program */
+int insmod(int argc, char *argv[]);
+
+/* modprobe program */
+int modprobe(int argc, char *argv[]);
+
+/* mount program */
+int mount_cmd(int argc, char *argv[]);
+
+/* umount program */
+int umount_cmd(int argc, char *argv[]);
+
+/* df program */
+int df(int argc, char *argv[]);
+
+/* su program */
+int su(int argc, char *argv[]);
+
+/* login program */
+int login(int argc, char *argv[]);
+
+/* help function */ // Not a program
+int help(int argc, char *argv[]);
+
+/* version function */ // Not a program
+int version(int argc, char *argv[]);
+
+/* uname program */
+int uname_cmd(int argc, char *argv[]);
+
+/* mkfifo program */
+int mkfifo_cmd(int argc, char *argv[]);
+
+/* ln program */
+int ln(int argc, char *argv[]);
+
+/* chmod program */
+int chmod_cmd(int argc, char *argv[]);
+
+/* chown program */
+int chown_cmd(int argc, char *argv[]);
+
+/* printf program */
+int printf_cmd(int argc, char *argv[]);
+
+/* pidof program */
+int pidof(int argc, char *argv[]);
+
+/* lsmod program */
+int lsmod(int argc, char *argv[]);
+
+/* poweroff/reboot/halt */
+int poweroff(int argc, char *argv[]);
 
 #endif // !COMMANDS_H

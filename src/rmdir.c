@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_RMDIR
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -40,3 +42,4 @@ int rmdir_cmd(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_RMDIR */

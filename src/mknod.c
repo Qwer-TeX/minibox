@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_MKNOD
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -67,3 +69,4 @@ int mknod_command(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_MKNOD */
