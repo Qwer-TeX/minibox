@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_CAT
 #include "minibox.h"
 
 #define BUFFER_SIZE 1024
@@ -49,3 +51,4 @@ int cat(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_CAT */

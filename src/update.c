@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_UPDATE
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -31,3 +33,4 @@ int update(int argc, char *argv[]) {
     sleep(30);
   }
 }
+#endif /* CONFIG_UPDATE */

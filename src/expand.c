@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_EXPAND
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -80,3 +82,4 @@ int expand(int argc, char *argv[]) {
     fclose(input);
   return 0;
 }
+#endif /* CONFIG_EXPAND */

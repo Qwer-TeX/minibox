@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_HELP
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -190,8 +192,62 @@ int help(int argc, char *argv[]) {
 #ifdef CONFIG_DATE
          "date:     Print/set system time and date\n"
 #endif
-         // Add more commands here as needed
+#ifdef CONFIG_UNAME
+         "uname:    Print system information\n"
+#endif
+#ifdef CONFIG_MKFIFO
+         "mkfifo:   Make named pipes (FIFOs)\n"
+#endif
+#ifdef CONFIG_LN
+         "ln:       Create links between files\n"
+#endif
+#ifdef CONFIG_CHMOD
+         "chmod:    Change file mode bits\n"
+#endif
+#ifdef CONFIG_CHOWN
+         "chown:    Change file owner and group\n"
+#endif
+#ifdef CONFIG_PRINTF
+         "printf:   Format and print data\n"
+#endif
+#ifdef CONFIG_PIDOF
+         "pidof:    Find process ID of a running program\n"
+#endif
+#ifdef CONFIG_LSMOD
+         "lsmod:    List loaded kernel modules\n"
+#endif
+#ifdef CONFIG_RMMOD
+         "rmmod:    Remove a module from the Linux kernel\n"
+#endif
+#ifdef CONFIG_INSMOD
+         "insmod:   Insert a module into the Linux kernel\n"
+#endif
+#ifdef CONFIG_MODPROBE
+         "modprobe: Add or remove modules from the Linux kernel\n"
+#endif
+#ifdef CONFIG_MOUNT
+         "mount:    Mount a filesystem\n"
+#endif
+#ifdef CONFIG_UMOUNT
+         "umount:   Unmount a filesystem\n"
+#endif
+#ifdef CONFIG_DF
+         "df:       Report filesystem disk space usage\n"
+#endif
+#ifdef CONFIG_SU
+         "su:       Change user ID or become superuser\n"
+#endif
+#ifdef CONFIG_LOGIN
+         "login:    Begin a session on the system\n"
+#endif
+#ifdef CONFIG_POWEROFF
+         "poweroff: Power off the system\n"
+         "reboot:   Reboot the system\n"
+         "halt:     Halt the system\n"
+#endif
+	// Add more commands here as needed
          "\n",
          VERSION);
   return 0;
 }
+#endif /* CONFIG_HELP */

@@ -36,6 +36,7 @@ typedef struct {
   CommandFunc cmd_func;
 } Command;
 
+
 // Create command table conditionally
 Command commands[] = {
 #ifdef CONFIG_WC
@@ -194,14 +195,68 @@ Command commands[] = {
 #ifdef CONFIG_DATE
     {"date", date},
 #endif
+#ifdef CONFIG_UNAME
+    {"uname", uname_cmd},
+#endif
+#ifdef CONFIG_MKFIFO
+    {"mkfifo", mkfifo_cmd},
+#endif
+#ifdef CONFIG_LN
+    {"ln", ln},
+#endif
+#ifdef CONFIG_CHMOD
+    {"chmod", chmod_cmd},
+#endif
+#ifdef CONFIG_CHOWN
+    {"chown", chown_cmd},
+#endif
+#ifdef CONFIG_PRINTF
+    {"printf", printf_cmd},
+#endif
+#ifdef CONFIG_PIDOF
+    {"pidof", pidof},
+#endif
+#ifdef CONFIG_LSMOD
+    {"lsmod", lsmod},
+#endif
+#ifdef CONFIG_RMMOD
+    {"rmmod", rmmod},
+#endif
+#ifdef CONFIG_INSMOD
+    {"insmod", insmod},
+#endif
+#ifdef CONFIG_MODPROBE
+    {"modprobe", modprobe},
+#endif
+#ifdef CONFIG_MOUNT
+    {"mount", mount_cmd},
+#endif
+#ifdef CONFIG_UMOUNT
+    {"umount", umount_cmd},
+#endif
+#ifdef CONFIG_DF
+    {"df", df},
+#endif
+#ifdef CONFIG_SU
+    {"su", su},
+#endif
+#ifdef CONFIG_LOGIN
+    {"login", login},
+#endif
+#ifdef CONFIG_POWEROFF
+    {"poweroff", poweroff},
+    {"reboot", poweroff},
+    {"halt", poweroff},
+#endif
     // Add more commands here as needed
+    // Sentinel
+    {NULL, NULL}
 };
 
-size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 
 // Function to execute a command based on the input
 int execute_command(const char *cmd, int argc, char *argv[]) {
-  for (size_t i = 0; i < num_commands; ++i) {
+  for (size_t i = 0; commands[i].cmd_name != NULL; ++i) {
     if (strcmp(cmd, commands[i].cmd_name) == 0) {
       return commands[i].cmd_func(argc, argv);
     }

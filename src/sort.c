@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_SORT
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -74,3 +76,4 @@ int sort(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_SORT */

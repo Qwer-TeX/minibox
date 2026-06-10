@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_ENV
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -163,3 +165,4 @@ int env(int argc, char *argv[]) {
   free(cmd_args);
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_ENV */

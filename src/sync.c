@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_SYNC
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -27,3 +29,4 @@ int _sync(int argc, char *argv[]) {
   sync();
   return 0;
 }
+#endif /* CONFIG_SYNC */

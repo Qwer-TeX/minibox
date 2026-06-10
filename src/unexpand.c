@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_UNEXPAND
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -100,3 +102,4 @@ int unexpand(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_UNEXPAND */

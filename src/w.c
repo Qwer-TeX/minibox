@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_W
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -26,7 +28,6 @@
 /* FIXME: Output is broken and doesn't display info in their correct respective
  * columns */
 int w(int argc, char *argv[]) {
-  struct sysinfo si;
   struct utmp *ut;
   struct tm *tm;
   time_t now;
@@ -34,6 +35,8 @@ int w(int argc, char *argv[]) {
   char buf[256];
 
   // Get system uptime
+#if defined(__linux__)
+  struct sysinfo si;
   if (sysinfo(&si) < 0) {
     perror("sysinfo");
     return 1;
@@ -45,6 +48,14 @@ int w(int argc, char *argv[]) {
   printf("%ld users,  load average: %.2f, %.2f, %.2f\n",
          (long)sysconf(_SC_NPROCESSORS_ONLN), (double)si.loads[0] / 65536.0,
          (double)si.loads[1] / 65536.0, (double)si.loads[2] / 65536.0);
+#else
+  now = time(NULL);
+
+  // Print header (no sysinfo on this platform)
+  printf(" %s up ", strtok(ctime(&now), "\n"));
+  printf("%ld users,  load average: 0.00, 0.00, 0.00\n",
+         (long)sysconf(_SC_NPROCESSORS_ONLN));
+#endif
   printf(
       "USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT\n");
 
@@ -80,3 +91,4 @@ int w(int argc, char *argv[]) {
   endutent();
   return 0;
 }
+#endif /* CONFIG_W */

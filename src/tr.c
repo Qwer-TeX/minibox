@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_TR
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -53,3 +55,4 @@ int tr(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_TR */

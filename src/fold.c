@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_FOLD
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -94,3 +96,4 @@ int fold(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_FOLD */

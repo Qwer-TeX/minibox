@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_HOSTNAME
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -31,3 +33,4 @@ int hostname(int argc, char *argv[]) {
   printf("%s\n", hostname);
   return 0;
 }
+#endif /* CONFIG_HOSTNAME */

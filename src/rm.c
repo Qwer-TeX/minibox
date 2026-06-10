@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_RM
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -88,3 +90,4 @@ int rm(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_RM */

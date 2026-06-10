@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_NOHUP
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -60,3 +62,4 @@ int nohup(int argc, char *argv[]) {
 
   return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 }
+#endif /* CONFIG_NOHUP */

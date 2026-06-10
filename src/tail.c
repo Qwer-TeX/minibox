@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_TAIL
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -152,3 +154,4 @@ int tail(int argc, char *argv[]) {
 
   return 0;
 }
+#endif /* CONFIG_TAIL */

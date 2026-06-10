@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_LINK
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -34,3 +36,4 @@ int create_link(int argc, char *argv[]) {
   }
   return 0;
 }
+#endif /* CONFIG_LINK */

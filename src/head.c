@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef CONFIG_HEAD
 /* MiniBox is a busybox/toybox like replacement aiming to be lightweight,
  * portable, and memory efficient.
  *
@@ -123,3 +125,4 @@ int head(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
+#endif /* CONFIG_HEAD */
